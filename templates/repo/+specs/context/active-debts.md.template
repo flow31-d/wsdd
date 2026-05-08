@@ -1,0 +1,18 @@
+# Dívidas Ativas — {{PROJECT_NAME}}
+
+## Dívidas Técnicas
+
+{{TECHNICAL_DEBTS_MARKDOWN}}
+
+## Dívidas de Produto
+
+{{PRODUCT_DEBTS_MARKDOWN}}
+
+## Riscos Conhecidos
+
+{{KNOWN_RISKS_MARKDOWN}}
+
+## Itens que Não Devem Ser Resolvidos Sem Spec
+
+{{DEFERRED_WITHOUT_SPEC_MARKDOWN}}
+

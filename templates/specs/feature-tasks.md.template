@@ -1,0 +1,65 @@
+# Tasks — [Nome da Feature]
+
+**Spec:** `+specs/features/[slug]/spec.md`
+**Gate commands:** ver `+specs/codebase/TESTING.md`
+**Status:** pending
+
+Uma task = um deliverable verificável = um commit.
+Tasks `[P]` podem rodar em paralelo (verificar Parallel-Safe em TESTING.md).
+
+---
+
+## T01 — [Título da Task]
+
+**Files:**
+- Create: `path/to/file.ext`
+- Modify: `path/to/existing.ext`
+- Test: `tests/path/to/test.ext`
+
+**Depends on:** —
+**Gate:** quick / full / build
+**Tests:** unit / integration / e2e / none
+
+- [ ] **RED: Escrever teste falho**
+
+```[linguagem]
+// teste que codifica o comportamento esperado do acceptance criterion
+```
+
+- [ ] **Rodar e confirmar falha:** `[gate command]` → todos os novos testes FAIL
+- [ ] **GREEN: Implementar mínimo para passar**
+- [ ] **VERIFY: Gate check** → `[gate command]` → todos PASS, contagem estável
+- [ ] **Commit:** `feat([scope]): [descrição imperativa sem ponto]`
+
+**Done when:**
+- WHEN [evento] THEN [sistema] SHALL [comportamento] — verificado por teste T01
+
+---
+
+## T02 — [Título da Task]
+
+**Files:**
+- Modify: `path/to/file.ext`
+
+**Depends on:** T01
+**Gate:** quick
+**Tests:** unit
+
+- [ ] **RED: Escrever teste falho**
+- [ ] **Rodar e confirmar falha**
+- [ ] **GREEN: Implementar**
+- [ ] **VERIFY: Gate check**
+- [ ] **Commit:** `feat([scope]): [descrição]`
+
+**Done when:**
+- WHEN [evento] THEN [sistema] SHALL [comportamento]
+
+---
+
+## Checklist Final
+
+- [ ] Todos os acceptance criteria da spec cobertos por testes
+- [ ] Gate Build passa: lint + tests + build
+- [ ] Nenhum SPEC_DEVIATION não documentado
+- [ ] STATE.md atualizado se houve decisão ou lição
+- [ ] HANDOFF.md gerado via `/wsd-finish`

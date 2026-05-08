@@ -1,0 +1,230 @@
+# Instruções para Agentes — {{PROJECT_NAME}}
+
+## Identidade Operacional
+
+- Projeto: `{{PROJECT_NAME}}`
+- Repositório: `{{REPO_NAME}}`
+- Host canônico: `{{CANONICAL_HOST}}`
+- Caminho canônico: `{{CANONICAL_PATH}}`
+- Branch principal: `{{DEFAULT_BRANCH}}`
+- Remote: `{{GITHUB_REMOTE}}`
+- Tipo de projeto: `{{PROJECT_TYPE}}`
+
+## Política de Ambiente
+
+{{ENVIRONMENT_POLICY_SUMMARY}}
+
+Agentes devem confirmar host, path, branch e remote antes de editar.
+
+## Entrada Obrigatória
+
+Sempre começar com:
+
+```bash
+git status --short --branch
+git branch -vv
+git remote -v
+git remote show origin
+```
+
+Se a worktree estiver suja, identificar mudanças preexistentes antes de editar. Não usar `git add .`, `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para contornar sujeira local sem decisão explícita.
+
+## Carregar Contexto (Base ~15k tokens)
+
+Ao iniciar qualquer sessão, carregar na ordem:
+
+1. `+specs/project/PROJECT.md` — visão, goals e regras do projeto
+2. `+specs/project/STATE.md` — decisões ativas, bloqueadores e lições
+3. `+specs/HANDOFF.md` — se existir, resumir e perguntar se quer continuar de onde parou
+
+On-demand (carregar somente quando relevante à task):
+
+- `+specs/codebase/ARCHITECTURE.md` — ao fazer mudanças arquiteturais
+- `+specs/codebase/CONCERNS.md` — ao tocar componentes frágeis ou tech debt
+- `+specs/codebase/TESTING.md` — ao criar tasks ou executar gate checks
+- `+specs/features/[slug]/spec.md` — somente a spec da feature em execução
+- `+specs/features/[slug]/tasks.md` — somente tasks da feature ativa
+
+Nunca carregar múltiplas specs ou múltiplos docs de codebase/ simultaneamente.
+
+## WSD Local
+
+Este repositório usa WSD + TLC:
+
+- `.wsd/`: cópia local vendorizada do método WSD.
+- `.context.json`: identidade, permissões, paths, ferramentas e validações.
+- `+specs/project/STATE.md`: memória operacional (decisões, bloqueadores, lições, deferred).
+- `+specs/features/[slug]/spec.md`: contrato executável por feature (WHEN/THEN/SHALL).
+- `+specs/features/[slug]/tasks.md`: plano atômico com gate checks por task.
+- `+specs/quick/NNN-slug/`: tasks L0 express.
+- `scripts/wsd_check.sh`: checker local.
+
+Comandos locais:
+
+```bash
+./.wsd/bin/wsd start    # abre sessão: git state, contexto, specs, risco
+./.wsd/bin/wsd check    # valida contrato WSD do repo
+./.wsd/bin/wsd finish   # fecha sessão: STATE.md, HANDOFF.md, relatório
+./.wsd/bin/wsd doctor   # diagnóstico de dependências e hooks
+./.wsd/bin/wsd hooks    # reinstala git hooks em .git/hooks/
+```
+
+Git hooks instalados (Conventional Commits + WSD gate em cada commit/push):
+
+- `.git/hooks/pre-commit` — valida contrato WSD antes de cada commit
+- `.git/hooks/commit-msg` — valida formato Conventional Commits 1.0.0
+- `.git/hooks/pre-push` — valida estado WSD antes de push
+
+Reinstalar: `./.wsd/bin/wsd hooks` (fonte versioned: `scripts/git-hooks/`)
+
+## Git/GitHub Governance
+
+{{GIT_GOVERNANCE_SUMMARY}}
+
+Modo: `{{GIT_GOVERNANCE_MODE}}`
+
+Politicas declaradas em `.context.json`:
+
+- Branch principal: `{{DEFAULT_BRANCH}}`
+- Remote esperado: `{{GITHUB_REMOTE}}`
+- Protocolo preferido: `{{REMOTE_PROTOCOL}}`
+- Issue policy: `{{ISSUE_POLICY}}`
+- PR policy: `{{PR_POLICY}}`
+- Sync policy: `{{SYNC_POLICY}}`
+- Dirty worktree policy: `{{DIRTY_WORKTREE_POLICY}}`
+- Branch naming: `{{BRANCH_NAMING}}`
+- Commit style: `{{COMMIT_STYLE}}`
+
+Comandos locais:
+
+```bash
+./.wsd/bin/wsd git doctor
+./.wsd/bin/wsd git preflight
+./.wsd/bin/wsd git pr-check
+```
+
+Regras:
+
+- `none`: usar somente a politica Git minima do WSD core.
+- `basic`: rodar `wsd git preflight` antes de operacoes arriscadas, push ou troca de branch.
+- `full`: rodar `wsd git pr-check` antes de criar ou atualizar PR; PR deve referenciar Issue/spec quando aplicavel.
+
+## Party Mode
+
+Sistema de orquestração multi-agente para decisões de spec, arquitetura, risco e code review.
+26 agentes WSD-aware selecionados automaticamente por contexto (2-3 por sessão).
+
+**Quando usar:**
+- Spec L1/L2 com trade-offs não óbvios
+- SPECIFY (brainstorm) ou DESIGN (arquitetura) — não em EXECUTE
+- RISK L2: obrigatório antes de qualquer deploy de produção
+
+**Quando skip:** L0 trivial, hotfix urgente, já decidido, em EXECUTE.
+
+```bash
+./.wsd/bin/wsd party status       # verifica instalação
+./.wsd/bin/wsd party list-agents  # lista os 26 agentes
+./.wsd/bin/wsd party when-to-use  # decision tree
+```
+
+Assets em `.wsd/party-mode/` — referência: `.wsd/party-mode/WHEN_TO_USE.md`
+
+Output de cada sessão: `+specs/features/<slug>/PARTY_ANALYSIS.md`
+
+Comandos de sessão (Claude Code):
+
+```
+/wsd-start       — abre sessão: git state, STATE.md, HANDOFF.md, risco e auto-sizing
+/wsd-finish      — fecha sessão: atualiza STATE.md, gera HANDOFF.md, relatório final
+/wsd-specify     — fase Specify: clarifica requirements, escreve spec.md WHEN/THEN/SHALL
+/wsd-design      — fase Design: arquitetura, componentes, design.md
+/wsd-tasks       — fase Tasks: tasks.md atômico com gate checks e dependências
+/wsd-party-mode  — Party Mode: debate multi-agente para L1/L2 complexas
+```
+
+## Auto-sizing por Risco
+
+Antes de qualquer tarefa, classificar e agir proporcionalmente:
+
+| Risco | Quando | O que fazer |
+|---|---|---|
+| **L0** | ≤3 arquivos, mudança local e reversível | Quick mode: descrever → implementar → verificar → commitar |
+| **L1** | Feature, endpoint, integração, refatoração relevante | `/wsd-specify` → (design) → (tasks) → implementar |
+| **L2** | Produção, deploy, banco, auth, secrets, dados sensíveis | 4 fases completas + aguardar aprovação humana antes de executar |
+
+## Knowledge Verification Chain
+
+Ao pesquisar, projetar ou tomar decisão técnica, seguir esta ordem:
+
+1. Codebase existente (código, convenções, padrões)
+2. Docs do projeto (`+specs/codebase/`, README, docs/)
+3. Ferramentas MCP disponíveis
+4. Web search (docs oficiais, fontes reputadas)
+5. Flagrar como incerto: "Não encontrei — aqui está meu raciocínio, mas verifique"
+
+**Nunca inventar APIs, padrões ou comportamentos. Se não sabe, diz.**
+
+## Scope Guardrail
+
+Ao notar algo que poderia melhorar mas está fora da task atual:
+
+- Registrar em `+specs/project/STATE.md` (seção Ideias Adiadas)
+- Não implementar sem instrução explícita
+
+## Classificação de Risco
+
+- L0: ajuste pequeno e local; Task Card ou Quick mode suficiente.
+- L1: feature, integração, automação, endpoint, mudança estrutural; spec aprovada obrigatória.
+- L2: produção, deploy, banco, auth, secrets, rede, dados sensíveis, disponibilidade; aprovação humana + rollback documentado.
+
+## Conventional Commits
+
+Todo commit em repositório WSD segue Conventional Commits 1.0.0:
+
+```
+<type>(<scope>): <description>
+```
+
+Tipos: `feat`, `fix`, `refactor`, `docs`, `test`, `style`, `perf`, `build`, `ci`, `chore`
+
+Regras: imperativo, lowercase, sem ponto final. Um task = um commit.
+
+## Paths Sensíveis
+
+Não alterar sem spec L2 ou decisão explícita:
+
+{{SENSITIVE_PATHS_MARKDOWN_LIST}}
+
+## Validação
+
+Consultar `+specs/codebase/TESTING.md` para gate checks por tier:
+
+- **Quick**: unit tests somente
+- **Full**: unit + e2e/integration
+- **Build**: tudo + lint + build
+
+```bash
+{{VALIDATION_COMMANDS_BLOCK}}
+```
+
+Gate check é obrigatório antes de commitar. Não inventar comandos de teste.
+
+## Sincronização de Governança
+
+Ao alterar qualquer arquivo WSD local:
+
+- `AGENTS.md`, `.context.json` ou `+specs/project/` → revisar política do projeto
+- `+specs/features/[slug]/spec.md` → revisar tasks.md correspondente
+- `scripts/wsd_check.sh` → atualizar contrato validável
+- `+specs/project/STATE.md` → atualizar decisões e lições
+
+Antes de fechar:
+
+```bash
+./.wsd/bin/wsd check
+git diff --check
+```
+
+## Produção
+
+Agentes não executam mutação direta em produção. Para L2, preparar branch, PR, artefato, script e rollback documentado — execução exige decisão humana explícita.

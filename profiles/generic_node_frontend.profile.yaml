@@ -1,0 +1,54 @@
+schema_version: "wsd/profile/v1"
+project:
+  name: "Generic Node Frontend"
+  type: "node_frontend"
+  primary_language: "TypeScript"
+  owner: "private"
+repository:
+  name: "{{REPO_NAME}}"
+  remote: "{{GITHUB_REMOTE}}"
+  default_branch: "main"
+environment:
+  canonical_host: "{{CANONICAL_HOST}}"
+  canonical_path: "{{CANONICAL_PATH}}"
+  environment_name: "development"
+  network_mode: "local_or_vps"
+permissions:
+  write_paths:
+    - "./src"
+    - "./tests"
+    - "./public"
+    - "./docs"
+    - "./scripts"
+    - "./+specs"
+    - "./+logs"
+    - "./AGENTS.md"
+    - "./.context.json"
+  forbidden_paths:
+    - "./.git"
+    - "./.env"
+    - "./secrets"
+    - "./keys"
+    - "./certs"
+  tools:
+    - "bash"
+    - "git"
+    - "gh"
+    - "node"
+    - "npm"
+    - "python3"
+validation:
+  lint:
+    - "npm run lint"
+  test:
+    - "npm test"
+  build:
+    - "npm run build"
+  smoke: []
+risk:
+  l2_areas:
+    - "deploy público"
+    - "secrets"
+    - "proxy/SSL"
+    - "dados sensíveis"
+

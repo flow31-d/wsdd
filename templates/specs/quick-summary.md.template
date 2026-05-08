@@ -1,0 +1,22 @@
+# Summary — [Título da Quick Task]
+
+**Data:** {{DATE}}
+**Status:** concluído / parcial / bloqueado
+
+## O que foi feito
+
+[Descrever o que mudou.]
+
+## Commit
+
+`[hash] — [mensagem]`
+
+## Verificação Executada
+
+```
+[output do comando de verificação]
+```
+
+## Lição ou Risco Residual
+
+[Se houve algo inesperado, registrar aqui e em STATE.md.]

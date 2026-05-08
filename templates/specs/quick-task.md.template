@@ -1,0 +1,35 @@
+# Quick Task — [Título]
+
+**Risco:** L0
+**Data:** {{DATE}}
+**Pasta:** `+specs/quick/NNN-[slug]/`
+
+---
+
+## Escopo
+
+[Descrever em uma frase o que muda. ≤3 arquivos.]
+
+## Objetivo
+
+[O que deve estar diferente após a task.]
+
+## Arquivos a Tocar
+
+- `path/to/file.ext`
+
+## Verificação
+
+```bash
+[comando de verificação — pode ser manual, não precisa de suite completa]
+```
+
+## Critério de Pronto
+
+[Condição verificável de que a task está concluída.]
+
+## Commit
+
+```
+[type]([scope]): [descrição imperativa]
+```

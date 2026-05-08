@@ -1,0 +1,41 @@
+# STATE — {{PROJECT_NAME}}
+
+Memória operacional do projeto. Atualizar a cada sessão relevante via `/wsd-finish`.
+Não deletar entradas — marcar como resolvido.
+
+---
+
+## Decisões
+
+| Data | Decisão | Racional |
+|---|---|---|
+| {{DATE}} | WSD instalado neste repositório | Padronizar governança de agentes, risco e rastreabilidade |
+
+---
+
+## Bloqueadores Ativos
+
+| Data | Bloqueador | Impacto | Status |
+|---|---|---|---|
+
+---
+
+## Lições Aprendidas
+
+| Data | Lição | Prevenção |
+|---|---|---|
+
+---
+
+## Ideias Adiadas
+
+| Data | Ideia | Prioridade |
+|---|---|---|
+
+---
+
+## Todos Ativos
+
+- [ ] Preencher `+specs/project/PROJECT.md` com visão e regras do projeto
+- [ ] Preencher `+specs/codebase/` com mapeamento brownfield (se projeto existente)
+- [ ] Criar primeira spec de feature em `+specs/features/[slug]/spec.md`

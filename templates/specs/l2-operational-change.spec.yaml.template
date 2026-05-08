@@ -1,0 +1,49 @@
+schema_version: "wsd/spec/v1"
+metadata:
+  id: "{{TASK_ID}}"
+  title: "{{TASK_TITLE}}"
+  severity: "L2"
+  status: "draft"
+  risk_score: {{RISK_SCORE}}
+  created: "{{DATE}}"
+  owner: "{{OWNER}}"
+  repository: "{{REPO_NAME}}"
+  issue: "{{ISSUE_URL_OR_EMPTY}}"
+intent:
+  description: >
+    {{INTENT_DESCRIPTION}}
+  business_reason: >
+    {{BUSINESS_REASON}}
+operational_context:
+  environment: "{{TARGET_ENVIRONMENT}}"
+  human_approval_required: true
+  production_mutation_by_agent: false
+  secret_handling: "Do not store secrets in Git, specs, prompts, logs or PRs."
+execution_bounds:
+  allowed_scopes:
+{{ALLOWED_SCOPES_YAML_LIST}}
+  forbidden_scopes:
+{{FORBIDDEN_SCOPES_YAML_LIST}}
+preflight_checks:
+{{PREFLIGHT_CHECKS_YAML_LIST}}
+execution_plan:
+{{EXECUTION_PLAN_YAML_LIST}}
+acceptance_criteria:
+{{ACCEPTANCE_CRITERIA_YAML_LIST}}
+validation_commands:
+{{VALIDATION_COMMANDS_YAML_LIST}}
+health_checks:
+{{HEALTH_CHECKS_YAML_LIST}}
+risk_assessment:
+{{RISK_ASSESSMENT_YAML_LIST}}
+rollback_plan:
+{{ROLLBACK_PLAN_YAML_LIST}}
+stop_conditions:
+{{STOP_CONDITIONS_YAML_LIST}}
+evidence_required:
+  - "Before state."
+  - "Commands run."
+  - "After state."
+  - "Validation output summary."
+  - "Rollback readiness."
+

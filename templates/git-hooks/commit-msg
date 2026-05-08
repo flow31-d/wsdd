@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# WSD commit-msg hook — enforces Conventional Commits 1.0.0.
+# Auto-installed by wsd-method install. Versioned copy: scripts/git-hooks/commit-msg
+# Reinstall: ./.wsd/bin/wsd hooks
+
+commit_file="$1"
+first_line="$(head -1 "$commit_file")"
+
+# Skip merge, revert, fixup, squash and WIP commits
+if echo "$first_line" | grep -qE '^(Merge|Revert|fixup!|squash!|WIP[[:space:]:])'; then
+  exit 0
+fi
+
+# Conventional Commits 1.0.0:  type(scope)!: description
+if ! echo "$first_line" | grep -qE '^(feat|fix|refactor|docs|test|style|perf|build|ci|chore)(\([^)]+\))?!?:[[:space:]].{1,}'; then
+  echo "WSD commit-msg: mensagem não segue Conventional Commits 1.0.0" >&2
+  echo "  Formato: type(scope): description" >&2
+  echo "  Tipos:   feat fix refactor docs test style perf build ci chore" >&2
+  echo "  Recebido: $first_line" >&2
+  exit 1
+fi

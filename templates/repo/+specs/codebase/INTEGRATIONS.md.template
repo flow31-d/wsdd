@@ -1,0 +1,27 @@
+# Integrations — {{PROJECT_NAME}}
+
+> Mapeamento brownfield. Preencher ao iniciar trabalho em repositório existente.
+
+## Integrações Externas
+
+| Serviço | Tipo | Autenticação | Ambiente | Notes |
+|---|---|---|---|---|
+| — | API REST / Webhook / SDK | — | prod/staging | — |
+
+## Integrações Internas
+
+| Serviço | Tipo | Protocolo | Notes |
+|---|---|---|---|
+| — | — | — | — |
+
+## Contratos de Interface
+
+| Interface | Formato | Documentação |
+|---|---|---|
+| — | JSON / Protobuf / gRPC | — |
+
+## Dependências de Runtime
+
+| Dependência | Criticidade | Fallback disponível? |
+|---|---|---|
+| — | Alta / Média / Baixa | Sim / Não |

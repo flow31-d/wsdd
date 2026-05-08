@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wsd/context/v1",
+  "title": "WSD .context.json contract",
+  "description": "Runtime contract every WSD-governed repo declares for agents. Validated by .wsd/bin/wsd-validate-context.js.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "project",
+    "environment",
+    "repository",
+    "permissions",
+    "workflow",
+    "wsd"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "wsd/context/v1"
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "type", "primary_language"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "primary_language": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "required": ["canonical_host", "canonical_path"],
+      "properties": {
+        "canonical_host": { "type": "string", "minLength": 1 },
+        "canonical_path": { "type": "string", "minLength": 1 },
+        "environment": { "type": "string" },
+        "network_mode": { "type": "string" }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "required": ["default_branch", "repo_type"],
+      "properties": {
+        "name": { "type": "string" },
+        "default_branch": { "type": "string", "minLength": 1 },
+        "remote": { "type": "string" },
+        "repo_type": {
+          "type": "string",
+          "enum": ["private", "public", "internal"]
+        },
+        "clone_policy": {
+          "type": "object",
+          "properties": {
+            "canonical_history": { "type": "string" },
+            "operational_clone": { "type": "string" },
+            "audit_lab_clone": { "type": "string" },
+            "deploy_clone": { "type": "string" },
+            "promotion_flow": { "type": "string" }
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": ["write_paths", "forbidden_paths", "tool_allowlist", "secrets_policy"],
+      "properties": {
+        "write_paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "tool_allowlist": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "secrets_policy": {
+          "type": "string",
+          "enum": ["read_only_env_vars", "denied", "vault_managed"]
+        },
+        "max_runtime_seconds": { "type": "integer", "minimum": 1 },
+        "max_tokens_per_request": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "required": ["production_mutation_policy"],
+      "properties": {
+        "approval_mode": {
+          "type": "string",
+          "enum": ["auto_for_l0_human_for_l2", "human_only", "auto_only"]
+        },
+        "branch_policy": {
+          "type": "string",
+          "enum": ["ephemeral_feature_branch", "task_branch", "direct_to_main_forbidden"]
+        },
+        "incident_mode": {
+          "type": "string",
+          "enum": ["log_and_halt", "halt_only", "log_only"]
+        },
+        "issue_policy": {
+          "type": "string",
+          "enum": ["issue_or_spec_required_for_l1_l2", "spec_required_for_all", "none"]
+        },
+        "production_mutation_policy": {
+          "type": "string",
+          "enum": ["forbidden_for_agents", "requires_human_approval"]
+        }
+      }
+    },
+    "git_governance": {
+      "type": "object",
+      "required": ["enabled", "mode", "default_branch", "issue_policy", "pr_policy", "sync_policy", "dirty_worktree_policy", "branch_naming", "commit_style"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "mode": {
+          "type": "string",
+          "enum": ["none", "basic", "full"]
+        },
+        "remote_protocol": {
+          "type": "string",
+          "enum": ["https", "ssh", "unknown"]
+        },
+        "github_cli_required": { "type": "boolean" },
+        "default_branch": { "type": "string", "minLength": 1 },
+        "legacy_branch_allowed": { "type": "boolean" },
+        "issue_policy": {
+          "type": "string",
+          "enum": ["required_for_l1_l2", "required_for_all", "optional", "none"]
+        },
+        "pr_policy": {
+          "type": "string",
+          "enum": ["required_for_relevant_changes", "required_for_all", "optional", "none"]
+        },
+        "sync_policy": {
+          "type": "string",
+          "enum": ["pull_ff_only", "manual", "none"]
+        },
+        "dirty_worktree_policy": {
+          "type": "string",
+          "enum": ["declare_and_halt_for_risky_ops", "warn", "none"]
+        },
+        "branch_naming": { "type": "string", "minLength": 1 },
+        "commit_style": {
+          "type": "string",
+          "enum": ["conventional_commits", "freeform"]
+        }
+      }
+    },
+    "wsd": {
+      "type": "object",
+      "required": ["method", "context_documents"],
+      "properties": {
+        "method": { "type": "string", "minLength": 1 },
+        "context_documents": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "local_checker": { "type": "string" },
+        "active_candidate_specs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ci": {
+      "type": "object",
+      "properties": {
+        "lint_commands": { "type": "array", "items": { "type": "string" } },
+        "test_commands": { "type": "array", "items": { "type": "string" } },
+        "build_commands": { "type": "array", "items": { "type": "string" } },
+        "smoke_commands": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

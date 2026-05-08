@@ -1,0 +1,30 @@
+## Scope
+
+{{SCOPE_SUMMARY}}
+
+## WSD
+
+- Risk: `{{RISK_LEVEL}}`
+- Spec: `{{SPEC_PATH}}`
+- Issue: `{{ISSUE_URL_OR_EMPTY}}`
+
+## Changed Paths
+
+{{CHANGED_PATHS_MARKDOWN}}
+
+## Validation
+
+{{VALIDATION_RESULTS_MARKDOWN}}
+
+## Not Run
+
+{{NOT_RUN_MARKDOWN}}
+
+## Rollback
+
+{{ROLLBACK_MARKDOWN}}
+
+## Residual Risk
+
+{{RESIDUAL_RISK_MARKDOWN}}
+

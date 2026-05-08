@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# WSD pre-push hook — validates WSD state before push.
+# Auto-installed by wsd-method install. Versioned copy: scripts/git-hooks/pre-push
+# Reinstall: ./.wsd/bin/wsd hooks
+
+set -euo pipefail
+
+if [[ -f "scripts/wsd_check.sh" ]]; then
+  bash scripts/wsd_check.sh --risk L0 . || exit 1
+fi

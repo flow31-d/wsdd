@@ -1,0 +1,28 @@
+# Task Card L0 — {{TASK_TITLE}}
+
+## Contexto
+
+{{TASK_CONTEXT}}
+
+## Objetivo
+
+{{TASK_OBJECTIVE}}
+
+## Escopo Permitido
+
+{{ALLOWED_SCOPE_MARKDOWN}}
+
+## Fora de Escopo
+
+{{OUT_OF_SCOPE_MARKDOWN}}
+
+## Validação
+
+```bash
+{{VALIDATION_COMMANDS_BLOCK}}
+```
+
+## Critério de Pronto
+
+{{DONE_CRITERIA_MARKDOWN}}
+

@@ -1,0 +1,26 @@
+# Structure — {{PROJECT_NAME}}
+
+> Mapeamento brownfield. Preencher ao iniciar trabalho em repositório existente.
+
+## Árvore Principal
+
+```
+{{PROJECT_NAME}}/
+├── [preencher com estrutura real]
+```
+
+## Responsabilidade por Pasta
+
+| Pasta | Responsabilidade |
+|---|---|
+| — | — |
+
+## Arquivos de Configuração Chave
+
+| Arquivo | Propósito |
+|---|---|
+| — | — |
+
+## Padrões de Decomposição
+
+> Como o projeto divide responsabilidades (por camada, por feature, por domínio, etc.)

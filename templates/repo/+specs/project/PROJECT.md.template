@@ -1,0 +1,50 @@
+# {{PROJECT_NAME}} — Project
+
+## Visão
+
+{{PRODUCT_SUMMARY}}
+
+## Goals
+
+- [ ] [Objetivo primário com resultado mensurável]
+- [ ] [Objetivo secundário com resultado mensurável]
+
+## Usuários / Público
+
+{{USER_CONTEXT}}
+
+## Stack
+
+{{STACK_SUMMARY}}
+
+## Regras do Projeto
+
+{{PROJECT_RULES_MARKDOWN}}
+
+## Decisões Técnicas
+
+{{TECHNICAL_DECISIONS_MARKDOWN}}
+
+## O Que Agentes Devem Evitar
+
+{{AGENT_AVOID_MARKDOWN}}
+
+## Política de Validação
+
+{{VALIDATION_POLICY_MARKDOWN}}
+
+## Fora de Escopo
+
+Explicitamente excluído para evitar scope creep:
+
+| Item | Motivo |
+|---|---|
+| [Feature X] | [Por que excluída] |
+
+## Política de Ambiente
+
+{{ENVIRONMENT_POLICY_DETAILS}}
+
+### Topologia de Clones
+
+{{CLONE_TOPOLOGY_MARKDOWN}}

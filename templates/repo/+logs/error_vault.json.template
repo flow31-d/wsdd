@@ -1,0 +1,5 @@
+{
+  "$schema": "wsd/error-vault/v1",
+  "note": "Memória operacional primária está em +specs/project/STATE.md. Este arquivo mantido para compatibilidade.",
+  "lessons": []
+}

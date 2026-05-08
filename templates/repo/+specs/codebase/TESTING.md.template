@@ -1,0 +1,47 @@
+# Testing — {{PROJECT_NAME}}
+
+Referência de gate checks para agentes. Consultar ao criar tasks ou executar implementação.
+
+---
+
+## Gate Check Commands
+
+Agentes devem rodar o gate correspondente ao tier da task antes de commitar.
+
+| Gate level | Quando usar | Comando |
+|---|---|---|
+| **Quick** | Task atômica, < 30s, módulo afetado | `{{TEST_QUICK_COMMAND}}` |
+| **Full** | Antes de commit em feature branch, < 5min | `{{TEST_FULL_COMMAND}}` |
+| **Build** | Antes de merge para `main` ou release | `{{TEST_BUILD_COMMAND}}` |
+
+> Smoke checks (pós-deploy): preencher conforme o projeto em `+specs/project/STATE.md`.
+
+---
+
+## Coverage Matrix
+
+Quais camadas exigem qual tipo de teste:
+
+| Camada / Módulo | Tipo de teste obrigatório | Parallel-Safe |
+|---|---|---|
+| [preencher com camadas reais do projeto] | unit | Yes |
+| [ex: handlers HTTP] | integration | No |
+| [ex: fluxos de usuário críticos] | e2e | No |
+| [ex: configuração, entidades] | none (build gate) | Yes |
+
+---
+
+## Regras de Gate
+
+- **Non-zero exit = STOP**. Corrigir falha e re-rodar. Não prosseguir com gate vermelho.
+- **Contagem de testes**: confirmar que o número de testes não diminuiu após implementação.
+- **Nenhum skip silencioso**: não usar `.skip`, `.pending`, `xtest`, `xit` para passar gate.
+- **Gate é determinístico**: o runner decide se o código está correto — não a auto-avaliação do agente.
+
+---
+
+## Comandos de Validação Completos
+
+```bash
+{{VALIDATION_COMMANDS_BLOCK}}
+```

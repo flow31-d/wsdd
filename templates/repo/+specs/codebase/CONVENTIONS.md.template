@@ -1,0 +1,49 @@
+# Conventions — {{PROJECT_NAME}}
+
+> Mapeamento brownfield. Preencher ao iniciar trabalho em repositório existente.
+
+## Estilo de Código
+
+| Aspecto | Convenção |
+|---|---|
+| Formatação | — |
+| Linting | — |
+| Nomenclatura de variáveis | — |
+| Nomenclatura de arquivos | — |
+
+## Commits
+
+Este projeto segue **Conventional Commits 1.0.0**:
+
+```
+<type>(<scope>): <description>
+```
+
+Tipos: `feat`, `fix`, `refactor`, `docs`, `test`, `style`, `perf`, `build`, `ci`, `chore`
+
+Regras: imperativo, lowercase, sem ponto final. Um deliverable = um commit.
+
+## Organização de Arquivos
+
+| Tipo | Onde fica |
+|---|---|
+| Código de produção | — |
+| Testes | — |
+| Docs | — |
+| Scripts | — |
+
+## Padrões de API / Interface
+
+| Aspecto | Padrão |
+|---|---|
+| Endpoints REST | — |
+| Nomes de eventos | — |
+| Erros | — |
+
+## Padrões de Teste
+
+| Tipo | Padrão | Arquivo |
+|---|---|---|
+| Unit | — | — |
+| Integration | — | — |
+| E2E | — | — |

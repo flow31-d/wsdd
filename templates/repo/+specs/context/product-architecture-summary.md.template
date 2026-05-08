@@ -1,0 +1,30 @@
+# Resumo de Produto e Arquitetura — {{PROJECT_NAME}}
+
+## Produto
+
+{{PRODUCT_SUMMARY}}
+
+## Usuários ou Público
+
+{{USER_CONTEXT}}
+
+## Stack
+
+{{STACK_SUMMARY}}
+
+## Módulos Principais
+
+{{MODULES_MARKDOWN}}
+
+## Fluxos Críticos
+
+{{CRITICAL_FLOWS_MARKDOWN}}
+
+## Integrações
+
+{{INTEGRATIONS_MARKDOWN}}
+
+## Ambientes
+
+{{ENVIRONMENTS_MARKDOWN}}
+

@@ -1,0 +1,38 @@
+# ADR — {{ADR_TITLE}}
+
+## Status
+
+{{ADR_STATUS}}
+
+## Contexto
+
+{{CONTEXT}}
+
+## Decisão
+
+{{DECISION}}
+
+## Consequências
+
+### Positivas
+
+{{POSITIVE_CONSEQUENCES}}
+
+### Negativas
+
+{{NEGATIVE_CONSEQUENCES}}
+
+### Riscos
+
+{{RISKS}}
+
+## Alternativas Consideradas
+
+{{ALTERNATIVES}}
+
+## Relação com WSD
+
+- Spec relacionada: `{{SPEC_PATH}}`
+- Risco: `{{RISK_LEVEL}}`
+- Validação: `{{VALIDATION_SUMMARY}}`
+

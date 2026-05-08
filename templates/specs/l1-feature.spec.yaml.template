@@ -1,0 +1,35 @@
+schema_version: "wsd/spec/v1"
+metadata:
+  id: "{{TASK_ID}}"
+  title: "{{TASK_TITLE}}"
+  severity: "L1"
+  status: "draft"
+  risk_score: {{RISK_SCORE}}
+  created: "{{DATE}}"
+  owner: "{{OWNER}}"
+  repository: "{{REPO_NAME}}"
+  issue: "{{ISSUE_URL_OR_EMPTY}}"
+intent:
+  description: >
+    {{INTENT_DESCRIPTION}}
+  business_reason: >
+    {{BUSINESS_REASON}}
+execution_bounds:
+  allowed_scopes:
+{{ALLOWED_SCOPES_YAML_LIST}}
+  forbidden_scopes:
+{{FORBIDDEN_SCOPES_YAML_LIST}}
+acceptance_criteria:
+{{ACCEPTANCE_CRITERIA_YAML_LIST}}
+validation_commands:
+{{VALIDATION_COMMANDS_YAML_LIST}}
+risk_assessment:
+{{RISK_ASSESSMENT_YAML_LIST}}
+rollback_plan:
+{{ROLLBACK_PLAN_YAML_LIST}}
+notes:
+  agent_instructions:
+    - "Do not include unrelated changes."
+    - "Do not commit if this spec remains draft."
+    - "Report validation commands and results."
+

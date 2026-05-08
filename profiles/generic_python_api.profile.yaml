@@ -1,0 +1,56 @@
+schema_version: "wsd/profile/v1"
+project:
+  name: "Generic Python API"
+  type: "python_api"
+  primary_language: "Python"
+  owner: "private"
+repository:
+  name: "{{REPO_NAME}}"
+  remote: "{{GITHUB_REMOTE}}"
+  default_branch: "main"
+environment:
+  canonical_host: "{{CANONICAL_HOST}}"
+  canonical_path: "{{CANONICAL_PATH}}"
+  environment_name: "development"
+  network_mode: "local_or_vps"
+permissions:
+  write_paths:
+    - "./app"
+    - "./tests"
+    - "./docs"
+    - "./scripts"
+    - "./+specs"
+    - "./+logs"
+    - "./AGENTS.md"
+    - "./.context.json"
+  forbidden_paths:
+    - "./.git"
+    - "./.env"
+    - "./secrets"
+    - "./keys"
+    - "./certs"
+    - "./alembic/versions"
+  tools:
+    - "bash"
+    - "git"
+    - "gh"
+    - "python3"
+    - "pytest"
+    - "ruff"
+    - "docker"
+validation:
+  lint:
+    - "ruff check app tests"
+  test:
+    - "pytest"
+  build:
+    - "docker compose config"
+  smoke: []
+risk:
+  l2_areas:
+    - "migração de banco"
+    - "auth/autorização"
+    - "secrets"
+    - "produção"
+    - "dados sensíveis"
+

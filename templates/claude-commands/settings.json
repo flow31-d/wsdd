@@ -1,0 +1,51 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Write|Edit|MultiEdit|Glob|Grep|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .wsd/hooks/pre-tool.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- WSD GOVERNANÇA ---' >&2 && echo 'Contexto prestes a ser compactado. Leia AGENTS.md e .context.json antes de qualquer edição futura. L0/L1/L2 obrigatório.' >&2",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' '--- WSD GOVERNANÇA ---' 'Contexto compactado. Leia AGENTS.md e .context.json antes de qualquer edição. L0/L1/L2 obrigatório. Execute /wsd-start para estado completo.'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Sessão encerrada. Execute /wsd-finish para registrar estado final e lições aprendidas.' >&2",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

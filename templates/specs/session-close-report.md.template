@@ -1,0 +1,41 @@
+# Relatório de Encerramento WSD — {{DATE}}
+
+## Repo
+
+- Nome: `{{REPO_NAME}}`
+- Host: `{{CANONICAL_HOST}}`
+- Path: `{{CANONICAL_PATH}}`
+- Branch: `{{BRANCH}}`
+
+## Estado Git
+
+```text
+{{GIT_STATUS}}
+```
+
+## Mudanças
+
+{{CHANGES_SUMMARY}}
+
+## Spec / Issue / PR
+
+- Spec: `{{SPEC_PATH_OR_EMPTY}}`
+- Issue: `{{ISSUE_URL_OR_EMPTY}}`
+- PR: `{{PR_URL_OR_EMPTY}}`
+
+## Validação Executada
+
+{{VALIDATION_RUN_MARKDOWN}}
+
+## Validação Não Executada
+
+{{VALIDATION_NOT_RUN_MARKDOWN}}
+
+## Riscos e Pendências
+
+{{RISKS_AND_PENDING_MARKDOWN}}
+
+## Próximo Passo Seguro
+
+{{NEXT_SAFE_STEP}}
+

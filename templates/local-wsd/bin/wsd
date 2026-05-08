@@ -1,0 +1,455 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+project_root="$(cd "$script_dir/../.." && pwd)"
+command="${1:-help}"
+shift || true
+
+cd "$project_root"
+
+_context_get() {
+  local key_path="${1:-}"
+  [[ -f .context.json ]] || return 0
+  command -v python3 >/dev/null || return 0
+  WSD_KEY_PATH="$key_path" python3 - <<'PY' 2>/dev/null || true
+import json
+import os
+
+path = os.environ.get("WSD_KEY_PATH", "")
+with open(".context.json", encoding="utf-8") as fh:
+    data = json.load(fh)
+cur = data
+for part in path.split("."):
+    if not part:
+        continue
+    if not isinstance(cur, dict) or part not in cur:
+        raise SystemExit(0)
+    cur = cur[part]
+if isinstance(cur, bool):
+    print("true" if cur else "false")
+elif cur is None:
+    print("")
+else:
+    print(cur)
+PY
+}
+
+_git_mode() {
+  local mode
+  mode="$(_context_get git_governance.mode)"
+  [[ -n "$mode" ]] || mode="none"
+  printf "%s\n" "$mode"
+}
+
+_git_current_branch() {
+  git rev-parse --abbrev-ref HEAD 2>/dev/null || true
+}
+
+_git_upstream() {
+  git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true
+}
+
+_git_has_changes_for_pr() {
+  local base_ref="$1"
+  [[ -n "$base_ref" ]] || return 1
+  git rev-list --count "${base_ref}..HEAD" 2>/dev/null | grep -qE '^[1-9][0-9]*$'
+}
+
+_git_base_ref() {
+  local default_branch="$1"
+  if [[ -n "$default_branch" ]] && git show-ref --verify --quiet "refs/remotes/origin/${default_branch}"; then
+    printf "origin/%s\n" "$default_branch"
+    return 0
+  fi
+  if [[ -n "$default_branch" ]] && git show-ref --verify --quiet "refs/heads/${default_branch}"; then
+    printf "%s\n" "$default_branch"
+    return 0
+  fi
+  printf "%s\n" "${default_branch:-main}"
+}
+
+case "$command" in
+  start)
+    echo "== WSD Start =="
+    git status --short --branch
+    git branch -vv
+    git remote -v
+    git remote show origin 2>/dev/null || true
+    if [[ -f scripts/wsd_check.sh ]]; then
+      bash scripts/wsd_check.sh --risk L0 .
+    fi
+    if [[ -f +specs/HANDOFF.md ]]; then
+      echo "-- HANDOFF.md (last session) --"
+      head -20 +specs/HANDOFF.md
+    fi
+    find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | sort || true
+    find +specs/quick -maxdepth 1 -type f -name '*.md' 2>/dev/null | sort || true
+    gh pr list --state open --limit 20 2>/dev/null || true
+    ;;
+  check)
+    if [[ -f scripts/wsd_check.sh ]]; then
+      bash scripts/wsd_check.sh "$@"
+    else
+      echo "FAIL: scripts/wsd_check.sh not found" >&2
+      exit 1
+    fi
+    ;;
+  finish)
+    echo "== WSD Finish =="
+    git status --short --branch
+    git diff --stat
+    git diff --check
+    git log -1 --date=short --pretty='last=%ad | %h | %s'
+    if [[ -f scripts/wsd_check.sh ]]; then
+      bash scripts/wsd_check.sh --risk L0 .
+    fi
+    gh pr status 2>/dev/null || true
+
+    # --- Generate HANDOFF.md ---
+    _today="$(date '+%Y-%m-%d')"
+    _now="$(date '+%Y-%m-%d %H:%M')"
+    _branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+    _last_commit="$(git log -1 --pretty='%h - %s (%ad)' --date=short 2>/dev/null || echo '(no commits)')"
+    _git_state_short="$(git status --short 2>/dev/null)"
+    _recent="$(git log --oneline -5 2>/dev/null | sed 's/^/- /' || echo '- (none)')"
+    _dirty="$(git status --short 2>/dev/null | grep -v '^??' | sed 's/^/- /' || true)"
+    [[ -z "$_dirty" ]] && _dirty="(working tree clean)"
+    _specs_list="$(find +specs/features -maxdepth 2 -name 'spec.md' 2>/dev/null | sed 's/^/- /' || true)"
+    [[ -z "$_specs_list" ]] && _specs_list="- (nenhuma)"
+
+    mkdir -p +specs
+    {
+      printf "# HANDOFF -- %s\n\n" "$_now"
+      printf "## Sessao\n\n"
+      printf -- "- Branch: %s\n" "$_branch"
+      printf -- "- Ultimo commit: %s\n" "$_last_commit"
+      if [[ -z "$_git_state_short" ]]; then
+        printf -- "- Estado: limpo\n"
+      else
+        printf -- "- Estado: sujo (uncommitted changes -- ver abaixo)\n"
+      fi
+      printf "\n## Concluido nesta sessao\n\n"
+      printf "(ultimos 5 commits -- editar conforme necessario)\n"
+      printf "%s\n" "$_recent"
+      printf "\n## Em andamento\n\n"
+      printf "%s\n" "$_dirty"
+      printf "\n## Proximos Passos\n\n"
+      printf -- "- [ ] (preencher)\n"
+      printf "\n## Referencias\n\n"
+      printf -- "- STATE: +specs/project/STATE.md\n"
+      printf -- "- Specs:\n"
+      printf "%s\n" "$_specs_list"
+    } > "+specs/HANDOFF.md"
+
+    echo ""
+    echo ">> +specs/HANDOFF.md gerado"
+
+    # --- Prompts STATE.md (somente em terminal interativo) ---
+    if [[ -f +specs/project/STATE.md ]]; then
+      if ! command -v python3 >/dev/null; then
+        echo "info: python3 ausente -- STATE.md prompts pulados; preencher manualmente"
+      elif [[ ! -t 0 ]]; then
+        echo "info: STATE.md prompts pulados (stdin nao-interativo)"
+      else
+        _state_insert() {
+          WSD_FILE="$1" WSD_SECTION="$2" WSD_ROW="$3" python3 -c "
+import os
+f = os.environ['WSD_FILE']
+sec = os.environ['WSD_SECTION']
+row = os.environ['WSD_ROW']
+lines = open(f).readlines()
+out = []
+in_sec = False
+done = False
+for l in lines:
+    out.append(l)
+    if sec in l:
+        in_sec = True
+    elif in_sec and not done and l.startswith('|---'):
+        out.append(row + '\n')
+        done = True
+        in_sec = False
+open(f, 'w').writelines(out)
+"
+        }
+
+        echo ""
+        echo "== Captura de Memoria Operacional =="
+
+        printf "Houve licoes aprendidas nesta sessao? [s/N] "
+        read -r _resp
+        if [[ "$_resp" =~ ^[Ss]$ ]]; then
+          printf "  Licao (1 linha): "
+          read -r _licao
+          if [[ -n "$_licao" ]]; then
+            printf "  Como prevenir? (1 linha): "
+            read -r _prevencao
+            _state_insert "+specs/project/STATE.md" "Aprendidas" "| $_today | $_licao | $_prevencao |"
+            echo "  ok: licao registrada em STATE.md"
+          fi
+        fi
+
+        printf "Houve decisoes arquiteturais ou de metodo? [s/N] "
+        read -r _resp
+        if [[ "$_resp" =~ ^[Ss]$ ]]; then
+          printf "  Decisao (1 linha): "
+          read -r _decisao
+          if [[ -n "$_decisao" ]]; then
+            printf "  Racional (1 linha): "
+            read -r _racional
+            _state_insert "+specs/project/STATE.md" "## Decis" "| $_today | $_decisao | $_racional |"
+            echo "  ok: decisao registrada em STATE.md"
+          fi
+        fi
+
+        printf "Ha bloqueadores ativos? [s/N] "
+        read -r _resp
+        if [[ "$_resp" =~ ^[Ss]$ ]]; then
+          printf "  Bloqueador (1 linha): "
+          read -r _bloqueador
+          if [[ -n "$_bloqueador" ]]; then
+            printf "  Impacto (1 linha): "
+            read -r _impacto
+            _state_insert "+specs/project/STATE.md" "## Bloqueadores Ativos" "| $_today | $_bloqueador | $_impacto | Em analise |"
+            echo "  ok: bloqueador registrado em STATE.md"
+          fi
+        fi
+      fi
+    fi
+    ;;
+  doctor)
+    echo "== WSD Doctor =="
+    test -f .wsd/config.json && echo "ok: .wsd/config.json" || echo "missing: .wsd/config.json"
+    test -f .wsd/docs/10_matriz_sincronizacao_notas.md && echo "ok: .wsd/docs/10_matriz_sincronizacao_notas.md" || echo "missing: .wsd/docs/10_matriz_sincronizacao_notas.md"
+    test -f .wsd/schemas/context.schema.json && echo "ok: .wsd/schemas/context.schema.json" || echo "missing: .wsd/schemas/context.schema.json"
+    test -x .wsd/bin/wsd-validate-context.js && echo "ok: .wsd/bin/wsd-validate-context.js" || echo "missing: .wsd/bin/wsd-validate-context.js"
+    test -f AGENTS.md && echo "ok: AGENTS.md" || echo "missing: AGENTS.md"
+    test -f .context.json && echo "ok: .context.json" || echo "missing: .context.json"
+    test -d +specs && echo "ok: +specs" || echo "missing: +specs"
+    test -f +specs/project/STATE.md && echo "ok: +specs/project/STATE.md" || echo "missing: +specs/project/STATE.md"
+    test -f +specs/project/PROJECT.md && echo "ok: +specs/project/PROJECT.md" || echo "missing: +specs/project/PROJECT.md"
+    if [[ -d +specs/codebase ]]; then
+      echo "ok: +specs/codebase (brownfield)"
+    else
+      echo "info: +specs/codebase absent (greenfield install)"
+    fi
+    command -v git >/dev/null && echo "ok: git" || echo "missing: git"
+    command -v node >/dev/null && echo "ok: node" || echo "missing: node (schema validation will skip)"
+    command -v python3 >/dev/null && echo "ok: python3" || echo "missing: python3"
+    command -v gh >/dev/null && echo "ok: gh optional" || echo "missing: gh optional"
+    echo "ok: git namespace available (doctor, preflight, pr-check)"
+    if [[ -f .wsd/party-mode/agents-wsd.csv ]]; then
+      echo "ok: party-mode instalado"
+    else
+      echo "info: party-mode ausente (reinstale com --force para instalar)"
+    fi
+    for hook in pre-commit commit-msg pre-push; do
+      if [[ -x ".git/hooks/$hook" ]]; then
+        echo "ok: .git/hooks/$hook"
+      else
+        echo "missing: .git/hooks/$hook (run: ./.wsd/bin/wsd hooks)"
+      fi
+    done
+    ;;
+  hooks)
+    if [[ -d scripts/git-hooks ]]; then
+      [[ -d .git/hooks ]] || { echo "FAIL: .git/hooks not found — is this a Git repo?" >&2; exit 1; }
+      for hook in scripts/git-hooks/*; do
+        hookname="$(basename "$hook")"
+        cp "$hook" ".git/hooks/$hookname"
+        chmod +x ".git/hooks/$hookname"
+        echo "ok: installed .git/hooks/$hookname"
+      done
+    else
+      echo "FAIL: scripts/git-hooks not found — run wsd-method install --force to regenerate" >&2
+      exit 1
+    fi
+    ;;
+  update)
+    if [[ ! -f .wsd/config.json ]]; then
+      echo "FAIL: .wsd/config.json not found — run wsd-method install first" >&2
+      exit 1
+    fi
+    _wsd_src="$(python3 -c "import json; print(json.load(open('.wsd/config.json')).get('wsd_source',''))" 2>/dev/null || echo '')"
+    if [[ -n "$_wsd_src" && -f "$_wsd_src/bin/wsd-method.js" ]]; then
+      node "$_wsd_src/bin/wsd-method.js" update --directory .
+    else
+      echo "warn: wsd_source ausente ou invalido em .wsd/config.json"
+      echo "Execute: node /caminho/para/wsd/bin/wsd-method.js update --directory ."
+    fi
+    ;;
+  git)
+    subcommand="${1:-help}"
+    shift || true
+    mode="$(_git_mode)"
+    case "$subcommand" in
+      doctor)
+        echo "== WSD Git Doctor =="
+        echo "mode: $mode"
+        git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "FAIL: not a Git repository" >&2; exit 1; }
+        branch="$(_git_current_branch)"
+        upstream="$(_git_upstream)"
+        remote="$(git remote get-url origin 2>/dev/null || true)"
+        default_branch="$(_context_get git_governance.default_branch)"
+        [[ -n "$default_branch" ]] || default_branch="$(_context_get repository.default_branch)"
+        echo "branch: ${branch:-unknown}"
+        echo "upstream: ${upstream:-missing}"
+        echo "remote: ${remote:-missing}"
+        echo "default_branch: ${default_branch:-unknown}"
+        if [[ "$mode" == "full" ]]; then
+          if command -v gh >/dev/null; then
+            echo "ok: gh available"
+            gh auth status >/dev/null 2>&1 && echo "ok: gh authenticated" || echo "warn: gh not authenticated"
+          else
+            echo "warn: gh missing (full mode can still use manual PR flow)"
+          fi
+          if [[ "$remote" == *github.com* ]]; then
+            echo "ok: origin looks like GitHub"
+          else
+            echo "warn: origin is not a GitHub remote"
+          fi
+        fi
+        ;;
+      preflight)
+        echo "== WSD Git Preflight =="
+        fail_count=0
+        git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "FAIL: not a Git repository" >&2; exit 1; }
+        branch="$(_git_current_branch)"
+        upstream="$(_git_upstream)"
+        status_short="$(git status --short)"
+        canonical_path="$(_context_get environment.canonical_path)"
+        canonical_host="$(_context_get environment.canonical_host)"
+        current_host="$(hostname 2>/dev/null || true)"
+        echo "mode: $mode"
+        echo "branch: ${branch:-unknown}"
+        echo "upstream: ${upstream:-missing}"
+        if [[ -n "$canonical_path" && "$canonical_path" != "$(pwd)" ]]; then
+          echo "warn: current path differs from canonical_path ($canonical_path)"
+        fi
+        if [[ -n "$canonical_host" && -n "$current_host" && "$canonical_host" != "$current_host" ]]; then
+          echo "warn: current host differs from canonical_host ($canonical_host)"
+        fi
+        if [[ -n "$status_short" ]]; then
+          echo "FAIL: worktree is dirty"
+          printf "%s\n" "$status_short"
+          fail_count=$((fail_count + 1))
+        else
+          echo "ok: worktree clean"
+        fi
+        if [[ -z "$upstream" ]]; then
+          echo "warn: upstream missing"
+        fi
+        [[ "$fail_count" -eq 0 ]] || exit 1
+        ;;
+      pr-check)
+        echo "== WSD Git PR Check =="
+        git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "FAIL: not a Git repository" >&2; exit 1; }
+        fail_count=0
+        branch="$(_git_current_branch)"
+        upstream="$(_git_upstream)"
+        remote="$(git remote get-url origin 2>/dev/null || true)"
+        default_branch="$(_context_get git_governance.default_branch)"
+        [[ -n "$default_branch" ]] || default_branch="$(_context_get repository.default_branch)"
+        [[ -n "$default_branch" ]] || default_branch="main"
+        base_ref="$(_git_base_ref "$default_branch")"
+        echo "mode: $mode"
+        echo "branch: ${branch:-unknown}"
+        echo "upstream: ${upstream:-missing}"
+        echo "remote: ${remote:-missing}"
+        echo "base_ref: ${base_ref:-unknown}"
+        if [[ "$branch" == "$default_branch" || "$branch" == "main" || "$branch" == "master" ]]; then
+          echo "FAIL: PR deve sair de branch dedicada, nao de $branch"
+          fail_count=$((fail_count + 1))
+        fi
+        if [[ -n "$(git status --short 2>/dev/null)" ]]; then
+          echo "FAIL: worktree is dirty"
+          fail_count=$((fail_count + 1))
+        fi
+        if ! _git_has_changes_for_pr "$base_ref"; then
+          echo "FAIL: nao ha commits ahead de ${base_ref} prontos para PR"
+          fail_count=$((fail_count + 1))
+        fi
+        if [[ "$mode" == "full" && "$remote" != *github.com* ]]; then
+          echo "warn: origin nao parece ser GitHub"
+        fi
+        if [[ "$mode" == "full" && -z "$upstream" ]]; then
+          echo "warn: upstream ausente; use git push -u origin $branch antes do PR"
+        fi
+        [[ "$fail_count" -eq 0 ]] || exit 1
+        echo "ok: pr-check passed"
+        ;;
+      help|--help|-h)
+        echo "Usage: ./.wsd/bin/wsd git doctor|preflight|pr-check"
+        ;;
+      *)
+        echo "Unknown WSD git command: $subcommand" >&2
+        echo "Usage: ./.wsd/bin/wsd git doctor|preflight|pr-check" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+  party)
+    subcommand="${1:-help}"
+    shift || true
+    case "$subcommand" in
+      status)
+        if [[ -f .wsd/party-mode/agents-wsd.csv ]]; then
+          count=$(tail -n +2 .wsd/party-mode/agents-wsd.csv | grep -c '' || true)
+          echo "ok: party-mode instalado — $count agentes disponíveis"
+        else
+          echo "FAIL: party-mode não instalado — .wsd/party-mode/agents-wsd.csv ausente" >&2
+          exit 1
+        fi
+        ;;
+      list-agents)
+        [[ -f .wsd/party-mode/agents-wsd.csv ]] || { echo "FAIL: .wsd/party-mode/agents-wsd.csv ausente" >&2; exit 1; }
+        command -v python3 >/dev/null || { echo "FAIL: python3 necessário para list-agents" >&2; exit 1; }
+        python3 - <<'PY'
+import csv
+with open(".wsd/party-mode/agents-wsd.csv", encoding="utf-8") as f:
+    for row in csv.DictReader(f):
+        icon = row.get("icon", "•")
+        name = row.get("displayName", row.get("name", "?"))
+        domain = row.get("domain", "?")
+        title = row.get("title", "")
+        print(f"{icon} {name:<20s} ({domain:<4s}) — {title}")
+PY
+        ;;
+      when-to-use)
+        cat <<'USAGE'
+== WSD Party Mode — Quando Usar ==
+
+L0 trivial?        → Skip (use quick-flow solo)
+Em EXECUTE?        → Skip (spec já diz o que fazer)
+Já decidido?       → Skip (use 1 agente para validar)
+Hotfix urgente?    → Skip
+
+Contexto              Agentes selecionados              Tempo
+SPECIFY/Brainstorm    analyst + pm + brainstorming-coach ~20 min
+DESIGN/Arquitetura    architect + dev + module-builder   ~25 min
+RISK L1               qa + architect + pm               ~20 min
+RISK L2 (obrigatório) tea + test-architect + sys-arch   ~30 min
+CODE REVIEW           dev + test-architect + architect  ~20 min
+PROCESS/Ciclo         wsd-master + scrum-master + workflow-builder ~15 min
+
+Comando Claude Code: /wsd-party-mode
+USAGE
+        ;;
+      help|*)
+        echo "Usage: ./.wsd/bin/wsd party <subcommand>"
+        echo "  status       — verifica se party-mode está instalado"
+        echo "  list-agents  — lista os 26 agentes disponíveis"
+        echo "  when-to-use  — decision tree de quando usar"
+        ;;
+    esac
+    ;;
+  help|--help|-h)
+    echo "Usage: ./.wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party"
+    ;;
+  *)
+    echo "Unknown WSD command: $command" >&2
+    echo "Usage: ./.wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party" >&2
+    exit 1
+    ;;
+esac

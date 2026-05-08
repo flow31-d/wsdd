@@ -1,0 +1,34 @@
+# Stack — {{PROJECT_NAME}}
+
+> Mapeamento brownfield. Preencher ao iniciar trabalho em repositório existente.
+
+## Linguagens e Runtimes
+
+| Camada | Linguagem | Versão | Notes |
+|---|---|---|---|
+| Backend | {{PRIMARY_LANGUAGE}} | — | — |
+| Frontend | — | — | — |
+
+## Frameworks e Bibliotecas Principais
+
+| Nome | Versão | Propósito |
+|---|---|---|
+| — | — | — |
+
+## Ferramentas de Build e Dev
+
+| Ferramenta | Versão | Uso |
+|---|---|---|
+| — | — | — |
+
+## Infraestrutura
+
+| Componente | Tecnologia | Ambiente |
+|---|---|---|
+| — | — | — |
+
+## Dependências Externas
+
+| Serviço / API | Propósito | Autenticação |
+|---|---|---|
+| — | — | — |

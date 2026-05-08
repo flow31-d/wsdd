@@ -1,0 +1,34 @@
+# Política de Ambiente Git — {{PROJECT_NAME}}
+
+## Papéis
+
+- GitHub: histórico compartilhado, branches remotas, issues, PRs e merge.
+- Host canônico: `{{CANONICAL_HOST}}`.
+- Path canônico: `{{CANONICAL_PATH}}`.
+
+{{CLONE_TOPOLOGY_MARKDOWN}}
+
+## Regra Operacional
+
+{{ENVIRONMENT_POLICY_DETAILS}}
+
+## Fluxo de Trabalho
+
+```bash
+cd {{CANONICAL_PATH}}
+git status --short --branch
+git fetch origin
+git switch {{DEFAULT_BRANCH}}
+git pull --ff-only origin {{DEFAULT_BRANCH}}
+git switch -c <branch-da-tarefa>
+```
+
+## Proibições
+
+- Não editar branch principal diretamente.
+- Não tratar clones paralelos como fontes independentes.
+- Não usar `git add .`.
+- Não fazer `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para esconder worktree suja.
+- Não registrar secrets em Git, specs, issues, Obsidian, logs, prompts ou PRs.
+- Não executar mutação de produção por conta própria.
+

@@ -1,0 +1,163 @@
+---
+title: "Party Mode Analysis — {{FEATURE_SLUG}}"
+created: {{DATE}}
+type: party-analysis
+workflow: {{WORKFLOW_TYPE}}
+status: {{STATUS}}
+tags:
+  - wsd
+  - party-mode
+  - {{FEATURE_SLUG}}
+---
+
+# Party Mode Analysis — {{FEATURE_NAME}}
+
+[[party-mode/README|← Party Mode WSD]]
+
+---
+
+## 📋 Sessão
+
+**Data:** {{DATE}} {{TIME}}
+**Feature:** {{FEATURE_SLUG}}
+**Workflow:** {{WORKFLOW_TYPE}} (specify-brainstorm | design-review | risk-assessment | code-review)
+**Status:** {{STATUS}} (✅ Consenso | ⚠️ Tensões | 🔴 Bloqueadores)
+**Duração:** {{DURATION}} min
+**Moderador:** {{MODERATOR}}
+
+---
+
+## 👥 Participantes
+
+{{PARTICIPANTS_LIST}}
+
+Exemplo:
+- 📋 **SpecReviewer** (SpecMaster) — Validação de specs
+- 💻 **ImplementationExpert** (TechLead) — Arquitetura & viabilidade
+- 🔴 **RiskAnalyst** (RiskOfficer) — Riscos & mitigações
+
+---
+
+## ✅ Consensos Encontrados
+
+Pontos que TODOS os agentes concordam:
+
+- [ ] **Consenso 1:** Descrição clara do que todos concordam
+  - Suportado por: Agente A, Agente B
+
+- [ ] **Consenso 2:** Outro ponto de consenso
+  - Suportado por: Todos
+
+---
+
+## ⚠️ Tensões & Trade-offs
+
+Pontos onde há opiniões divergentes. Document ambos lados:
+
+### Trade-off 1: {{DECISÃO}}
+
+**Opção A: {{NOME_A}}**
+```
+✅ Vantagens:
+  - Ponto positivo 1
+  - Ponto positivo 2
+
+❌ Desvantagens:
+  - Custo 1
+  - Custo 2
+
+🗣️ Suportado por: ImplementationExpert, ProductStrategist
+```
+
+**Opção B: {{NOME_B}}**
+```
+✅ Vantagens:
+  - Ponto positivo 1
+  - Ponto positivo 2
+
+❌ Desvantagens:
+  - Custo 1
+  - Custo 2
+
+🗣️ Suportado por: RiskAnalyst, OpsEngineer
+```
+
+**Análise de Trade-off:**
+- Tempo vs Qualidade
+- Complexidade vs Escalabilidade
+- Risco vs Feature velocity
+
+---
+
+## 🔴 Riscos Capturados
+
+Riscos identificados durante o debate:
+
+| # | Risco | Severidade | Mitigação | Dono |
+|---|-------|-----------|----------|------|
+| 1 | {{RISCO_1}} | Alto/Médio/Baixo | {{MITIGATION}} | {{DONO}} |
+| 2 | {{RISCO_2}} | Alto/Médio/Baixo | {{MITIGATION}} | {{DONO}} |
+
+**Risco Residual:** {{RESIDUAL_RISK_SUMMARY}}
+
+---
+
+## 🎯 Recomendação
+
+### Decisão Proposta
+
+→ {{RECOMENDAÇÃO CLARA}}
+
+### Rationale
+
+{{JUSTIFICATIVA EM 2-3 PARÁGRAFOS}}
+
+Exemplo:
+```
+Recomendamos Opção A (Redis + fallback DB) porque:
+
+1. MVP precisa sair em 3 sprints — simplicidade ganha
+2. Escala até 100k users (próximo milestone)
+3. Rollback é < 2 min (aceitável para L2)
+4. Monitoring é straightforward (prometheus + redis-exporter)
+
+Trade-off: quando hit 1M users, precisaremos split para micro.
+Isso é conhecido e planejado para Q4 roadmap.
+```
+
+---
+
+## 📌 Pendências & Próximos Passos
+
+Ações necessárias antes de EXECUTE:
+
+- [ ] **Pending 1:** {{DESCRIÇÃO}} (Owner: {{PESSOA}}, Due: {{DATA}})
+- [ ] **Pending 2:** {{DESCRIÇÃO}} (Owner: {{PESSOA}}, Due: {{DATA}})
+
+### Próximo Passo
+
+Após resolver pendências:
+
+1. Refinar spec com inputs deste debate
+2. Criar tasks no `+specs/features/<slug>/tasks.md`
+3. Proceder para EXECUTE phase
+4. Adicionar referência em HANDOFF.md ao finish
+
+---
+
+## 📚 Referências
+
+- **Spec:** `+specs/features/{{SLUG}}/spec.md`
+- **Tasks:** `+specs/features/{{SLUG}}/tasks.md`
+- **Related Specs:** {{LINKS}}
+
+---
+
+## 🕒 Histórico
+
+Esta análise foi gerada automaticamente pelo sistema Party Mode WSD em {{DATE}}.
+Para retomar o debate ou adicionar insights depois, reabre este arquivo + `.wsd/bin/wsd party-review --resume`.
+
+---
+
+**Status:** {{STATUS}} — {{RECOMENDAÇÃO_STATUS}}

@@ -1,0 +1,33 @@
+# Architecture — {{PROJECT_NAME}}
+
+> Mapeamento brownfield. Preencher ao iniciar trabalho em repositório existente.
+
+## Resumo
+
+{{PRODUCT_SUMMARY}}
+
+## Módulos Principais
+
+{{MODULES_MARKDOWN}}
+
+## Fluxos Críticos
+
+{{CRITICAL_FLOWS_MARKDOWN}}
+
+## Integrações
+
+{{INTEGRATIONS_MARKDOWN}}
+
+## Ambientes
+
+{{ENVIRONMENTS_MARKDOWN}}
+
+## Decisões Arquiteturais Relevantes
+
+| Decisão | Racional | Data |
+|---|---|---|
+| — | — | — |
+
+## Diagramas
+
+> Adicionar diagramas de fluxo, componentes ou sequência quando aplicável.

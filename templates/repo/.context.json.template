@@ -1,0 +1,75 @@
+{
+  "$schema": "wsd/context/v1",
+  "project": {
+    "name": "{{PROJECT_NAME}}",
+    "type": "{{PROJECT_TYPE}}",
+    "primary_language": "{{PRIMARY_LANGUAGE}}",
+    "owner": "{{PROJECT_OWNER}}",
+    "status": "{{PROJECT_STATUS}}"
+  },
+  "environment": {
+    "canonical_host": "{{CANONICAL_HOST}}",
+    "canonical_path": "{{CANONICAL_PATH}}",
+    "environment": "{{ENVIRONMENT_NAME}}",
+    "network_mode": "{{NETWORK_MODE}}"
+  },
+  "repository": {
+    "name": "{{REPO_NAME}}",
+    "default_branch": "{{DEFAULT_BRANCH}}",
+    "remote": "{{GITHUB_REMOTE}}",
+    "repo_type": "{{REPO_TYPE}}",
+    "clone_policy": {
+      "canonical_history": "GitHub",
+      "operational_clone": "{{OPERATIONAL_CLONE}}",
+      "audit_lab_clone": "{{AUDIT_LAB_CLONE}}",
+      "deploy_clone": "{{DEPLOY_CLONE}}",
+      "promotion_flow": "{{PROMOTION_FLOW}}"
+    }
+  },
+  "permissions": {
+    "write_paths": {{WRITE_PATHS_JSON_ARRAY}},
+    "forbidden_paths": {{FORBIDDEN_PATHS_JSON_ARRAY}},
+    "tool_allowlist": {{TOOL_ALLOWLIST_JSON_ARRAY}},
+    "secrets_policy": "read_only_env_vars",
+    "max_runtime_seconds": 600,
+    "max_tokens_per_request": 64000
+  },
+  "workflow": {
+    "approval_mode": "auto_for_l0_human_for_l2",
+    "branch_policy": "ephemeral_feature_branch",
+    "incident_mode": "log_and_halt",
+    "issue_policy": "issue_or_spec_required_for_l1_l2",
+    "production_mutation_policy": "forbidden_for_agents"
+  },
+  "git_governance": {
+    "enabled": {{GIT_GOVERNANCE_ENABLED}},
+    "mode": "{{GIT_GOVERNANCE_MODE}}",
+    "remote_protocol": "{{REMOTE_PROTOCOL}}",
+    "github_cli_required": {{GITHUB_CLI_REQUIRED}},
+    "default_branch": "{{DEFAULT_BRANCH}}",
+    "legacy_branch_allowed": {{LEGACY_BRANCH_ALLOWED}},
+    "issue_policy": "{{ISSUE_POLICY}}",
+    "pr_policy": "{{PR_POLICY}}",
+    "sync_policy": "{{SYNC_POLICY}}",
+    "dirty_worktree_policy": "{{DIRTY_WORKTREE_POLICY}}",
+    "branch_naming": "{{BRANCH_NAMING}}",
+    "commit_style": "{{COMMIT_STYLE}}"
+  },
+  "wsd": {
+    "method": "Wolff Spec Driven",
+    "context_documents": [
+      "+specs/project/PROJECT.md",
+      "+specs/project/STATE.md",
+      "+specs/codebase/ARCHITECTURE.md",
+      "+specs/codebase/CONCERNS.md"
+    ],
+    "local_checker": "scripts/wsd_check.sh",
+    "active_candidate_specs": []
+  },
+  "ci": {
+    "lint_commands": {{LINT_COMMANDS_JSON_ARRAY}},
+    "test_commands": {{TEST_COMMANDS_JSON_ARRAY}},
+    "build_commands": {{BUILD_COMMANDS_JSON_ARRAY}},
+    "smoke_commands": {{SMOKE_COMMANDS_JSON_ARRAY}}
+  }
+}

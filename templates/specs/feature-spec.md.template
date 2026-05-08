@@ -1,0 +1,73 @@
+# [Nome da Feature] — Spec
+
+**Feature:** [slug-da-feature]
+**Risco:** L1 / L2
+**Status:** draft → approved → implemented → verified → closed
+**Criado:** {{DATE}}
+**Owner:** {{PROJECT_OWNER}}
+
+---
+
+## Problema
+
+[Descrever o problema em 2-3 frases. Qual dor? Por que agora?]
+
+## Goals
+
+- [ ] [Objetivo primário com resultado mensurável]
+- [ ] [Objetivo secundário]
+
+## Fora de Escopo
+
+| Item | Motivo |
+|---|---|
+| [Feature X] | [Por que excluída] |
+
+---
+
+## User Stories
+
+### P1: [Título] ⭐ MVP
+
+**Como** [papel], **quero** [capacidade] **para** [benefício].
+
+**Por que P1:** [Por que é crítico para o MVP]
+
+**Acceptance Criteria:**
+
+1. WHEN [evento/ação do usuário] THEN [sistema] SHALL [comportamento mensurável]
+2. WHEN [evento/ação do usuário] THEN [sistema] SHALL [comportamento mensurável]
+3. WHEN [caso de borda] THEN [sistema] SHALL [tratamento gracioso]
+
+### P2: [Título]
+
+**Como** [papel], **quero** [capacidade] **para** [benefício].
+
+**Acceptance Criteria:**
+
+1. WHEN [evento/ação] THEN [sistema] SHALL [comportamento]
+
+---
+
+## Escopo de Execução
+
+**Paths permitidos:**
+- [path/ou/módulo]
+
+**Paths proibidos:**
+- [path/ou/módulo]
+
+## Riscos e Mitigações
+
+| Risco | Probabilidade | Mitigação |
+|---|---|---|
+| [risco] | Alta/Média/Baixa | [como mitigar] |
+
+## Rollback (L2 obrigatório)
+
+1. [Passo de rollback]
+2. [Passo de rollback]
+
+---
+
+> **Nota para agente:** Não implementar enquanto status for `draft`. Exige `approved` para L1 e aprovação humana explícita para L2.

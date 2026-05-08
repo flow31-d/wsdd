@@ -1,0 +1,25 @@
+# Regras do Projeto — {{PROJECT_NAME}}
+
+## Fonte de Verdade
+
+- Repositório: `{{REPO_NAME}}`
+- Host canônico: `{{CANONICAL_HOST}}`
+- Caminho canônico: `{{CANONICAL_PATH}}`
+- Branch padrão: `{{DEFAULT_BRANCH}}`
+
+## Regras Permanentes
+
+{{PROJECT_RULES_MARKDOWN}}
+
+## Decisões Técnicas
+
+{{TECHNICAL_DECISIONS_MARKDOWN}}
+
+## O Que Agentes Devem Evitar
+
+{{AGENT_AVOID_MARKDOWN}}
+
+## Validação Obrigatória
+
+{{VALIDATION_POLICY_MARKDOWN}}
+
