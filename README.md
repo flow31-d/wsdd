@@ -231,7 +231,8 @@ Histórico de entregas (alpha + estável):
 - `v0.1.10-alpha`: MVP Git/GitHub Governance — `--git-policy none|basic|full`, bloco `git_governance` no `+context.json`, seção Git/GitHub no `AGENTS.md`, comandos `./+wsd/bin/wsd git doctor|preflight|pr-check`, templates `.github/` no modo `full` e testes de instalação para os três modos.
 - `v0.1.11-alpha`: Party Mode Integration — sistema de 26 agentes WSD-aware instalado em `+wsd/party-mode/`, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção Party Mode no AGENTS.md e 7 gates de instalação no `npm test`.
 - **`v0.1.0`** (release estável): consolida toda a série alpha em API estável. Fase 4 fechada: documentação oficial (seção "Uso Oficial"), tags retroativas v0.1.10/v0.1.11, validação completa Codex e Claude Code (7/7 testes PASS), 2 itens descartados com rationale (perfis stacks, YAML schema). Sem mudanças de API; mantém compatibilidade com instalações alpha tardias.
-- **`v0.1.2`**: ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md instalados automaticamente em todo projeto via `renderRepoTemplates()`. Skill `/idea-{PROJECT_SLUG}` (Claude Code e Codex) com captura estruturada L0/L1/L2 e oferta de Party Mode. Variável `PROJECT_SLUG` derivada no install + rename dinâmico do comando idea. Estratégia `npx github:flow31-d/wsdd install` documentada. Repositório publicado como público no GitHub.
+- **`v0.1.2`**: ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md instalados automaticamente em todo projeto via `renderRepoTemplates()`. Skill `/idea-{PROJECT_SLUG}` (Claude Code e Codex) com captura estruturada L0/L1/L2 e oferta de Party Mode. Variável `PROJECT_SLUG` derivada no install + rename dinâmico do comando idea. Repositório público `wsdd` criado.
+- **`v0.1.3`**: renomeação de `wsd-validate-context.js` e `wsd-snapshot.js` para `.cjs` (compatibilidade com projetos `"type": "module"`). Adição de `RELEASING.md` (checklist obrigatório pré-release), spec retroativa `project-snapshot`, `docs/05` expandido com seções `+specs/project/` e vendor tree `+wsd/`. Sync `wsdd` público atualizado para v0.1.3.
 
 Não contém segredos.
 
@@ -250,7 +251,7 @@ A camada de qualidade da v0.1.4 está detalhada em [[wsd/docs/14_qualidade_desen
 
 ## 8. Foco Atual
 
-WSD está em desenvolvimento ativo pós-v0.1.0. `v0.1.2` entregue. Próximas frentes mapeadas no `ROADMAP.md`; candidatas imediatas:
+WSD está em desenvolvimento ativo pós-v0.1.0. `v0.1.3` entregue. Próximas frentes mapeadas no `ROADMAP.md`; candidatas imediatas:
 
 - `project-snapshot` (L1): JSON auto-gerado com visão geral do projeto (roadmap, ideias, git, saúde) para consumo por dashboards externos como o `wdb`.
 - Server-side hook como módulo opcional (enforcement inquebrável).
