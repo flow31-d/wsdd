@@ -10,7 +10,7 @@ tags:
 status: ativo
 tipo: guia
 parent: "[[wsd/wsd]]"
-links: "[[wsd/wsd]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/examples/koomplet-office-bootstrap-plan]]"
+links: "[[wsd/wsd]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/10_matriz_sincronizacao_notas]]"
 otimizado_para_obsidian: true
 ---
 # 06 — Personalização WSD por Projeto
