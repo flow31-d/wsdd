@@ -99,28 +99,28 @@ Ele deve ser pequeno, claro e diretamente executável.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 5. Exemplo — Prescreve Mais
+## 5. Exemplo — API Python com múltiplos hosts
 
-Personalização:
+Personalização típica de projeto `python_api` em topologia multi-host:
 
-- host operacional: Oct;
-- path operacional: `/srv/oct/prescreve_mais`;
-- DLP: auditoria/laboratório;
+- host operacional: servidor de produção (ex: VPS);
+- path operacional: `/srv/meu-app`;
+- host de desenvolvimento: máquina local ou dev server;
 - branch: `main`;
-- risco L2: Vidaas, dados sensíveis, produção, auth, banco;
-- validação: backend Python, frontend, Docker.
+- risco L2: dados sensíveis, produção, auth, banco;
+- validação: `ruff check app tests`, `pytest`, `docker compose config`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 6. Exemplo — Koomplet Office
+## 6. Exemplo — Frontend Node com deploy público
 
-Personalização:
+Personalização típica de projeto `node_frontend` com publicação remota:
 
-- host operacional: DLP;
-- path: `/srv/CLI/x/dev_cli/koomplet-office`;
-- Oct: publicação/proxy/frontend servido;
-- branch atual: `master`;
-- risco L2: deploy público, proxy/SSL, rsync para Oct, base path `/office/`;
+- host operacional: servidor de desenvolvimento;
+- path: `/srv/projetos/meu-frontend`;
+- host de publicação: servidor de produção;
+- branch atual: `main`;
+- risco L2: deploy público, proxy/SSL, assets publicados;
 - validação: `npm test`, `npm run build`, asset público servido.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

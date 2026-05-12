@@ -57,7 +57,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 Antes de subir:
 
 ```bash
-cd /srv/CLI/x/wsd
+cd /srv/CLI/+Apps/WSD
 bash scripts/wsd_self_check.sh
 rg -n 'API[_]KEY|SEC[R]ET|TOK[E]N|PASS[W]ORD|PRIVA[T]E KEY|BEGI[N] .*KEY|s[k]-' .
 ```
@@ -187,7 +187,7 @@ Não commitar:
 ## 8. Sincronização de Release
 
 > [!tip] Quick Start
-> Usuários podem instalar o WSD diretamente do repositório público sem nenhuma configuração adicional: `npx github:flow31-d/wsdd install`. O fluxo completo de distribuição — incluindo regras de compatibilidade privado × público, checklist de release e separação de conteúdo — está em [[wsd/docs/15_repositorio_publico_e_quick_start|15 — Repositório Público e Quick Start]].
+> Usuários podem instalar o WSD diretamente do repositório público sem nenhuma configuração adicional: `npx github:flow31-d/WSD install`. O fluxo completo de distribuição — incluindo regras de compatibilidade privado × público, checklist de release e separação de conteúdo — está em [[wsd/docs/15_repositorio_publico_e_quick_start|15 — Repositório Público e Quick Start]].
 
 Toda release/tag do WSD deve revisar:
 
