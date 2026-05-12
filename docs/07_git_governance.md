@@ -48,6 +48,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Adição da Seção 9 (Git Hooks no Bootstrap) com `pre-commit`, `commit-msg`, `pre-push` instalados pelo bootstrap (v0.1.6-alpha).
 - 07/05/2026 — Codex: Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização `v0.1.0`.
 - 07/05/2026 — Codex: Marcação da `v0.1.10-alpha` como implementada com `--git-policy`, Git namespace local e templates GitHub no modo `full`.
+- 12/05/2026 — Claude: Clarificação do padrão de branch por modo (`basic` vs `full`), decisão de idioma de commit (português obrigatório) e atualização de todos os exemplos para português.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -68,15 +69,16 @@ git remote show origin
 
 Usar branch dedicada para mudanças não triviais.
 
-Padrões:
+Padrão por modo:
 
-```text
-docs/wsd-bootstrap
-spec/TASK-001-wsd-bootstrap
-feat/<slug>
-fix/<slug>
-chore/<slug>
-```
+| Modo | Formato | Exemplo |
+|---|---|---|
+| `basic` (sem Issue) | `tipo/<slug>` | `feat/validacao-email`, `fix/carrinho-quantidade` |
+| `full` (com Issue) | `issue-<numero>-<slug>` | `issue-42-validacao-email` |
+
+O formato `issue-<numero>-<slug>` é o **padrão obrigatório** quando o módulo git-governance está em modo `full` — garante rastreabilidade Issue→branch→PR. Em modo `basic`, onde Issues são opcionais, usar `tipo/<slug>`.
+
+O valor default do instalador é `issue-<number>-<slug>`, alinhado com a política Git da VPS.
 
 Evitar trabalhar direto em `main` ou `master`.
 
@@ -86,14 +88,18 @@ Evitar trabalhar direto em `main` ou `master`.
 
 **Conventional Commits 1.0.0 é obrigatório** em repositórios WSD.
 
+### Idioma
+
+**Description sempre em português.** Esta é uma decisão explícita: os repositórios WSD são operados em português e o idioma deve ser consistente entre agentes, PRs e histórico de commits. O formato Conventional Commits (tipo, escopo) permanece em inglês por convenção do spec, mas o texto descritivo é em português.
+
 ### Formato
 
 ```
-<type>(<scope>): <description>
+<type>(<scope>): <descrição em português>
 
-[optional body]
+[corpo opcional em português]
 
-[optional footer(s)]
+[footer(s) opcional]
 ```
 
 ### Tipos
@@ -113,19 +119,21 @@ Evitar trabalhar direto em `main` ou `master`.
 
 ### Regras de Description
 
-- Modo imperativo ("add", não "added" ou "adds")
-- Lowercase na primeira letra
+- Modo imperativo ("adicionar", não "adicionado" ou "adiciona")
+- Minúscula na primeira letra
 - Sem ponto final
-- Complete a frase: "If applied, this commit will _[sua description]_"
+- Complete a frase: "Se aplicado, este commit irá _[sua description]_"
 
 ### Exemplos
 
 ```text
-feat(auth): add email validation to login form
-fix(cart): prevent negative quantity on item decrement
-docs: add Rule 11 (knowledge verification chain) to Constitution
-refactor(installer): rename .specs → +specs in profiles
-test(installer): update install tests for +specs structure
+feat(auth): adicionar validação de e-mail no formulário de login
+fix(carrinho): impedir quantidade negativa no decremento de item
+docs: adicionar Regra 11 (cadeia de verificação de conhecimento) à Constituição
+refactor(installer): renomear .specs → +specs nos perfis
+test(installer): atualizar testes de instalação para estrutura +specs
+fix(installer): não vendarizar meta-docs do toolkit em +wsd/ do projeto
+docs(07): clarificar padrão de branch por modo e decidir idioma de commit
 ```
 
 ### Breaking Changes
@@ -133,9 +141,9 @@ test(installer): update install tests for +specs structure
 Acrescentar `!` após type/scope e footer `BREAKING CHANGE:`:
 
 ```
-feat(api)!: change authentication endpoint response format
+feat(api)!: alterar formato de resposta do endpoint de autenticação
 
-BREAKING CHANGE: login endpoint now returns JWT in body instead of cookie
+BREAKING CHANGE: endpoint de login agora retorna JWT no corpo em vez de cookie
 ```
 
 ### Regras de Escopo
@@ -294,5 +302,6 @@ Ao alterar git hooks, revisar também:
 | 07/05/2026 — | Claude | `x/wsd/docs/07_git_governance.md` | Adição da Seção 9 — Git Hooks no Bootstrap (`pre-commit`, `commit-msg`, `pre-push`) e atualização dos números de seção e índice (v0.1.6-alpha). |
 | 07/05/2026 — | Codex | `x/wsd/docs/07_git_governance.md` | Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização. |
 | 07/05/2026 — | Codex | `x/wsd/docs/07_git_governance.md` | Marcação da `v0.1.10-alpha` como implementada em instalador, CLI local e templates GitHub. |
+| 12/05/2026 — | Claude | `+Apps/WSD/docs/07_git_governance.md` | Clarificação do padrão de branch por modo (`basic` = `tipo/<slug>`, `full` = `issue-<numero>-<slug>`), decisão explícita de idioma (português obrigatório na description) e atualização de todos os exemplos de commit. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

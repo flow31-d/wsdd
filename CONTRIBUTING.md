@@ -77,6 +77,17 @@ revert:    reverter commit anterior
 style:     formatação, semicolons, etc. (sem mudar lógica)
 ```
 
+**Idioma da description: português obrigatório.** Tipo e escopo seguem o spec em inglês; o texto descritivo é sempre em português.
+
+Exemplos:
+
+```text
+fix(installer): não vendarizar meta-docs do toolkit em +wsd/ do projeto
+feat(party-mode): adicionar step de encerramento com análise
+docs(07): clarificar padrão de branch por modo e decidir idioma de commit
+chore(release): v0.2.0
+```
+
 Escopo opcional entre parênteses: `fix(installer): ...`, `feat(party-mode): ...`, `chore(release): v0.2.0`.
 
 **Tipos NÃO válidos**: `release:`, `update:`, `improve:`, `misc:` etc. Se o `wsd-method install` aplicou hooks, o `commit-msg` bloqueia. No próprio repo do método (este aqui) o hook não roda — atenção redobrada.

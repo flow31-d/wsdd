@@ -21,8 +21,8 @@ otimizado_para_obsidian: true
 
 ---
 
-> [!abstract] Objetivo
-> Registrar o plano oficial para transformar os princípios da política Git de `Recursos/r.3.4_git_github` em um módulo opcional instalável do WSD.
+> [!abstract] Status
+> Módulo implementado no MVP `v0.1.10-alpha`. Esta nota é o **registro de decisão** do módulo git-governance: o que foi implementado, o que foi adiado e por quê. O que está planejado está marcado com `[ ]`; o que foi entregue está com `[x]`.
 
 > [!info] Otimização Obsidian
 > Esta nota é otimizada para visualização no Obsidian, com índice navegável, links literais de cabeçalho e rastreabilidade de alterações por agentes.
@@ -57,6 +57,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 06/05/2026 14:41:06 -03 — Codex: Padronização das listas de implementação e critérios de aceite do módulo com checkboxes para acompanhamento operacional.
 - 07/05/2026 — Codex: Replanejamento da primeira implementação como `v0.1.10-alpha` MVP Git/GitHub Governance para uso em projeto real em andamento.
 - 07/05/2026 — Codex: Marcação do MVP `v0.1.10-alpha` como implementado em installer, contexto, AGENTS, CLI local, templates GitHub e testes por modo.
+- 12/05/2026 — Claude: Conversão de documento de plano para registro de decisão: reescrita do abstract, seção 15 reestruturada com separação clara entre implementado/planejado, seção 18 simplificada com tabela apontando para docs/10.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -424,51 +425,36 @@ Regras:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 15. Fase Recomendada de Implementação
+## 15. O Que Foi Implementado e O Que Está Planejado
 
-Versão sugerida: `v0.1.10-alpha`.
+### Implementado no MVP `v0.1.10-alpha`
 
-Objetivo do MVP:
-
-- tornar GitHub parte explícita do contrato operacional em projetos em andamento;
-- reduzir risco de agente trabalhar na branch, remote ou host errado;
-- criar um caminho repetível para PRs com spec/Issue, risco e validação;
-- manter o core funcionando sem GitHub quando `--git-policy none`.
-
-Escopo obrigatório do MVP:
+Objetivo cumprido: tornar GitHub parte explícita do contrato operacional, reduzir risco de agente trabalhar na branch/remote/host errado, criar caminho repetível para PRs com spec/Issue/risco/validação, manter core funcionando sem GitHub.
 
 - [x] `--git-policy none|basic|full` no instalador.
 - [x] Campo `git_governance` no `+context.json`.
 - [x] Seção Git/GitHub gerada no `AGENTS.md`.
-- [x] `./+wsd/bin/wsd git doctor`.
-- [x] `./+wsd/bin/wsd git preflight`.
-- [x] `./+wsd/bin/wsd git pr-check`.
+- [x] `./+wsd/bin/wsd git doctor` — valida `git`, branch, remote, upstream, `gh`, protocolo e contexto.
+- [x] `./+wsd/bin/wsd git preflight` — bloqueia operações arriscadas com worktree suja.
+- [x] `./+wsd/bin/wsd git pr-check` — valida branch dedicada, worktree limpa e commits à frente da base.
 - [x] Template `.github/PULL_REQUEST_TEMPLATE.md`.
-- [x] Templates simples de Issue: `task.md`, `bug.md`, `decision.md`.
-- [x] Testes de install para `none`, `basic` e `full`.
-- [x] Documentação sincronizada em README, hub, ROADMAP, docs/00, docs/03, docs/07, docs/08, docs/10 e esta nota.
+- [x] Templates de Issue: `task.md`, `bug.md`, `decision.md`.
+- [x] Testes de install para `none`, `basic` e `full` (gates 4, 5, 6 do `npm test`).
+- [x] Templates do módulo em `templates/modules/git-governance/`.
+- [x] Documentação sincronizada: README, hub, ROADMAP, docs/00, docs/03, docs/07, docs/08, docs/10.
 
-Fora do MVP:
+### Pendente antes de promover para `v0.1.0` estável
 
-- [ ] `multi-host`.
-- [ ] `wsd git audit`.
-- [ ] `wsd git bootstrap` criando repo automaticamente.
+- [ ] Testar em projeto real em andamento.
+
+### Planejado para versões futuras
+
+- [ ] `wsd git audit` — inspecionar estado local, dirty state, último commit, remote e fetch dry-run.
+- [ ] `wsd git bootstrap` — criar/conectar repo GitHub quando autorizado.
+- [ ] Modo `multi-host` — topologia DLP/Oct/GitHub com validação de host canônico.
 - [ ] Server-side hooks.
-- [ ] OPA/Rego.
-- [ ] Alterar visibilidade, secrets, branch default, delete repo ou permissões GitHub.
-
-Plano:
-
-- [x] Criar templates do módulo em `templates/modules/git-governance/`.
-- [x] Expandir `bin/wsd-method.js` com `--git-policy none|basic|full`.
-- [x] Adicionar pergunta interativa para modo Git Governance.
-- [x] Atualizar `+context.json.template` com `git_governance` e manter `clone_topology` como política existente.
-- [x] Atualizar `AGENTS.md.template` com seção do módulo.
-- [x] Implementar comandos no CLI local vendorizado (`wsd git doctor|preflight|pr-check`).
-- [x] Adicionar namespace `./+wsd/bin/wsd git ...`.
-- [x] Atualizar `docs/00`, `docs/03`, `docs/04`, `docs/07`, `docs/08`, `docs/10`, README, hub e ROADMAP.
-- [x] Rodar testes de instalação para `none`, `basic` e `full`.
-- [ ] Testar em projeto real em andamento antes de promover `v0.1.0`.
+- [ ] OPA/Rego para policy-as-code.
+- [ ] Operações administrativas GitHub (visibilidade, secrets, branch default, permissões) — fora do escopo por risco.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -512,20 +498,17 @@ Não implementar no primeiro alpha:
 
 ## 18. Sincronização Obrigatória
 
-Ao evoluir este módulo, revisar:
+Ao evoluir este módulo, consultar [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]] — ela é a fonte canônica dos grupos de arquivos que devem ser revisados por tipo de mudança.
 
-- [[wsd/docs/00_planejamento_instalacao_wsd|00 Planejamento de Instalação]], quando mudar installer ou perguntas;
-- [[wsd/docs/04_playbook_implantacao|04 Playbook de Implantação]], quando mudar bootstrap;
-- [[wsd/docs/05_contrato_artefatos|05 Contrato de Artefatos]], quando mudar `+context.json`;
-- [[wsd/docs/07_git_governance|07 Git Governance]], quando mudar regra Git;
-- [[wsd/docs/08_rotinas_sessao|08 Rotinas de Sessão]], quando mudar comandos locais;
-- [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]], quando mudar dependências entre arquivos;
-- `templates/repo/AGENTS.md.template`;
-- `templates/codex-skills/wsd/SKILL.md`;
-- `bin/wsd-method.js`;
-- `templates/local-wsd/bin/wsd`;
-- `scripts/wsd_docs_check.sh`;
-- `scripts/wsd_self_check.sh`.
+Resumo dos arquivos de maior impacto:
+
+| Mudança | Arquivos críticos |
+|---|---|
+| Installer / flags | `bin/wsd-method.js`, `docs/00`, `docs/04` |
+| Campos `+context.json` | `templates/repo/+context.json.template`, `docs/05` |
+| Regra Git | `docs/07`, `templates/repo/AGENTS.md.template` |
+| Comandos CLI locais | `templates/local-wsd/bin/wsd`, `docs/08` |
+| Qualquer mudança | `scripts/wsd_docs_check.sh`, `scripts/wsd_self_check.sh` |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -537,5 +520,6 @@ Ao evoluir este módulo, revisar:
 | 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Padronização das listas de implementação e critérios de aceite do módulo com checkboxes para acompanhamento operacional. |
 | 07/05/2026 — | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Replanejamento da primeira implementação como `v0.1.10-alpha` MVP Git/GitHub Governance, com `multi-host` e enforcement avançado adiados. |
 | 07/05/2026 — | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Marcação do MVP `v0.1.10-alpha` como implementado, preservando teste em projeto real como pendência antes da estável. |
+| 12/05/2026 — | Claude | `+Apps/WSD/docs/11_modulo_git_governance.md` | Conversão de plano para registro de decisão: abstract reescrito, seção 15 reestruturada (implementado / pendente / planejado), seção 18 simplificada com tabela. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
