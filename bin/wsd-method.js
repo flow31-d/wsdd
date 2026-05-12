@@ -202,10 +202,6 @@ async function update(args) {
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
 
-  for (const name of ['README.md', 'wsd.md', 'AGENTS.md', 'CHANGELOG.md', 'ROADMAP.md']) {
-    copyFile(path.join(WSD_ROOT, name), path.join(vendor, name));
-  }
-
   config.version = VERSION;
   config.updated_at = new Date().toISOString();
   config.wsd_source = WSD_ROOT;
@@ -362,9 +358,6 @@ function installVendorTree(directory, settings) {
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.cjs'), 0o755);
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
-  for (const name of ['README.md', 'wsd.md', 'AGENTS.md', 'CHANGELOG.md', 'ROADMAP.md']) {
-    copyFile(path.join(WSD_ROOT, name), path.join(vendor, name));
-  }
   fs.writeFileSync(path.join(vendor, 'config.json'), JSON.stringify({
     schema: 'wsd/local-config/v1',
     version: VERSION,
