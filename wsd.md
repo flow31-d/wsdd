@@ -11,7 +11,7 @@ tags:
 status: ativo
 tipo: hub
 parent: "[[x]]"
-links: "[[x]], [[wsd/README]], [[wsd/ROADMAP]], [[wsd/CHANGELOG]], [[wsd/AGENTS]], [[wsd/docs/00_planejamento_instalacao_wsd]], [[wsd/docs/01_constituicao]], [[wsd/docs/02_matriz_risco]], [[wsd/docs/03_ciclo_operacional]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/06_personalizacao_por_projeto]], [[wsd/docs/07_git_governance]], [[wsd/docs/08_rotinas_sessao]], [[wsd/docs/09_publicacao_github_privado]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]], [[wsd/docs/12_avaliacao_critica]], [[wsd/docs/13_compatibilidade_claude_code]], [[wsd/docs/14_qualidade_desenvolvimento]]"
+links: "[[x]], [[wsd/README]], [[wsd/ROADMAP]], [[wsd/CHANGELOG]], [[wsd/AGENTS]], [[wsd/docs/00_planejamento_instalacao_wsd]], [[wsd/docs/01_constituicao]], [[wsd/docs/02_matriz_risco]], [[wsd/docs/03_ciclo_operacional]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/06_personalizacao_por_projeto]], [[wsd/docs/07_git_governance]], [[wsd/docs/08_rotinas_sessao]], [[wsd/docs/09_publicacao_github_privado]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]], [[wsd/docs/12_avaliacao_critica]], [[wsd/docs/13_compatibilidade_claude_code]], [[wsd/docs/14_qualidade_desenvolvimento]], [[wsd/docs/15_repositorio_publico_e_quick_start]], [[wsd/docs/16_wdb_snapshot_integration]], [[wsd/docs/17_snapshot_campos_explicados]]"
 otimizado_para_obsidian: true
 ---
 # WSD — Wolff Spec Driven
@@ -81,6 +81,9 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 | [[wsd/docs/12_avaliacao_critica|12 Avaliação Crítica]] | ao revisar o estado do método ou planejar evolução | o que funciona, o que falta e o roadmap de enforcement |
 | [[wsd/docs/13_compatibilidade_claude_code|13 Compatibilidade Claude Code]] | ao implementar suporte Claude Code ou entender diferenças com Codex | modelo de skills, gap de governança, templates e hooks |
 | [[wsd/docs/14_qualidade_desenvolvimento|14 Qualidade de Desenvolvimento]] | ao usar auto-sizing, STATE.md, WHEN/THEN/SHALL, TESTING.md tiered, knowledge chain ou Conventional Commits | padrões TLC adotados na v0.1.4-alpha |
+| [[wsd/docs/15_repositorio_publico_e_quick_start|15 Repositório Público e Quick Start]] | ao sincronizar WSD privado → wsdd público ou usar `npx github:flow31-d/wsdd install` | estratégia privado × público, checklist de sync, regras de compatibilidade |
+| [[wsd/docs/16_wdb_snapshot_integration|16 WDB Snapshot Integration]] | ao integrar snapshot com dashboard externo | schema v1, localização de arquivos, polling |
+| [[wsd/docs/17_snapshot_campos_explicados|17 O que contém o Snapshot]] | ao entender o que cada campo do snapshot significa | explicação detalhada de todos os blocos em linguagem acessível |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
