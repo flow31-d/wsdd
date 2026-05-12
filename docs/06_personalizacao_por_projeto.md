@@ -10,7 +10,7 @@ tags:
 status: ativo
 tipo: guia
 parent: "[[wsd/wsd]]"
-links: "[[wsd/wsd]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/examples/exemplo-saas-b-bootstrap-plan]]"
+links: "[[wsd/wsd]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/examples/koomplet-office-bootstrap-plan]]"
 otimizado_para_obsidian: true
 ---
 # 06 — Personalização WSD por Projeto
@@ -32,8 +32,8 @@ otimizado_para_obsidian: true
 2. [[#2. O Que Fica Global]]
 3. [[#3. O Que Muda por Projeto]]
 4. [[#4. Adapter Local]]
-5. [[#5. Exemplo — Exemplo SaaS A]]
-6. [[#6. Exemplo — Exemplo SaaS B]]
+5. [[#5. Exemplo — Prescreve Mais]]
+6. [[#6. Exemplo — Koomplet Office]]
 7. [[#7. Perfil de Projeto]]
 8. [[#8. Regra Prática]]
 9. [[#9. Sincronização de Perfis]]
@@ -90,7 +90,7 @@ O adapter local é composto por:
 
 ```text
 AGENTS.md
-.context.json
++context.json
 +specs/context/*.md
 scripts/wsd_check.sh
 ```
@@ -99,12 +99,12 @@ Ele deve ser pequeno, claro e diretamente executável.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 5. Exemplo — Exemplo SaaS A
+## 5. Exemplo — Prescreve Mais
 
 Personalização:
 
 - host operacional: Oct;
-- path operacional: `/srv/oct/exemplo_saas_a`;
+- path operacional: `/srv/oct/prescreve_mais`;
 - DLP: auditoria/laboratório;
 - branch: `main`;
 - risco L2: Vidaas, dados sensíveis, produção, auth, banco;
@@ -112,12 +112,12 @@ Personalização:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 6. Exemplo — Exemplo SaaS B
+## 6. Exemplo — Koomplet Office
 
 Personalização:
 
 - host operacional: DLP;
-- path: `/srv/CLI/x/dev_cli/exemplo-saas-b`;
+- path: `/srv/CLI/x/dev_cli/koomplet-office`;
 - Oct: publicação/proxy/frontend servido;
 - branch atual: `master`;
 - risco L2: deploy público, proxy/SSL, rsync para Oct, base path `/office/`;
@@ -157,7 +157,7 @@ risk:
 Se uma informação muda entre projetos, ela não deve estar hardcoded no template global. Deve ir para:
 
 - profile;
-- `.context.json`;
+- `+context.json`;
 - `AGENTS.md`;
 - `+specs/context/*.md`.
 

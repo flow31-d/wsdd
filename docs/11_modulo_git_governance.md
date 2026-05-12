@@ -37,7 +37,7 @@ otimizado_para_obsidian: true
 6. [[#6. Perguntas do Instalador]]
 7. [[#7. Modos de Instalação]]
 8. [[#8. Artefatos a Gerar]]
-9. [[#9. Campos Novos no `.context.json`]]
+9. [[#9. Campos Novos no `+context.json`]]
 10. [[#10. Comandos Locais Planejados]]
 11. [[#11. Integração com Agentes]]
 12. [[#12. Integração com Issues e PRs]]
@@ -200,7 +200,7 @@ Inclui:
 - proteção de worktree suja;
 - `wsd git preflight`;
 - seção Git em `AGENTS.md`;
-- campos `git_governance` no `.context.json`.
+- campos `git_governance` no `+context.json`.
 
 ### `full`
 
@@ -260,7 +260,7 @@ Arquivos gerados ou alterados no projeto alvo:
 
 ```text
 AGENTS.md
-.context.json
++context.json
 +specs/project/PROJECT.md
 +specs/project/PROJECT.md
 .github/PULL_REQUEST_TEMPLATE.md
@@ -275,7 +275,7 @@ scripts/wsd_github_bootstrap.sh
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 9. Campos Novos no `.context.json`
+## 9. Campos Novos no `+context.json`
 
 Bloco planejado:
 
@@ -319,9 +319,9 @@ Regra: se `mode = "multi-host"`, `execution_plane` e `operational_clone` devem s
 O CLI local deve ganhar namespace Git:
 
 ```bash
-./.wsd/bin/wsd git doctor
-./.wsd/bin/wsd git preflight
-./.wsd/bin/wsd git pr-check
+./+wsd/bin/wsd git doctor
+./+wsd/bin/wsd git preflight
+./+wsd/bin/wsd git pr-check
 ```
 
 Funções:
@@ -335,7 +335,7 @@ Comandos futuros fora do MVP:
 - `git audit`: mostra estado local, dirty state, último commit, remote e fetch dry-run;
 - `git bootstrap`: cria/conecta repo GitHub quando autorizado, sem alterar visibilidade, secrets, default branch ou permissões sem decisão explícita.
 
-Quando o módulo estiver ativo, `./.wsd/bin/wsd start` deve chamar `git preflight` em modo informativo. Para L1/L2, o checker deve poder exigir preflight limpo.
+Quando o módulo estiver ativo, `./+wsd/bin/wsd start` deve chamar `git preflight` em modo informativo. Para L1/L2, o checker deve poder exigir preflight limpo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -419,7 +419,7 @@ Regras:
 
 - scripts devem ser gerados dentro do projeto;
 - não devem depender de paths da VPS;
-- scripts com topologia DLP/Oct devem aceitar configuração via `.context.json`;
+- scripts com topologia DLP/Oct devem aceitar configuração via `+context.json`;
 - operações destrutivas não entram no primeiro alpha do módulo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -438,11 +438,11 @@ Objetivo do MVP:
 Escopo obrigatório do MVP:
 
 - [x] `--git-policy none|basic|full` no instalador.
-- [x] Campo `git_governance` no `.context.json`.
+- [x] Campo `git_governance` no `+context.json`.
 - [x] Seção Git/GitHub gerada no `AGENTS.md`.
-- [x] `./.wsd/bin/wsd git doctor`.
-- [x] `./.wsd/bin/wsd git preflight`.
-- [x] `./.wsd/bin/wsd git pr-check`.
+- [x] `./+wsd/bin/wsd git doctor`.
+- [x] `./+wsd/bin/wsd git preflight`.
+- [x] `./+wsd/bin/wsd git pr-check`.
 - [x] Template `.github/PULL_REQUEST_TEMPLATE.md`.
 - [x] Templates simples de Issue: `task.md`, `bug.md`, `decision.md`.
 - [x] Testes de install para `none`, `basic` e `full`.
@@ -462,10 +462,10 @@ Plano:
 - [x] Criar templates do módulo em `templates/modules/git-governance/`.
 - [x] Expandir `bin/wsd-method.js` com `--git-policy none|basic|full`.
 - [x] Adicionar pergunta interativa para modo Git Governance.
-- [x] Atualizar `.context.json.template` com `git_governance` e manter `clone_topology` como política existente.
+- [x] Atualizar `+context.json.template` com `git_governance` e manter `clone_topology` como política existente.
 - [x] Atualizar `AGENTS.md.template` com seção do módulo.
 - [x] Implementar comandos no CLI local vendorizado (`wsd git doctor|preflight|pr-check`).
-- [x] Adicionar namespace `./.wsd/bin/wsd git ...`.
+- [x] Adicionar namespace `./+wsd/bin/wsd git ...`.
 - [x] Atualizar `docs/00`, `docs/03`, `docs/04`, `docs/07`, `docs/08`, `docs/10`, README, hub e ROADMAP.
 - [x] Rodar testes de instalação para `none`, `basic` e `full`.
 - [ ] Testar em projeto real em andamento antes de promover `v0.1.0`.
@@ -481,10 +481,10 @@ O módulo só deve ser considerado pronto quando:
 - [x] O modo `basic` gerar política local sem exigir `gh`.
 - [x] O modo `full` validar ou orientar `gh` e GitHub.
 - [x] `AGENTS.md` gerado orientar o agente sem depender desta conversa.
-- [x] `.context.json` declarar política Git e topologia.
-- [x] `./.wsd/bin/wsd git doctor` rodar em instalação temporária.
-- [x] `./.wsd/bin/wsd git preflight` detectar worktree suja.
-- [x] `./.wsd/bin/wsd git pr-check` validar branch dedicada, worktree limpa e commits à frente da base antes de PR.
+- [x] `+context.json` declarar política Git e topologia.
+- [x] `./+wsd/bin/wsd git doctor` rodar em instalação temporária.
+- [x] `./+wsd/bin/wsd git preflight` detectar worktree suja.
+- [x] `./+wsd/bin/wsd git pr-check` validar branch dedicada, worktree limpa e commits à frente da base antes de PR.
 - [x] Templates de PR e Issue serem gerados no modo `full`.
 - [x] `npm run test:install` continuar passando.
 - [x] Novo teste de instalação do módulo Git Governance passar.
@@ -516,7 +516,7 @@ Ao evoluir este módulo, revisar:
 
 - [[wsd/docs/00_planejamento_instalacao_wsd|00 Planejamento de Instalação]], quando mudar installer ou perguntas;
 - [[wsd/docs/04_playbook_implantacao|04 Playbook de Implantação]], quando mudar bootstrap;
-- [[wsd/docs/05_contrato_artefatos|05 Contrato de Artefatos]], quando mudar `.context.json`;
+- [[wsd/docs/05_contrato_artefatos|05 Contrato de Artefatos]], quando mudar `+context.json`;
 - [[wsd/docs/07_git_governance|07 Git Governance]], quando mudar regra Git;
 - [[wsd/docs/08_rotinas_sessao|08 Rotinas de Sessão]], quando mudar comandos locais;
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]], quando mudar dependências entre arquivos;

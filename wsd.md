@@ -46,11 +46,11 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 05/05/2026 14:13:39 -03 — Codex: Alinhamento do hub à versão `v0.1.2-alpha`, inclusão de status operacional, CLI atual e matriz de sincronização documental obrigatória.
 - 05/05/2026 14:38:29 -03 — Codex: Inclusão da nota `11 — Módulo Git Governance WSD` no mapa do método e no fluxo de governança futura.
 - 06/05/2026 11:31:14 -03 — Codex: Registro da reavaliação da nota `12 — Avaliação Crítica` com foco Codex-first e suporte Claude Code em evolução.
-- 06/05/2026 11:38:28 -03 — Codex: Inclusão das pastas auxiliares `+wsd/` como inbox de notas e `wsd_philo/` como base filosófica e de pesquisa do método.
+- 06/05/2026 11:38:28 -03 — Codex: Inclusão das pastas auxiliares `+imbox/` como inbox de notas e `wsd_philo/` como base filosófica e de pesquisa do método.
 - 06/05/2026 11:52:30 -03 — Codex: Registro da nota `13 — Compatibilidade WSD com Claude Code` no mapa do método e no fluxo de evolução do suporte Claude.
-- 06/05/2026 — Claude: Atualização para `v0.1.3-alpha` — suporte Claude Code operacional, foco atual atualizado para piloto no `exemplo-saas-b`.
+- 06/05/2026 — Claude: Atualização para `v0.1.3-alpha` — suporte Claude Code operacional, foco atual atualizado para piloto no `koomplet-office`.
 - 06/05/2026 — Claude: Atualização para `v0.1.4-alpha` — integração TLC: doc 14 no mapa, regra para agentes atualizada para `+specs/project/`, regras 11 e 12, novos comandos slash `/wsd-specify`, `/wsd-design`, `/wsd-tasks`.
-- 07/05/2026 — Claude: Atualização para `v0.1.5-alpha` — JSON Schema 2020-12 canônico para `.context.json` em `schemas/context.schema.json`, validador `wsd-validate-context.js` integrado a `wsd_check.sh`.
+- 07/05/2026 — Claude: Atualização para `v0.1.5-alpha` — JSON Schema 2020-12 canônico para `+context.json` em `schemas/context.schema.json`, validador `wsd-validate-context.js` integrado a `wsd_check.sh`.
 - 07/05/2026 — Claude: Atualização para `v0.1.6-alpha` — ghost spec detector em `wsd_check.sh` e git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`). Fecha a Fase 3.
 - 07/05/2026 — Claude: Atualização para `v0.1.7-alpha` — `wsd finish` automatizado: HANDOFF.md gerado pelo CLI + prompts interativos para STATE.md. Fecha o último item da Fase 3.
 - 07/05/2026 — Claude: Atualização para `v0.1.8-alpha` — instalação interativa rica (linguagem, path canônico, comandos test/build/lint, forbidden_paths), `wsd update` real via `wsd_source`, WHEN+THEN+SHALL todos obrigatórios no ghost scan.
@@ -71,7 +71,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 | [[wsd/docs/02_matriz_risco|02 Matriz de Risco]] | ao classificar tarefa | quando usar L0, L1 ou L2 |
 | [[wsd/docs/03_ciclo_operacional|03 Ciclo Operacional]] | durante uma sessão | como abrir, executar e fechar trabalho |
 | [[wsd/docs/04_playbook_implantacao|04 Playbook de Implantação]] | ao colocar WSD em um repo | sequência de bootstrap |
-| [[wsd/docs/05_contrato_artefatos|05 Contrato de Artefatos]] | ao editar templates | formato de `.context.json`, specs e logs |
+| [[wsd/docs/05_contrato_artefatos|05 Contrato de Artefatos]] | ao editar templates | formato de `+context.json`, specs e logs |
 | [[wsd/docs/06_personalizacao_por_projeto|06 Personalização]] | ao adaptar para um projeto | o que é global e o que é local |
 | [[wsd/docs/07_git_governance|07 Git Governance]] | ao mexer em branch/PR | política Git para agentes |
 | [[wsd/docs/08_rotinas_sessao|08 Rotinas de Sessão]] | no início/fim do dia | checklist operacional |
@@ -93,10 +93,10 @@ O WSD já possui:
 - `package.json` com binário `wsd-method` e `npm test` (7 gates);
 - `bin/wsd-method.js` com `install`, `doctor`, `help`, `update`, `--list-options`, flag `--brownfield` e `--git-policy none|basic|full`;
 - `install.sh` como wrapper local;
-- instalação vendorizada em `.wsd/`;
+- instalação vendorizada em `+wsd/`;
 - `templates/local-wsd/bin/wsd` com `start`, `check`, `finish`, `doctor`, `update`, `hooks`, namespace `git doctor|preflight|pr-check` e namespace `party status|list-agents|when-to-use`;
 - 6 skills Codex em `.codex/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`);
-- 6 comandos slash Claude Code em `.claude/commands/` (`wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`), `.claude/settings.json` com hooks e `.wsd/hooks/pre-tool.sh`;
+- 6 comandos slash Claude Code em `.claude/commands/` (`wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`), `.claude/settings.json` com hooks e `+wsd/hooks/pre-tool.sh`;
 - `--tools both` gera os dois conjuntos sem conflito;
 - matriz e checker de sincronização documental (com 20+ assertions TLC);
 - estrutura `+specs/` expandida (project/, codebase/, features/, quick/) substituindo `.specs/`;
@@ -109,11 +109,11 @@ O WSD já possui:
 - git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`) instalados por `wsd-method install`; subcomando `wsd hooks` para reinstalar após clone (v0.1.6);
 - `wsd finish` automatizado: gera `+specs/HANDOFF.md` (branch, commits recentes, arquivos uncommitted, specs) + prompts interativos para STATE.md (lições, decisões, bloqueadores) (v0.1.7);
 - instalação interativa rica: linguagem principal, path canônico, comandos test/build/lint, forbidden_paths (v0.1.8);
-- `wsd update` real: atualiza `.wsd/` vendor tree via `wsd_source` em `.wsd/config.json` sem tocar em arquivos do projeto (v0.1.8);
+- `wsd update` real: atualiza `+wsd/` vendor tree via `wsd_source` em `+wsd/config.json` sem tocar em arquivos do projeto (v0.1.8);
 - validação WHEN+THEN+SHALL completa: todos os três keywords obrigatórios em ghost scan e L1/L2 (v0.1.8).
 - saneamento documental operacional: `docs/00` e `docs/12` alinhados ao estado real; `wsd_philo/` preservado como histórico/pesquisa (v0.1.9).
-- MVP Git/GitHub Governance implementado: `--git-policy none|basic|full`, bloco `git_governance` no `.context.json`, seção Git/GitHub no `AGENTS.md`, templates `.github/` no modo `full` e testes de instalação para `none`, `basic` e `full` (v0.1.10).
-- Party Mode Integration: `installPartyMode` copia 26 agentes para `.wsd/party-mode/`, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção `## Party Mode` no `AGENTS.md` gerado e `test:install-party-mode` no pipeline `npm test` (7/7 gates PASS) (v0.1.11).
+- MVP Git/GitHub Governance implementado: `--git-policy none|basic|full`, bloco `git_governance` no `+context.json`, seção Git/GitHub no `AGENTS.md`, templates `.github/` no modo `full` e testes de instalação para `none`, `basic` e `full` (v0.1.10).
+- Party Mode Integration: `installPartyMode` copia 26 agentes para `+wsd/party-mode/`, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção `## Party Mode` no `AGENTS.md` gerado e `test:install-party-mode` no pipeline `npm test` (7/7 gates PASS) (v0.1.11).
 - Release **`v0.1.0`** estável (07/05/2026): API estável após validação brownfield + fechamento de todas as fases. Modo manutenção. Documentação oficial expandida no README.
 
 Foco atual: **`v0.1.0` estável entregue** (07/05/2026). Todas as fases do roadmap (1–4 + 3.5) concluídas. Modo de manutenção: bug fixes em `v0.1.x`, novas features grandes em `v0.2.0` após validação em piloto.
@@ -125,7 +125,7 @@ Foco atual: **`v0.1.0` estável entregue** (07/05/2026). Todas as fases do roadm
 - `templates/repo/`: kit para copiar para um repositório alvo.
 - `templates/specs/`: modelos de Task Card, spec L1, spec L2, ADR e PR.
 - `templates/codex-skills/`: modelos de skills Codex para governar WSD.
-- `templates/local-wsd/`: CLI local instalada em `.wsd/bin/wsd`.
+- `templates/local-wsd/`: CLI local instalada em `+wsd/bin/wsd`.
 - `profiles/`: perfis de projeto para renderizar/adaptar templates.
 - `scripts/`: scripts de verificação e bootstrap.
 
@@ -133,7 +133,7 @@ Foco atual: **`v0.1.0` estável entregue** (07/05/2026). Todas as fases do roadm
 
 ## 5. Decisão de Design
 
-WSD não deve depender de um projeto específico. Exemplo SaaS A e Exemplo SaaS B são perfis, não a metodologia.
+WSD não deve depender de um projeto específico. Prescreve Mais e Koomplet Office são perfis, não a metodologia.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -152,7 +152,7 @@ Essa nota define quais arquivos precisam ser revisados juntos e quais comandos d
 Antes de editar qualquer repositório que use WSD, o agente deve encontrar e respeitar:
 
 1. `AGENTS.md`;
-2. `.context.json`;
+2. `+context.json`;
 3. `+specs/project/PROJECT.md` (visão e regras) e `+specs/project/STATE.md` (decisões e bloqueadores ativos);
 4. `+specs/codebase/*.md` quando o repositório for brownfield;
 5. spec aprovada para L1/L2 com WHEN/THEN/SHALL em `+specs/features/<slug>/spec.md`;
@@ -169,7 +169,7 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 05/05/2026 13:29:54 -03 | Codex | `x/wsd/wsd.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
 | 05/05/2026 14:13:39 -03 | Codex | `x/wsd/wsd.md` | Alinhamento do hub à versão `v0.1.2-alpha`, inclusão de status operacional, CLI atual e matriz de sincronização documental obrigatória. |
 | 05/05/2026 14:38:29 -03 | Codex | `x/wsd/wsd.md` | Inclusão da nota `11 — Módulo Git Governance WSD` no mapa do método e no fluxo de governança futura. |
-| 06/05/2026 — | Claude | `x/wsd/wsd.md` | Atualização do Estado Atual para `v0.1.3-alpha` com suporte Claude Code operacional e novo foco no piloto `exemplo-saas-b`. |
+| 06/05/2026 — | Claude | `x/wsd/wsd.md` | Atualização do Estado Atual para `v0.1.3-alpha` com suporte Claude Code operacional e novo foco no piloto `koomplet-office`. |
 | 06/05/2026 — | Claude | `x/wsd/wsd.md` | Atualização para `v0.1.4-alpha`: doc 14 no mapa, regra para agentes refeita com `+specs/project/`, `+specs/codebase/` e WHEN/THEN/SHALL, novos comandos `/wsd-specify`, `/wsd-design`, `/wsd-tasks`, foco em piloto brownfield. |
 | 07/05/2026 — | Claude | `x/wsd/wsd.md` | Generalização do "foco atual": após validação operacional concluída, manter o repositório do método limpo de detalhes específicos de projetos-alvo. Detalhes operacionais ficam no `+specs/project/STATE.md` de cada projeto que adota WSD. |
 | 07/05/2026 — | Claude | `x/wsd/wsd.md` | Atualização para `v0.1.5-alpha`: JSON Schema canônico em `schemas/context.schema.json` + validador `wsd-validate-context.js` no estado atual do método. |

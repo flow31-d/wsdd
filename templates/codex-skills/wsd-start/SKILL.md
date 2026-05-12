@@ -26,7 +26,7 @@ git remote show origin
 - Read `+specs/project/STATE.md` — summarize active decisions and blockers
 - Read `+specs/HANDOFF.md` if it exists — summarize and ask "Continuar de onde parou?"
 - Read `AGENTS.md` if present
-- Read `.context.json` if present — identify write_paths, forbidden_paths, wsd.risk_default
+- Read `+context.json` if present — identify write_paths, forbidden_paths, wsd.risk_default
 
 4. If WSD exists, run:
 

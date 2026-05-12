@@ -1,92 +1,145 @@
-# wsdd — Wolff Spec Driven Development
+---
+title: "WSD — Wolff Spec Driven"
+created: 05/05/2026
+modified: 11/05/2026
+tags:
+  - x
+  - wsd
+  - sdd
+  - agentes
+  - git
+status: ativo
+tipo: hub
+parent: "[[x]]"
+links: "[[wsd/wsd]], [[wsd/docs/00_planejamento_instalacao_wsd]], [[wsd/docs/01_constituicao]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/06_personalizacao_por_projeto]], [[wsd/docs/10_matriz_sincronizacao_notas]]"
+otimizado_para_obsidian: true
+---
+# WSD — Wolff Spec Driven
 
-> Kit pessoal de Spec Driven Development para agentes de código (Codex, Claude Code).
-> Versão `v0.1.0` estável, em modo de manutenção.
-
-`wsdd` é a **versão pública** do método **WSD (Wolff Spec Driven)**: um conjunto de templates, scripts, skills de agente e CLI vendorizado que transforma repositórios em ambientes previsíveis para agentes CLI editarem código com governança real (risco, scope, validação, rastreabilidade).
-
-O objetivo não é criar burocracia — é impedir que agentes editem código sem saber **onde estão**, **qual risco assumem**, **quais paths podem tocar**, **como validar** e **como deixar rastreabilidade**.
-
-## Sobre este repo
-
-Este é um **espelho público sanitizado** do desenvolvimento privado em `flow31-d/WSD`. Aqui não há perfis de clientes específicos, decisões internas (`+specs/project/STATE.md`) nem o histórico de commits do desenvolvimento original — apenas o método, código, templates e exemplos genéricos.
-
-Existe para:
-
-- **revisão por pares** — outros devs analisarem arquitetura e dar feedback;
-- **uso por terceiros** — qualquer dev pode instalar `wsdd` em seus projetos;
-- **transparência metodológica** — mostrar o estado real de um SDD pessoal evoluído.
-
-Para contribuir, ver [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-> **Nota Obsidian**: os arquivos `.md` deste repo foram escritos para visualização no Obsidian (índices navegáveis, callouts, links literais). No GitHub renderizam normalmente, mas alguns elementos (callouts `> [!info]`) viram blockquotes simples.
+[[x|← x — Interface IA]]
 
 ---
 
-## Ideia central
+> [!abstract] Visão Geral
+> WSD é um kit pessoal de Spec Driven Development para agentes de código. Ele separa política global, contrato por repositório, specs por tarefa, rotinas de sessão, validação e governança Git.
 
-```
-WSD global   = método comum
+WSD existe para transformar repositórios privados em ambientes previsíveis para agentes CLI. O objetivo não é criar burocracia; é impedir que agentes editem código sem saber onde estão, qual risco assumem, quais paths podem tocar, como validar e como deixar rastreabilidade. O WSD é otimizado para ser visualizado no Obsidian.
+
+
+> [!info] Otimização Obsidian
+> Esta nota é otimizada para visualização no Obsidian, com índice navegável, links literais de cabeçalho e rastreabilidade de alterações por agentes.
+
+## 📑 Índice
+
+1. [[#1. 🔄 Atualizações]]
+2. [[#2. Ideia Central]]
+3. [[#3. Estrutura do Pacote]]
+4. [[#4. Uso Oficial]]
+5. [[#5. Princípios]]
+6. [[#6. Status]]
+7. [[#7. Fases de Consolidação]]
+8. [[#8. Foco Atual]]
+9. [[#9. Instalação Local]]
+10. [[#10. Sincronização Obrigatória de Notas]]
+11. [[#11. 🕒 Registro de Alterações por Agentes]]
+
+## 1. 🔄 Atualizações
+
+Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
+
+- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
+- 05/05/2026 13:41:50 -03 — Codex: Marcação da versão `v0.1.0-alpha`, registro das fases de consolidação e definição de foco inicial em Codex.
+- 05/05/2026 13:57:20 -03 — Codex: Registro do instalador alpha local `wsd-method install`, `+wsd/bin/wsd` e instalação de skills Codex locais.
+- 05/05/2026 14:13:39 -03 — Codex: Alinhamento do README à versão `v0.1.2-alpha`, priorização do instalador local e inclusão da matriz obrigatória de sincronização documental.
+- 06/05/2026 11:38:28 -03 — Codex: Inclusão das pastas auxiliares `+imbox/` como inbox de notas e `wsd_philo/` como base filosófica do SDD.
+- 06/05/2026 11:52:30 -03 — Codex: Registro da nota `13 — Compatibilidade WSD com Claude Code` como referência de apoio para a evolução do método.
+- 06/05/2026 — Claude: Atualização para `v0.1.3-alpha` — suporte Claude Code operacional, templates `claude-commands/`, hooks e documentação.
+- 06/05/2026 — Claude: Atualização para `v0.1.4-alpha` — integração TLC: `+specs/` expandido, 4 fases (Specify/Design/Tasks/Execute), auto-sizing por risco, STATE.md/HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, Knowledge Chain (R11), Scope Guardrail (R12), Conventional Commits 1.0.0, flag `--brownfield`.
+- 07/05/2026 — Claude: Atualização para `v0.1.5-alpha` — JSON Schema 2020-12 canônico em `schemas/context.schema.json` + validador pure-JS zero-deps `wsd-validate-context.js` vendorizado em `+wsd/bin/`. `wsd_check.sh` agora valida `+context.json` contra o schema.
+- 07/05/2026 — Claude: Atualização para `v0.1.6-alpha` — ghost spec detector em `wsd_check.sh` (WHEN/THEN/SHALL gate) e git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`). Subcomando `wsd hooks` para reinstalar após clone. Fecha a Fase 3.
+- 07/05/2026 — Claude: Atualização para `v0.1.7-alpha` — HANDOFF.md gerado automaticamente por `wsd finish` + prompts interativos para STATE.md. Fecha o último item da Fase 3.
+- 07/05/2026 — Claude: Atualização para `v0.1.8-alpha` — instalação interativa rica (linguagem, path, test/build/lint, forbidden_paths), `wsd update` real, WHEN+THEN+SHALL completos em ghost spec e L1/L2.
+- 07/05/2026 — Codex: Atualização para `v0.1.9-alpha` — saneamento documental operacional em `docs/00` e `docs/12`; `wsd_philo/` mantido como referência histórica/pesquisa.
+- 07/05/2026 — Codex: Planejamento da próxima frente `v0.1.10-alpha` — MVP Git/GitHub Governance antes da estabilização `v0.1.0`.
+- 07/05/2026 — Codex: Atualização para `v0.1.10-alpha` — MVP Git/GitHub Governance implementado com `--git-policy none|basic|full`, `wsd git doctor|preflight|pr-check`, templates PR/Issue e bloco `git_governance`.
+- 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration: `/wsd-party-mode`, `wsd party`, `installPartyMode`, seção AGENTS.md, 7/7 testes PASS.
+- 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Drop do sufixo `-alpha`: API estável após 11 iterações alpha + piloto operacional brownfield + 2 itens descartados com rationale (perfis stacks, YAML schema). Adicionada seção "Uso Oficial" como entry point recomendado.
+- 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/wsdd install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 2. Ideia Central
+
+```text
+WSD global = método comum
 WSD template = arquivos copiáveis
-WSD adapter  = personalização por repositório
-WSD session  = rotina de início, execução e encerramento
+WSD adapter = personalização por repositório
+WSD session = rotina de início, execução e encerramento
 ```
 
-Cada repositório que adota WSD recebe um pacote local com:
+Cada repositório que adotar WSD deve receber um pacote local com:
 
+```text
++wsd/
+AGENTS.md
+CLAUDE.md
++context.json
++specs/project/PROJECT.md
++specs/project/STATE.md
++specs/project/ROADMAP.md
++specs/project/IDEAS.md
++specs/project/IDEAS_PIPELINE.md
++specs/features/<slug>/spec.md (com WHEN/THEN/SHALL)
++specs/codebase/*.md (somente com --brownfield)
++logs/
+scripts/wsd_check.sh
 ```
-.wsd/                            ← CLI vendorizado, hooks, schemas
-AGENTS.md                        ← regras para agentes
-CLAUDE.md                        ← (opcional) instruções específicas Claude
-.context.json                    ← contrato runtime do projeto
-+specs/project/PROJECT.md        ← visão e regras do projeto
-+specs/project/STATE.md          ← memória operacional viva
-+specs/features/<slug>/spec.md   ← spec WHEN/THEN/SHALL por feature
-+specs/codebase/*.md             ← (brownfield) docs gerados pelo agente
-+logs/                           ← logs de sessão
-scripts/wsd_check.sh             ← gate determinístico
-```
 
----
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## Estrutura do pacote
+## 3. Estrutura do Pacote
 
-```
-wsdd/
-├── README.md          ← este arquivo
-├── wsd.md             ← hub do método (visão geral, mapa de docs)
-├── ROADMAP.md         ← fases concluídas (1, 2, 3, 3.5, 4)
-├── CHANGELOG.md       ← histórico de versões
-├── AGENTS.md          ← regras para agentes editando este repo
-├── CONTRIBUTING.md    ← fluxo de bug fix e contribuição
+```text
+wsd/
+├── README.md
+├── wsd.md
+├── ROADMAP.md
+├── CHANGELOG.md
+├── AGENTS.md
 ├── package.json
-├── install.sh         ← wrapper local do installer
+├── install.sh
 ├── bin/
-│   └── wsd-method.js  ← installer principal
-├── docs/              ← 14 docs metodológicas
+│   └── wsd-method.js
+├── docs/
+├── +imbox/
+├── wsd_philo/
 ├── templates/
-│   ├── repo/          ← arquivos copiados para projetos cliente
-│   ├── specs/         ← templates de spec L0/L1/L2
-│   ├── local-wsd/     ← CLI vendorizado (.wsd/bin/wsd)
-│   ├── codex-skills/  ← skills Codex
-│   ├── claude-commands/ ← slash commands Claude Code
-│   ├── claude-skills/
-│   ├── git-hooks/     ← pre-commit, commit-msg, pre-push
-│   └── modules/       ← módulos opcionais (.github/, etc.)
-├── profiles/          ← perfis de configuração (Node, Python)
-├── scripts/           ← validação e bootstrap
-├── party-mode/        ← 26 agentes para debate multi-perspectiva
-├── schemas/           ← JSON Schema do .context.json
-└── examples/          ← exemplos de uso
+│   ├── repo/
+│   ├── specs/
+│   ├── local-wsd/
+│   ├── codex-skills/
+│   ├── claude-commands/
+│   └── modules/
+├── profiles/
+├── scripts/
+└── examples/
 ```
 
----
+Pastas auxiliares do repositório:
 
-## Uso oficial
+- `+imbox/`: inbox local para notas novas ou ainda não categorizadas; depois de uma análise mais profunda, elas podem ser movidas para a pasta definitiva correta.
+- `wsd_philo/`: base filosófica e de pesquisa do SDD/WSD; serve como referência conceitual e não como contrato operacional do instalador.
 
-`v0.1.0` é a primeira release estável. Fluxo recomendado:
+> [!note] Dogfooding — WSD gerencia o próprio WSD
+> O repositório WSD usa WSD para gerir seu próprio desenvolvimento. Por isso existem `+specs/`, `ROADMAP.md` e `STATE.md` na raiz — são artefatos de gestão *do toolkit*, não templates. O que chega em projetos novos via install é exclusivamente o que está em `templates/repo/`. Os arquivos de gestão do WSD em si nunca são copiados para o projeto alvo.
 
-### Greenfield (projeto novo)
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 4. Uso Oficial
+
+WSD `v0.1.0` é a primeira release estável. Fluxo recomendado para qualquer projeto novo ou brownfield:
+
+### 4.1 Greenfield (projeto novo)
 
 ```bash
 bash install.sh \
@@ -97,7 +150,7 @@ bash install.sh \
   --yes
 ```
 
-### Brownfield (código existente)
+### 4.2 Brownfield (código existente)
 
 ```bash
 bash install.sh \
@@ -111,33 +164,33 @@ bash install.sh \
 
 `--brownfield` gera `+specs/codebase/` com 7 docs (STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, CONCERNS, TESTING) que o agente preenche após o install lendo o código real.
 
-### Ciclo de sessão
+### 4.3 Ciclo de sessão
 
 Dentro do projeto após o install, rotina diária:
 
 ```bash
-./.wsd/bin/wsd doctor      # verifica saúde (uma vez)
-./.wsd/bin/wsd start       # abre sessão
+./+wsd/bin/wsd doctor      # verifica saúde (uma vez)
+./+wsd/bin/wsd start       # abre sessão
 # ... trabalho do agente: /wsd-specify, /wsd-design, /wsd-tasks, /wsd-party-mode ...
-./.wsd/bin/wsd check       # valida gates antes do commit
-./.wsd/bin/wsd finish      # fecha sessão (gera HANDOFF.md, atualiza STATE.md)
+./+wsd/bin/wsd check       # valida gates antes do commit
+./+wsd/bin/wsd finish      # fecha sessão (gera HANDOFF.md, atualiza STATE.md)
 ```
 
-### Comandos disponíveis após o install
+### 4.4 Comandos disponíveis após o install
 
 - **Codex** (`--tools codex`): 6 skills em `.codex/skills/` — `wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`.
-- **Claude Code** (`--tools claude-code`): 6 slash commands em `.claude/commands/` — `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`. Hooks `PreToolUse|PreCompact|SessionStart|Stop` em `.claude/settings.json`.
-- **CLI vendorizado** (`./.wsd/bin/wsd`): `start`, `check`, `finish`, `doctor`, `update`, `hooks`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`.
+- **Claude Code** (`--tools claude-code`): 7 slash commands em `.claude/commands/` — `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`. Hooks `PreToolUse|PreCompact|SessionStart|Stop` configurados em `.claude/settings.json`.
+- **CLI vendorizado** (`./+wsd/bin/wsd`): `start`, `check`, `finish`, `doctor`, `update`, `hooks`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`.
 
-### Política Git
+### 4.5 Política Git
 
 - `--git-policy none`: sem governança Git extra (default mínimo).
-- `--git-policy basic`: pre-commit / commit-msg / pre-push hooks + Conventional Commits 1.0.0 obrigatório.
+- `--git-policy basic`: pre-commit/commit-msg/pre-push hooks + Conventional Commits 1.0.0 obrigatório.
 - `--git-policy full`: tudo do `basic` + templates `.github/PULL_REQUEST_TEMPLATE.md` e `ISSUE_TEMPLATE/{task,bug,decision}.md`, `wsd git pr-check` validando branch/commits/PR.
 
-### Validação contínua
+### 4.6 Validação contínua
 
-Após qualquer mudança no código `wsdd`:
+Após qualquer mudança em código WSD:
 
 ```bash
 npm test                              # 7 gates de instalação
@@ -145,9 +198,9 @@ bash scripts/wsd_docs_check.sh        # sincronização documental
 bash scripts/wsd_self_check.sh        # consistência interna
 ```
 
----
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## Princípios
+## 5. Princípios
 
 - Intenção antes de edição.
 - Risco define rigor.
@@ -157,44 +210,71 @@ bash scripts/wsd_self_check.sh        # consistência interna
 - Segredo nunca entra em Git, spec, prompt, log ou Obsidian.
 - Produção exige regra explícita, rollback e decisão humana.
 
----
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## Status
+## 6. Status
 
-Versão atual: **`v0.1.0`** (release estável). Histórico completo em [`CHANGELOG.md`](CHANGELOG.md).
+Este diretório está publicado como repositório GitHub público em versão **`v0.1.2`**. A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` e `v0.1.2` são patches pós-release com novas features.
 
-A série `v0.1.0-alpha` → `v0.1.11-alpha` está consolidada; entregas principais:
+Histórico de entregas (alpha + estável):
 
-- `v0.1.4-alpha` — integração TLC Spec-Driven (auto-sizing L0/L1/L2, STATE.md, HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, Conventional Commits, `--brownfield`).
-- `v0.1.5-alpha` — JSON Schema 2020-12 para `.context.json` + validador pure-JS zero-deps.
-- `v0.1.6-alpha` — ghost spec detector + git hooks no bootstrap.
-- `v0.1.7-alpha` — `wsd finish` automatizado (HANDOFF.md + prompts STATE.md).
-- `v0.1.8-alpha` — instalação interativa rica + `wsd update` real.
-- `v0.1.10-alpha` — MVP Git/GitHub Governance.
-- `v0.1.11-alpha` — Party Mode Integration (26 agentes).
-- **`v0.1.0`** — release estável; modo de manutenção.
+- `v0.1.0-alpha`: documentação, templates, perfis, exemplos e primeira publicação privada.
+- `v0.1.1-alpha`: instalador local, CLI `wsd-method`, `+wsd/bin/wsd` e skills Codex locais.
+- `v0.1.2-alpha`: sincronização obrigatória de notas, checker documental e correção do teste de instalação.
+- `v0.1.3-alpha`: suporte operacional ao Claude Code — `--tools claude-code`, comandos slash, hooks e settings.
+- `v0.1.4-alpha`: integração TLC Spec-Driven — auto-sizing L0/L1/L2, 4 fases (Specify/Design/Tasks/Execute), STATE.md/HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered (Quick/Full/Build), Knowledge Chain (Regra 11), Scope Guardrail (Regra 12), Conventional Commits 1.0.0, flag `--brownfield` e novos comandos `/wsd-specify`, `/wsd-design`, `/wsd-tasks`.
+- `v0.1.5-alpha`: JSON Schema 2020-12 para `+context.json` em `schemas/context.schema.json` + validador pure-JS zero-deps `wsd-validate-context.js` vendorizado no install. `wsd_check.sh` valida o contrato runtime e falha cedo em campo faltante, tipo errado ou enum inválido.
+- `v0.1.6-alpha`: ghost spec detector em `wsd_check.sh` (specs `approved`/`implemented` sem WHEN/THEN/SHALL bloqueadas em L1/L2) + git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`) instalados pelo `wsd-method install`. Subcomando `wsd hooks` para reinstalar após clone. Flag `--no-git-hooks` para opt-out.
+- `v0.1.7-alpha`: `wsd finish` automatizado — gera `+specs/HANDOFF.md` (branch, último commit, últimos 5 commits, arquivos uncommitted, specs abertas) + prompts interativos para STATE.md (lições aprendidas, decisões, bloqueadores). Fecha o último item da Fase 3.
+- `v0.1.8-alpha`: instalação interativa rica (linguagem principal, path canônico, test/build/lint commands, forbidden_paths), `wsd update` real (atualiza `+wsd/` sem tocar em arquivos do projeto), WHEN+THEN+SHALL completos obrigatórios em ghost spec scan e L1/L2.
+- `v0.1.9-alpha`: saneamento documental operacional — checklists de `docs/00` e `docs/12` alinhados ao estado real, `wsd_philo/` classificado como referência histórica/pesquisa e não fonte de gate.
+- `v0.1.10-alpha`: MVP Git/GitHub Governance — `--git-policy none|basic|full`, bloco `git_governance` no `+context.json`, seção Git/GitHub no `AGENTS.md`, comandos `./+wsd/bin/wsd git doctor|preflight|pr-check`, templates `.github/` no modo `full` e testes de instalação para os três modos.
+- `v0.1.11-alpha`: Party Mode Integration — sistema de 26 agentes WSD-aware instalado em `+wsd/party-mode/`, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção Party Mode no AGENTS.md e 7 gates de instalação no `npm test`.
+- **`v0.1.0`** (release estável): consolida toda a série alpha em API estável. Fase 4 fechada: documentação oficial (seção "Uso Oficial"), tags retroativas v0.1.10/v0.1.11, validação completa Codex e Claude Code (7/7 testes PASS), 2 itens descartados com rationale (perfis stacks, YAML schema). Sem mudanças de API; mantém compatibilidade com instalações alpha tardias.
+- **`v0.1.2`**: ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md instalados automaticamente em todo projeto via `renderRepoTemplates()`. Skill `/idea-{PROJECT_SLUG}` (Claude Code e Codex) com captura estruturada L0/L1/L2 e oferta de Party Mode. Variável `PROJECT_SLUG` derivada no install + rename dinâmico do comando idea. Estratégia `npx github:flow31-d/wsdd install` documentada. Repositório publicado como público no GitHub.
 
-### Fases do roadmap (todas concluídas)
+Não contém segredos.
 
-1. Aprimorar o WSD — série `v0.1.x-alpha`.
-2. Validar operacionalmente em projeto brownfield real.
-3. Ajustar a partir das lições da validação operacional.
-3.5. Party Mode Integration.
-4. Consolidar release oficial em `v0.1.0`.
+A camada de qualidade da v0.1.4 está detalhada em [[wsd/docs/14_qualidade_desenvolvimento|14 — Qualidade de Desenvolvimento]]. A compatibilidade com Claude Code está em [[wsd/docs/13_compatibilidade_claude_code|13 — Compatibilidade WSD com Claude Code]]. O contrato JSON Schema do `+context.json` (v0.1.5) está documentado em [[wsd/docs/05_contrato_artefatos|05 — Contrato de Artefatos]].
 
-### Próximas frentes (opt-in conforme demanda real)
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
+## 7. Fases de Consolidação
+
+1. Aprimorar o WSD — concluído na série `v0.1.x-alpha`.
+2. Validar operacionalmente em projeto brownfield real — concluído em 07/05/2026.
+3. Ajustar a partir das lições da validação operacional — concluído em 07/05/2026 (incluindo Fase 3.5 Party Mode Integration).
+4. Consolidar o repositório final oficial em `v0.1.0` — **concluído em 07/05/2026**.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 8. Foco Atual
+
+WSD está em desenvolvimento ativo pós-v0.1.0. `v0.1.2` entregue. Próximas frentes mapeadas no `ROADMAP.md`; candidatas imediatas:
+
+- `project-snapshot` (L1): JSON auto-gerado com visão geral do projeto (roadmap, ideias, git, saúde) para consumo por dashboards externos como o `wdb`.
 - Server-side hook como módulo opcional (enforcement inquebrável).
 - OPA/Rego como módulo avançado (multi-agente e times).
-- Migração para `ajv` quando a complexidade do JSON Schema crescer.
 
-Bugs descobertos em uso real geram patches `v0.1.x` (sem alpha). Novas features grandes vão para `v0.2.0` após validação em piloto.
+Issues e bugs descobertos em uso real geram patches `v0.1.x`; novas features seguem ciclo planejado com spec aprovada antes de implementação.
 
----
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## Instalação local (a partir do clone)
+## 9. Instalação
 
-Direto via Node:
+### 9.1 Quick Start (sem clone)
+
+```bash
+npx github:flow31-d/wsdd install \
+  --directory /path/to/project \
+  --tools claude-code \
+  --git-policy basic \
+  --yes
+```
+
+Requer Node.js v20+. Sem `npm publish` — usa o repositório GitHub diretamente.
+
+### 9.2 Uso a partir do clone local
 
 ```bash
 node bin/wsd-method.js install \
@@ -205,13 +285,13 @@ node bin/wsd-method.js install \
   --yes
 ```
 
-Pelo wrapper local:
+Uso pelo wrapper local:
 
 ```bash
 bash install.sh --directory /path/to/project --tools codex --github skip --yes
 ```
 
-Para projetos que valorizam PR/Issue no GitHub:
+Para projetos reais que valorizam PR/Issue no GitHub:
 
 ```bash
 bash install.sh \
@@ -222,37 +302,58 @@ bash install.sh \
   --yes
 ```
 
-Após instalar:
+Após instalar no projeto:
 
 ```bash
-./.wsd/bin/wsd doctor
-./.wsd/bin/wsd check
-./.wsd/bin/wsd start
-./.wsd/bin/wsd finish
+./+wsd/bin/wsd doctor
+./+wsd/bin/wsd check
+./+wsd/bin/wsd start
+./+wsd/bin/wsd finish
 ```
 
-`--tools both` instala simultaneamente skills Codex + slash commands Claude Code.
+Para Codex (`--tools codex`): cria 6 skills em `.codex/skills/`: `wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`.
 
----
+Para Claude Code (`--tools claude-code`): cria 7 comandos slash em `.claude/commands/`: `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`. Também `.claude/settings.json` com hooks `PreToolUse`/`PreCompact`/`SessionStart`/`Stop` e `+wsd/hooks/pre-tool.sh`.
 
-## Documentação
+Para ambos: `--tools both` gera os dois conjuntos sem conflito.
 
-| Arquivo | Quando abrir |
-|---|---|
-| [`docs/01_constituicao.md`](docs/01_constituicao.md) | Antes de criar ou adaptar regras |
-| [`docs/02_matriz_risco.md`](docs/02_matriz_risco.md) | Ao classificar tarefa (L0/L1/L2) |
-| [`docs/03_ciclo_operacional.md`](docs/03_ciclo_operacional.md) | Durante uma sessão |
-| [`docs/04_playbook_implantacao.md`](docs/04_playbook_implantacao.md) | Ao colocar wsdd em um repo |
-| [`docs/05_contrato_artefatos.md`](docs/05_contrato_artefatos.md) | Ao editar templates |
-| [`docs/07_git_governance.md`](docs/07_git_governance.md) | Ao mexer em branch/PR |
-| [`docs/13_compatibilidade_claude_code.md`](docs/13_compatibilidade_claude_code.md) | Suporte Claude Code |
-| [`docs/10_matriz_sincronizacao_notas.md`](docs/10_matriz_sincronizacao_notas.md) | Matriz de sincronização de notas — antes de finalizar qualquer mudança documental |
-| [`docs/14_qualidade_desenvolvimento.md`](docs/14_qualidade_desenvolvimento.md) | Padrões TLC adotados na v0.1.4 |
-| [`AGENTS.md`](AGENTS.md) | Regras para agentes editando este repo |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Fluxo de bug fix e PR |
+Para projetos legados, adicionar `--brownfield`: gera `+specs/codebase/` com 7 docs (STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, CONCERNS, TESTING) que devem ser preenchidos pelo agente após o install.
 
----
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## Licença
+## 10. Sincronização Obrigatória de Notas
 
-Sem licença pública declarada por enquanto — uso pessoal/educacional. Forks e estudos são bem-vindos; uso comercial requer combinação prévia com o autor.
+Antes de finalizar mudanças no WSD, todo agente deve abrir [[wsd/docs/10_matriz_sincronizacao_notas|10 — Matriz de Sincronização de Notas WSD]].
+
+Regra prática:
+
+- mudou versão ou release: atualizar `package.json`, README, CHANGELOG, ROADMAP e docs/09;
+- mudou instalador ou CLI: atualizar README, docs/00, docs/04, docs/08 e CHANGELOG;
+- mudou regra para agentes: atualizar AGENTS, docs/01 ou docs/03 quando aplicável, docs/07, templates de agentes e skills;
+- mudou template ou profile: atualizar docs/05 ou docs/06 e exemplos relacionados;
+- rodar `bash scripts/wsd_docs_check.sh` e `bash scripts/wsd_self_check.sh`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 11. 🕒 Registro de Alterações por Agentes
+
+| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
+|---|---|---|---|
+| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/README.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
+| 05/05/2026 13:41:50 -03 | Codex | `x/wsd/README.md` | Marcação da versão `v0.1.0-alpha`, registro das fases de consolidação e definição de foco inicial em Codex. |
+| 05/05/2026 13:57:20 -03 | Codex | `x/wsd/README.md` | Registro do instalador alpha local `wsd-method install`, `+wsd/bin/wsd` e instalação de skills Codex locais. |
+| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/README.md` | Alinhamento do README à versão `v0.1.2-alpha`, priorização do instalador local e inclusão da matriz obrigatória de sincronização documental. |
+| 06/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.3-alpha`: seções de status, foco atual, instalação e estrutura de pacote refletindo suporte Claude Code. |
+| 06/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.4-alpha`: TLC integration — `+specs/` expandido, 4 fases, auto-sizing, STATE.md/HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, Conventional Commits, flag `--brownfield`, 5 comandos por agente, link para doc 14. |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.5-alpha`: JSON Schema canônico em `schemas/context.schema.json`, validador pure-JS `wsd-validate-context.js`, hook em `wsd_check.sh`. Foco atual reposicionado para Fase 4. |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.6-alpha`: ghost spec detector em `wsd_check.sh`, git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`), subcomando `wsd hooks`. Fase 3 concluída. |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.7-alpha`: `wsd finish` automatizado (HANDOFF.md + prompts STATE.md). Último item da Fase 3 fechado. |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.8-alpha`: instalação interativa rica, `wsd update` real, WHEN+THEN+SHALL completo. |
+| 07/05/2026 — | Codex | `x/wsd/README.md` | Atualização para `v0.1.9-alpha`: saneamento documental operacional e classificação de `wsd_philo/` como histórico/pesquisa. |
+| 07/05/2026 — | Codex | `x/wsd/README.md` | Planejamento da próxima frente `v0.1.10-alpha`: MVP Git/GitHub Governance antes da estabilização. |
+| 07/05/2026 — | Codex | `x/wsd/README.md` | Atualização para `v0.1.10-alpha`: MVP Git/GitHub Governance implementado e Fase 4 reposicionada como próxima frente. |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.11-alpha`: Party Mode Integration entregue (Fase 3.5). |
+| 07/05/2026 — | Claude | `x/wsd/README.md` | Release **`v0.1.0`** estável: drop do sufixo `-alpha`, seção "Uso Oficial" expandida (greenfield/brownfield/ciclo de sessão/comandos/política Git/validação contínua), Fase 4 marcada concluída, foco em manutenção estável. |
+| 11/05/2026 — | Claude | `+Apps/WSD/README.md` | Atualização para `v0.1.2`: status atualizado para repo público, novos artefatos (ROADMAP/IDEAS/IDEAS_PIPELINE) na ideia central, comando `idea-{slug}` nas seções 4.4 e 9, callout dogfooding na seção 3, quick start `npx` na seção 9, seção 8 com candidatas pós-v0.1.2. |
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]

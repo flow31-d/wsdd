@@ -34,7 +34,7 @@ Ciclo Operacional (7 fases): start → classify → prepare → execute → vali
 Risk Levels: L0 (trivial), L1 (feature+spec), L2 (produção+rollback)
 Spec Structure: WHEN (trigger) + THEN (behavior) + SHALL (system state)
 Comandos WSD: wsd start, wsd doctor, wsd check, wsd finish, wsd party-review
-Artefatos: .context.json, AGENTS.md, STATE.md, HANDOFF.md, +specs/
+Artefatos: +context.json, AGENTS.md, STATE.md, HANDOFF.md, +specs/
 Git Governance: Conventional Commits, pre-commit hooks, ghost spec detection
 ```
 

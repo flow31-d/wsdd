@@ -21,7 +21,7 @@ Tasks atomicas para implementar a `v0.1.10-alpha`.
 
 ## T2. Contexto e schema
 
-- [x] Atualizar `.context.json.template` com `git_governance`.
+- [x] Atualizar `+context.json.template` com `git_governance`.
 - [x] Atualizar `schemas/context.schema.json` para aceitar bloco opcional.
 - [x] **VERIFY:** validator aceita installs `none`, `basic` e `full`.
 

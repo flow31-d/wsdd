@@ -19,7 +19,7 @@ otimizado_para_obsidian: true
 ---
 
 > [!tip] Achou bug em projeto que usa WSD?
-> Veja [`CONTRIBUTING.md`](CONTRIBUTING.md) — define onde corrigir (projeto-alvo vs `flow31-d/wsdd`), fluxo de Issue/PR e convenções de versionamento. Vale para qualquer agente: Codex, Claude Code, ou humano.
+> Veja [`CONTRIBUTING.md`](CONTRIBUTING.md) — define onde corrigir (projeto-alvo vs `flow31-d/WSD`), fluxo de Issue/PR e convenções de versionamento. Vale para qualquer agente: Codex, Claude Code, ou humano.
 
 
 > [!info] Otimização Obsidian
@@ -55,7 +55,7 @@ Este diretório contém o pacote WSD, Wolff Spec Driven. Ele é um template e um
 
 - Manter o WSD genérico.
 - Não inserir dados sensíveis, tokens, chaves, URLs privadas não necessárias ou segredos.
-- Não hardcodar Exemplo SaaS A, Exemplo SaaS B ou outro projeto dentro dos templates genéricos; usar `profiles/` e `examples/`.
+- Não hardcodar Prescreve Mais, Koomplet Office ou outro projeto dentro dos templates genéricos; usar `profiles/` e `examples/`.
 - Preservar placeholders `{{...}}` nos arquivos `.template`.
 - Validar JSON e YAML após alterações.
 - Usar `scripts/wsd_check.sh` antes de considerar o pacote pronto.

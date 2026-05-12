@@ -101,7 +101,7 @@ Após instalação, o projeto alvo deve ficar assim:
 
 ```text
 meu-projeto/
-├── .wsd/
+├── +wsd/
 │   ├── docs/
 │   ├── templates/
 │   ├── profiles/
@@ -110,7 +110,7 @@ meu-projeto/
 │   └── config.json
 ├── AGENTS.md
 ├── CLAUDE.md
-├── .context.json
+├── +context.json
 ├── +specs/
 │   ├── features/
 │   │   └── wsd-bootstrap/
@@ -156,7 +156,7 @@ Overrides:
 ```bash
 npx wsd-method install \
   --directory /path/to/project \
-  --set project.name="Exemplo SaaS B" \
+  --set project.name="Koomplet Office" \
   --set environment.canonical_host="DLP" \
   --set validation.test="npm test" \
   --set validation.build="npm run build" \
@@ -269,7 +269,7 @@ Deseja instalar o módulo de Governança Git/GitHub?
 - completo
 ```
 
-Regra para `v0.1.10-alpha`: `none` ou resposta negativa mantém apenas a segurança Git mínima do core. `basic` e `full` geram política Git adicional, campos no `.context.json`, scripts locais e instruções extras para agentes. Topologia `multi-host`, auditoria completa e bootstrap administrativo ficam fora do primeiro MVP.
+Regra para `v0.1.10-alpha`: `none` ou resposta negativa mantém apenas a segurança Git mínima do core. `basic` e `full` geram política Git adicional, campos no `+context.json`, scripts locais e instruções extras para agentes. Topologia `multi-host`, auditoria completa e bootstrap administrativo ficam fora do primeiro MVP.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -305,7 +305,7 @@ CLAUDE.md
 
 Objetivo:
 
-- orientar Claude Code a ler `.context.json`;
+- orientar Claude Code a ler `+context.json`;
 - exigir spec para L1/L2;
 - impedir `git add .`;
 - impedir ocultação de worktree suja;
@@ -328,19 +328,19 @@ npx wsd-method help
 Depois de instalado dentro do projeto:
 
 ```bash
-./.wsd/bin/wsd start
-./.wsd/bin/wsd check
-./.wsd/bin/wsd finish
-./.wsd/bin/wsd doctor
-./.wsd/bin/wsd update
+./+wsd/bin/wsd start
+./+wsd/bin/wsd check
+./+wsd/bin/wsd finish
+./+wsd/bin/wsd doctor
+./+wsd/bin/wsd update
 ```
 
 Com o módulo `git-governance`, o CLI local também deve suportar:
 
 ```bash
-./.wsd/bin/wsd git doctor
-./.wsd/bin/wsd git preflight
-./.wsd/bin/wsd git pr-check
+./+wsd/bin/wsd git doctor
+./+wsd/bin/wsd git preflight
+./+wsd/bin/wsd git pr-check
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -370,21 +370,21 @@ Assistido:
 
 Estado implementado até `v0.1.10-alpha`:
 
-- [x] Adaptar o WSD atual para suportar `.wsd/` local por projeto.
-- [x] Criar CLI local instalada em `.wsd/bin/wsd`.
+- [x] Adaptar o WSD atual para suportar `+wsd/` local por projeto.
+- [x] Criar CLI local instalada em `+wsd/bin/wsd`.
 - [x] Criar `install` por `wsd-method install`.
 - [x] Ajustar templates Codex para instalação local.
 - [x] Publicar WSD como GitHub privado.
 - [x] Criar matriz e checker de sincronização documental.
 - [x] Registrar plano do módulo opcional `git-governance`.
 - [x] Criar templates Claude Code.
-- [x] Testar em projeto brownfield real (`exemplo-saas-b`) antes de escalar.
+- [x] Testar em projeto brownfield real (`koomplet-office`) antes de escalar.
 - [x] Enriquecer prompts interativos de instalação (linguagem, path, test/build/lint, forbidden_paths).
-- [x] Criar JSON Schema formal para `.context.json` e validador zero-deps.
+- [x] Criar JSON Schema formal para `+context.json` e validador zero-deps.
 - [x] Implementar `v0.1.10-alpha`: MVP Git/GitHub Governance antes da estabilização.
 - [x] Adicionar `--git-policy none|basic|full` ao instalador.
-- [x] Gerar seção Git/GitHub no `AGENTS.md`, campos `git_governance` no `.context.json` e templates PR/Issue no modo `full`.
-- [x] Adicionar comandos `./.wsd/bin/wsd git doctor`, `preflight` e `pr-check`.
+- [x] Gerar seção Git/GitHub no `AGENTS.md`, campos `git_governance` no `+context.json` e templates PR/Issue no modo `full`.
+- [x] Adicionar comandos `./+wsd/bin/wsd git doctor`, `preflight` e `pr-check`.
 
 Próximos itens:
 

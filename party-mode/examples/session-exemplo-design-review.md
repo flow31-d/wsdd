@@ -285,4 +285,4 @@ type: exemplo
 
 **Status:** ✅ Consenso — Ready pra EXECUTE
 
-Próximo passo: `.wsd/bin/wsd tasks --feature cache-layer`
+Próximo passo: `+wsd/bin/wsd tasks --feature cache-layer`

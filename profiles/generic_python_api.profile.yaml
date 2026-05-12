@@ -22,7 +22,7 @@ permissions:
     - "./+specs"
     - "./+logs"
     - "./AGENTS.md"
-    - "./.context.json"
+    - "./+context.json"
   forbidden_paths:
     - "./.git"
     - "./.env"

@@ -35,7 +35,7 @@ WSD = Spec Driven Development Framework para agentes
 ├── Contrato via YAML/Markdown: WHEN/THEN/SHALL (specs)
 ├── Git governance: Conventional Commits, hooks, PR checks
 ├── Documentação: Obsidian-native com wikilinks e frontmatter
-└── Tooling: CLI `.wsd/bin/wsd`, skills Codex/Claude Code
+└── Tooling: CLI `+wsd/bin/wsd`, skills Codex/Claude Code
 ```
 
 ### Princípios Centrais
@@ -265,12 +265,12 @@ devops,Diego,DevOps,Infrastructure,agents/devops.md
 ### Trigger Automático
 
 ```bash
-.wsd/bin/wsd start
++wsd/bin/wsd start
 # ↓ detecta L1 complexo ou L2
 # ↓
 "Spec complexa detectada. Abra Party Mode? [y/n]"
 # ↓
-.wsd/bin/wsd party-review --feature <slug> --risk L1
++wsd/bin/wsd party-review --feature <slug> --risk L1
 ```
 
 ---
@@ -354,7 +354,7 @@ RESULTADO: Spec tem 5 dimensões exploradas, não 2.
 - [ ] ✅ Sem mudança a code; tudo é "opção externa"
 
 ### **v0.1.11-alpha** (próxima)
-- [ ] Comando `.wsd/bin/wsd party-review`
+- [ ] Comando `+wsd/bin/wsd party-review`
 - [ ] Hook automático: detecta L1 complexo, sugere Party Mode
 - [ ] Integração em HANDOFF.md: exibir `PARTY_ANALYSIS.md`
 - [ ] Tests para party output format
@@ -401,7 +401,7 @@ RESULTADO: Spec tem 5 dimensões exploradas, não 2.
    - Criar `agents-party-mode.csv` básico (5 agentes genéricos)
 
 2. **Médio prazo (próximas 2 alphas):**
-   - Comando `.wsd/bin/wsd party-review`
+   - Comando `+wsd/bin/wsd party-review`
    - Template `PARTY_ANALYSIS.md`
    - Hook automático de sugestão
 

@@ -34,7 +34,7 @@ Gate levels (ver TESTING.md quando criado):
 **Files:**
 - Modify: `bin/wsd-method.js`
 
-- [ ] Nos 4 profiles (`generic_node_frontend`, `generic_python_api`, `exemplo_saas_b`, `exemplo_saas_a`): substituir `./.specs` → `./ +specs` e `./.logs` → `./+logs` em `write_paths`
+- [ ] Nos 4 profiles (`generic_node_frontend`, `generic_python_api`, `koomplet_office`, `prescreve_mais`): substituir `./.specs` → `./ +specs` e `./.logs` → `./+logs` em `write_paths`
 - [ ] Na função `buildSettings()`: atualizar valor padrão de `WRITE_PATHS` e `FORBIDDEN_PATHS` se referenciarem `.specs` ou `.logs`
 - [ ] Gate: grep por `.specs` no arquivo e confirmar zero ocorrências
 
@@ -46,16 +46,16 @@ grep -n '\.specs\|\.logs' bin/wsd-method.js
 
 ---
 
-### T02 — Atualizar .context.json.template [P]
+### T02 — Atualizar +context.json.template [P]
 
 **Files:**
-- Modify: `templates/repo/.context.json.template`
+- Modify: `templates/repo/+context.json.template`
 
 - [ ] Substituir todos os paths `.specs/` → `+specs/` e `.logs/` → `+logs/`
 - [ ] Atualizar `context_documents` para apontar para nova estrutura (`+specs/project/`, `+specs/codebase/`)
-- [ ] Gate: `grep -n '\.specs\|\.logs' templates/repo/.context.json.template` → zero
+- [ ] Gate: `grep -n '\.specs\|\.logs' templates/repo/+context.json.template` → zero
 
-- [ ] Commit: `refactor(templates): update .context.json paths to +specs and +logs`
+- [ ] Commit: `refactor(templates): update +context.json paths to +specs and +logs`
 
 ---
 
@@ -469,8 +469,8 @@ grep -n '\.specs\|\.logs' bin/wsd-method.js
 - Modify: `bin/wsd-method.js` (seção PROFILE_PRESETS)
 - Modify: `profiles/generic_node_frontend.profile.yaml`
 - Modify: `profiles/generic_python_api.profile.yaml`
-- Modify: `profiles/exemplo_saas_b.profile.yaml`
-- Modify: `profiles/exemplo_saas_a.profile.yaml`
+- Modify: `profiles/koomplet_office.profile.yaml`
+- Modify: `profiles/prescreve_mais.profile.yaml`
 
 - [ ] Cada profile: `write_paths` com `+specs` e `+logs`
 - [ ] Cada profile: novo campo `test_quick`, `test_full`, `test_build` para TESTING.md

@@ -54,15 +54,15 @@ esac
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || fail "not inside a Git repository"
 pass_step "git repository detected"
 
-[[ -f ".context.json" ]] || fail ".context.json missing"
-python3 -m json.tool .context.json >/dev/null || fail ".context.json is invalid JSON"
-pass_step ".context.json valid JSON"
+[[ -f "+context.json" ]] || fail "+context.json missing"
+python3 -m json.tool +context.json >/dev/null || fail "+context.json is invalid JSON"
+pass_step "+context.json valid JSON"
 
-if command -v node >/dev/null 2>&1 && [[ -x ".wsd/bin/wsd-validate-context.js" ]]; then
-  node .wsd/bin/wsd-validate-context.js .context.json >/dev/null || fail ".context.json schema validation failed"
-  pass_step ".context.json schema valid"
+if command -v node >/dev/null 2>&1 && [[ -x "+wsd/bin/wsd-validate-context.cjs" ]]; then
+  node +wsd/bin/wsd-validate-context.cjs +context.json >/dev/null || fail "+context.json schema validation failed"
+  pass_step "+context.json schema valid"
 else
-  echo "warn: node missing or .wsd/bin/wsd-validate-context.js absent — schema validation skipped"
+  echo "warn: node missing or +wsd/bin/wsd-validate-context.cjs absent — schema validation skipped"
 fi
 
 [[ -f "+specs/project/STATE.md" ]] || fail "+specs/project/STATE.md missing"
@@ -73,7 +73,7 @@ pass_step "STATE.md present"
 [[ -d "+specs/project" ]] || fail "+specs/project directory missing"
 pass_step "WSD directories present"
 
-if grep -R "{{[A-Z0-9_][A-Z0-9_]*}}" AGENTS.md .context.json +specs +logs scripts 2>/dev/null; then
+if grep -R "{{[A-Z0-9_][A-Z0-9_]*}}" AGENTS.md +context.json +specs +logs scripts 2>/dev/null; then
   fail "unrendered placeholders found"
 fi
 pass_step "no template placeholders found"
@@ -121,3 +121,8 @@ if [[ "$risk" == "L2" ]]; then
 fi
 
 echo "PASS: WSD check completed"
+
+# Write health cache for wsd snapshot
+if [[ -d +wsd ]]; then
+  printf '{"passed":true,"ghost_specs":0,"checked_at":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > +wsd/.last-check.json 2>/dev/null || true
+fi

@@ -64,7 +64,7 @@ echo
 echo "WSD templates copied to: $target"
 echo "Next steps:"
 echo "  1. Replace placeholders {{...}}."
-echo "  2. Run: python3 -m json.tool .context.json"
+echo "  2. Run: python3 -m json.tool +context.json"
 echo "  3. Run: cat +specs/project/STATE.md"
 echo "  4. Run: bash scripts/wsd_check.sh --risk L0 ."
 

@@ -18,7 +18,7 @@ intent:
 execution_bounds:
   allowed_scopes:
     - "AGENTS.md"
-    - ".context.json"
+    - "+context.json"
     - "+specs/**"
     - "+logs/STATE.md"
     - "scripts/wsd_check.sh"
@@ -31,13 +31,13 @@ execution_bounds:
     - "runtime production mutation"
 acceptance_criteria:
   - "AGENTS.md declara host, branch, remote, WSD local e validação."
-  - ".context.json é JSON válido e não contém secrets."
+  - "+context.json é JSON válido e não contém secrets."
   - "+specs/project/ contém PROJECT.md e STATE.md do projeto."
   - "+specs/project/STATE.md contém seções Decisões e Todos."
   - "scripts/wsd_check.sh executa com PASS para L0."
   - "Bootstrap é promovido em branch dedicada ou PR."
 validation_commands:
-  - "python3 -m json.tool .context.json"
+  - "python3 -m json.tool +context.json"
   - "bash scripts/wsd_check.sh --risk L0 ."
   - "bash scripts/wsd_check.sh --risk L1 --spec +specs/features/bootstrap/spec.md ."
   - "git diff --check"

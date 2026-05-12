@@ -1,23 +1,23 @@
 ---
-title: "Design — JSON Schema validation for .context.json (v0.1.5-alpha)"
+title: "Design — JSON Schema validation for +context.json (v0.1.5-alpha)"
 created: 07/05/2026
 modified: 07/05/2026
 feature: json-schema-context
 status: approved
 ---
 
-# Design — JSON Schema validation for `.context.json`
+# Design — JSON Schema validation for `+context.json`
 
 ## Decisões
 
 ### D1 — Schema canônico vive em `schemas/context.schema.json`
 
-Pasta nova `schemas/` no root do WSD. Evita poluir `templates/repo/`, e o nome reflete que é fonte-de-verdade (não template parametrizado). O `$id` do schema é `wsd/context/v1`, batendo com `$schema` de `.context.json`.
+Pasta nova `schemas/` no root do WSD. Evita poluir `templates/repo/`, e o nome reflete que é fonte-de-verdade (não template parametrizado). O `$id` do schema é `wsd/context/v1`, batendo com `$schema` de `+context.json`.
 
 ### D2 — Validador pure-JS zero-deps em vez de ajv
 
 Ajv é o padrão de mercado, mas:
-- Adiciona `node_modules/` ao `.wsd/` vendorizado (~500 KB) — viola "kit pessoal enxuto";
+- Adiciona `node_modules/` ao `+wsd/` vendorizado (~500 KB) — viola "kit pessoal enxuto";
 - Cria pressão para `npm install` no projeto-alvo, que pode não ser Node;
 - Para o subconjunto que precisamos (type/required/properties/enum/pattern/items/additionalProperties/oneOf/const), 150 linhas de JS resolvem.
 
@@ -25,7 +25,7 @@ Trade-off aceito: o validador NÃO é spec-completo de JSON Schema 2020-12. Doc 
 
 ### D3 — Wiring por bash + node, sem novo binário
 
-`scripts/wsd_check.sh` chama `node .wsd/bin/wsd-validate-context.js .context.json`. Não criamos `wsd validate` separado. Razão: o gate de schema é parte do check operacional, não comando standalone.
+`scripts/wsd_check.sh` chama `node +wsd/bin/wsd-validate-context.js +context.json`. Não criamos `wsd validate` separado. Razão: o gate de schema é parte do check operacional, não comando standalone.
 
 ### D4 — Fallback degradado quando Node ausente
 
@@ -35,7 +35,7 @@ Justificativa: hosts mínimos (containers, CI minimal) podem não ter Node. Não
 
 ### D5 — Schema modela o contrato real, não o ideal
 
-Vamos derivar required/types/enums do que `.context.json.template` realmente produz após render, não do "como queríamos que fosse". Isso evita falso-positivo dia-1.
+Vamos derivar required/types/enums do que `+context.json.template` realmente produz após render, não do "como queríamos que fosse". Isso evita falso-positivo dia-1.
 
 Campos obrigatórios (mínimo viável):
 - `$schema`, `project.name`, `environment.canonical_host`, `repository.default_branch`, `permissions.write_paths`, `permissions.forbidden_paths`, `permissions.tool_allowlist`, `permissions.secrets_policy`, `workflow.production_mutation_policy`, `wsd.method`, `wsd.context_documents`.
@@ -100,7 +100,7 @@ Sai erro com mensagem `unsupported keyword: <keyword>` se o schema usar algo for
 
 ## Plano de teste
 
-1. **Rendered profile passes**: cada profile renderiza `.context.json` que valida.
+1. **Rendered profile passes**: cada profile renderiza `+context.json` que valida.
 2. **Missing required field fails**: remove `permissions.write_paths`, validator exit 1 com path do erro.
 3. **Wrong type fails**: `permissions.max_runtime_seconds: "600"` (string) → fail.
 4. **Bad enum fails**: `workflow.production_mutation_policy: "yolo"` → fail.

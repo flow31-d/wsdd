@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .wsd/hooks/pre-tool.sh",
+            "command": "bash +wsd/hooks/pre-tool.sh",
             "timeout": 10
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '--- WSD GOVERNANÇA ---' >&2 && echo 'Contexto prestes a ser compactado. Leia AGENTS.md e .context.json antes de qualquer edição futura. L0/L1/L2 obrigatório.' >&2",
+            "command": "echo '--- WSD GOVERNANÇA ---' >&2 && echo 'Contexto prestes a ser compactado. Leia AGENTS.md e +context.json antes de qualquer edição futura. L0/L1/L2 obrigatório.' >&2",
             "timeout": 5
           }
         ]
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '%s\\n' '--- WSD GOVERNANÇA ---' 'Contexto compactado. Leia AGENTS.md e .context.json antes de qualquer edição. L0/L1/L2 obrigatório. Execute /wsd-start para estado completo.'",
+            "command": "printf '%s\\n' '--- WSD GOVERNANÇA ---' 'Contexto compactado. Leia AGENTS.md e +context.json antes de qualquer edição. L0/L1/L2 obrigatório. Execute /wsd-start para estado completo.'",
             "timeout": 5
           }
         ]

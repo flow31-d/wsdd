@@ -39,7 +39,7 @@ otimizado_para_obsidian: true
 Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
 
 - 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Alinhamento das rotinas ao CLI local `.wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`.
+- 05/05/2026 14:13:39 -03 — Codex: Alinhamento das rotinas ao CLI local `+wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`.
 - 06/05/2026 — Claude: Adição da seção 6.2 com comandos slash Claude Code, hook e settings; atualização da lista de sincronização para incluir `templates/claude-commands/`.
 - 06/05/2026 — Claude: Integração de `STATE.md` e `HANDOFF.md` no fluxo de início e fim de sessão, auto-sizing inicial, e novos comandos de fase (`/wsd-specify`, `/wsd-design`, `/wsd-tasks`).
 - 07/05/2026 — Claude: Atualização da seção 4 para refletir `wsd finish` automatizado (`v0.1.7-alpha`): HANDOFF.md gerado pelo CLI e prompts interativos para STATE.md.
@@ -53,21 +53,21 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 Comando curto recomendado dentro do projeto:
 
 ```bash
-./.wsd/bin/wsd start
+./+wsd/bin/wsd start
 ```
 
 O agente deve:
 
 1. identificar repo e host canônico;
 2. rodar checks Git;
-3. detectar `.context.json`;
+3. detectar `+context.json`;
 4. carregar `+specs/project/STATE.md` (decisões ativas, bloqueadores) e `+specs/HANDOFF.md` se existir (perguntar "continuar de onde parou?");
 5. rodar checker L0;
 6. listar specs ativas em `+specs/features/`;
 7. **auto-sizing**: classificar a tarefa do usuário como L0/L1/L2 e propor fluxo (Quick / Specify+Execute / 4 fases);
 8. indicar próximo passo seguro.
 
-Quando o módulo Git/GitHub Governance estiver instalado em modo `basic` ou `full`, o início de sessão também deve rodar `./.wsd/bin/wsd git preflight` e, para tarefas L1/L2, `./.wsd/bin/wsd git doctor`.
+Quando o módulo Git/GitHub Governance estiver instalado em modo `basic` ou `full`, o início de sessão também deve rodar `./+wsd/bin/wsd git preflight` e, para tarefas L1/L2, `./+wsd/bin/wsd git doctor`.
 
 Saída esperada:
 
@@ -109,7 +109,7 @@ O agente deve:
 - validar com gate level apropriado (quick/full/build, ver `+specs/codebase/TESTING.md`);
 - commitar conforme **Conventional Commits 1.0.0**;
 - preparar PR quando solicitado ou quando o fluxo exigir;
-- quando `git-governance` estiver ativo, rodar `./.wsd/bin/wsd git pr-check` antes de criar ou atualizar PR.
+- quando `git-governance` estiver ativo, rodar `./+wsd/bin/wsd git pr-check` antes de criar ou atualizar PR.
   Neste alpha, `pr-check` trata `upstream` e `remote` como sinais adicionais; o bloqueio principal é branch dedicada, worktree limpa e commits à frente da base.
   Spec/Issue e validação seguem no fluxo L1/L2 e nos checkers do projeto, não no `pr-check` local.
 
@@ -120,7 +120,7 @@ O agente deve:
 Comando curto recomendado dentro do projeto:
 
 ```bash
-./.wsd/bin/wsd finish
+./+wsd/bin/wsd finish
 ```
 
 A partir da `v0.1.7-alpha`, o CLI executa automaticamente:
@@ -182,12 +182,12 @@ Quando o WSD for instalado com `--tools claude-code`, o projeto recebe:
 .claude/commands/wsd-design.md
 .claude/commands/wsd-tasks.md
 .claude/settings.json              ← hooks PreToolUse, PreCompact, SessionStart, Stop
-.wsd/hooks/pre-tool.sh             ← enforcement de forbidden_paths
++wsd/hooks/pre-tool.sh             ← enforcement de forbidden_paths
 ```
 
 Uso prático:
 
-- `/wsd-start`: abre sessão com git state, `.context.json`, STATE.md/HANDOFF.md, specs e risco inicial (auto-sizing);
+- `/wsd-start`: abre sessão com git state, `+context.json`, STATE.md/HANDOFF.md, specs e risco inicial (auto-sizing);
 - `/wsd-specify`: cria `+specs/features/<slug>/spec.md` com WHEN/THEN/SHALL (HARD-GATE);
 - `/wsd-design`: cria `+specs/features/<slug>/design.md` (pode pular em casos simples);
 - `/wsd-tasks`: cria `+specs/features/<slug>/tasks.md` atômico;
@@ -234,7 +234,7 @@ bash scripts/wsd_docs_check.sh
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
 | 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Alinhamento das rotinas ao CLI local `.wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`. |
+| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Alinhamento das rotinas ao CLI local `+wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`. |
 | 06/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Adição da seção 6.2 com comandos slash Claude Code (`/wsd-start`, `/wsd-finish`, hook, settings) e atualização da lista de sincronização. |
 | 06/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Integração de STATE.md/HANDOFF.md no início e fim de sessão, auto-sizing inicial, scope guardrail na execução, e novos comandos de fase (`/wsd-specify`, `/wsd-design`, `/wsd-tasks`) em Codex e Claude Code. |
 | 07/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Atualização da seção 4 (Fim de Sessão) para refletir `wsd finish` automatizado: HANDOFF.md gerado automaticamente pelo CLI e prompts interativos para STATE.md (v0.1.7-alpha). |

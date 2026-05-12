@@ -163,7 +163,7 @@ WSD global não sabe tudo sobre um projeto.
 Cada repo deve declarar seu adapter local:
 
 - `AGENTS.md`;
-- `.context.json`;
+- `+context.json`;
 - `+specs/context/*.md`;
 - `+logs/error_vault.json`;
 - scripts de validação.

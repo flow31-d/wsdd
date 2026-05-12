@@ -125,18 +125,18 @@ cat /srv/CLI/x/wsd/party-mode/agents/implementation-expert.md
 # +specs/features/<slug>/PARTY_ANALYSIS.md
 
 # 5. Continuar ciclo WSD
-.wsd/bin/wsd design
++wsd/bin/wsd design
 ```
 
 ### Opção B: CLI (v0.1.11+)
 
 ```bash
 # Auto-detect
-.wsd/bin/wsd start
++wsd/bin/wsd start
 # → Sistema sugere Party Mode se L1 complexa
 
 # Manual
-.wsd/bin/wsd party-review --workflow design-review --feature my-feature
++wsd/bin/wsd party-review --workflow design-review --feature my-feature
 ```
 
 ### Exemplo Prático
@@ -179,7 +179,7 @@ Este sistema é **100% autônomo**:
 
 ### v0.1.11-alpha (Próxima)
 
-- [ ] Comando `.wsd/bin/wsd party-review` operacional
+- [ ] Comando `+wsd/bin/wsd party-review` operacional
 - [ ] Auto-detect "complexidade" → sugere Party Mode
 - [ ] Integração automática em HANDOFF.md
 - [ ] Tests para output format

@@ -30,7 +30,7 @@ git remote show origin
 - Ler `+specs/project/STATE.md` — resumir decisões ativas e bloqueadores
 - Ler `+specs/HANDOFF.md` se existir — resumir e perguntar "Continuar de onde parou?"
 - Ler `AGENTS.md` se presente
-- Ler `.context.json` se presente — identificar `write_paths`, `forbidden_paths`, `wsd.risk_default`
+- Ler `+context.json` se presente — identificar `write_paths`, `forbidden_paths`, `wsd.risk_default`
 
 **4. Se WSD presente, executar checker:**
 
@@ -58,7 +58,7 @@ gh pr list --state open --limit 20 2>/dev/null || true
 - worktree limpa/suja
 - contexto presente/ausente
 - specs encontradas (id, título, status, risco)
-- paths permitidos e proibidos do `.context.json`
+- paths permitidos e proibidos do `+context.json`
 - classificação inicial de risco da tarefa
 - próxima ação segura
 

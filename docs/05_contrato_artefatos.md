@@ -26,14 +26,16 @@ otimizado_para_obsidian: true
 ## 📑 Índice
 
 1. [[#1. 🔄 Atualizações]]
-2. [[#2. `.context.json`]]
+2. [[#2. `+context.json`]]
 3. [[#3. `AGENTS.md`]]
 4. [[#4. `+specs/*.spec.yaml`]]
 5. [[#5. `+specs/context/*.md`]]
-6. [[#6. `+logs/error_vault.json`]]
-7. [[#7. `scripts/wsd_check.sh`]]
-8. [[#8. Sincronização de Artefatos]]
-9. [[#9. 🕒 Registro de Alterações por Agentes]]
+6. [[#6. `+specs/project/` — Artefatos de Planejamento]]
+7. [[#7. `+logs/error_vault.json`]]
+8. [[#8. `scripts/wsd_check.sh`]]
+9. [[#9. `+wsd/` — Vendor Tree]]
+10. [[#10. Sincronização de Artefatos]]
+11. [[#11. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -42,12 +44,13 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
 - 05/05/2026 14:13:39 -03 — Codex: Inclusão da regra de sincronização entre contrato, templates, checker e notas derivadas.
 - 07/05/2026 — Claude: Documentação do schema canônico `schemas/context.schema.json` e do validador `wsd-validate-context.js` (v0.1.5-alpha).
-- 07/05/2026 — Codex: Planejamento do bloco `git_governance` no `.context.json` para o MVP Git/GitHub Governance (`v0.1.10-alpha`).
+- 07/05/2026 — Codex: Planejamento do bloco `git_governance` no `+context.json` para o MVP Git/GitHub Governance (`v0.1.10-alpha`).
 - 07/05/2026 — Codex: Marcação do bloco `git_governance` como implementado na `v0.1.10-alpha` e validado pelo schema canônico.
+- 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 2. `.context.json`
+## 2. `+context.json`
 
 Função: declarar ambiente, permissões, ferramentas e validações.
 
@@ -80,7 +83,7 @@ Regras:
 A partir de `v0.1.5-alpha`, o contrato é validado por um JSON Schema 2020-12:
 
 - **Schema canônico:** `schemas/context.schema.json` (`$id: wsd/context/v1`).
-- **Validador:** `templates/local-wsd/bin/wsd-validate-context.js` — pure-JS zero-deps, vendorizado em `.wsd/bin/wsd-validate-context.js` no install.
+- **Validador:** `templates/local-wsd/bin/wsd-validate-context.js` — pure-JS zero-deps, vendorizado em `+wsd/bin/wsd-validate-context.js` no install.
 - **Gate:** `scripts/wsd_check.sh` chama o validador após o JSON syntax check; falha com path JSON-pointer (ex.: `/permissions/write_paths: missing required property`).
 - **Fallback:** se Node ausente, o gate emite `warn:` e segue (syntax check continua hard-fail).
 
@@ -88,7 +91,7 @@ Required mínimo: `$schema` (const `wsd/context/v1`), `project`, `environment`, 
 
 ### Bloco `git_governance` (v0.1.10-alpha)
 
-O MVP Git/GitHub Governance adiciona um bloco opcional ao `.context.json`. Instalações novas sempre renderizam o bloco; instalações antigas continuam válidas sem ele.
+O MVP Git/GitHub Governance adiciona um bloco opcional ao `+context.json`. Instalações novas sempre renderizam o bloco; instalações antigas continuam válidas sem ele.
 
 ```json
 "git_governance": {
@@ -178,7 +181,30 @@ O objetivo é evitar que agentes carreguem documentação inteira, BMad completo
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 6. `+logs/error_vault.json`
+## 6. `+specs/project/` — Artefatos de Planejamento
+
+Artefatos criados automaticamente pelo installer em todos os projetos (greenfield e brownfield):
+
+### `+specs/project/STATE.md`
+Memória operacional: decisões, lições, bloqueadores, ideias adiadas, todos ativos. Atualizado por `wsd finish` com prompts interativos.
+
+### `+specs/project/PROJECT.md`
+Definição imutável do projeto: nome, tipo, objetivos, contexto de negócio.
+
+### `+specs/project/ROADMAP.md` (v0.1.1)
+Visão consolidada de features: tabela com status (`planned`, `specified`, `in-progress`, `done`, `blocked`, `discarded`), link para specs, instruções para agentes. Atualizado sempre que uma spec muda de status.
+
+### `+specs/project/IDEAS.md` (v0.1.2)
+Notebook de captura fiel de ideias brutas. Cada ideia recebe um ID sequencial permanente (`IDEA-001`, `IDEA-002` …). Populado via skill `/idea-{project_slug}` — nunca editado diretamente.
+
+### `+specs/project/IDEAS_PIPELINE.md` (v0.1.2)
+Índice de controle de progressão das ideias: `raw → detalhada → spec-criada → em-roadmap → implementada → descartada`. Atualizado sempre que uma ideia avança de etapa.
+
+**Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 7. `+logs/error_vault.json`
 
 Função: memória operacional estruturada.
 
@@ -206,14 +232,14 @@ Não registrar logs longos ou secrets.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 7. `scripts/wsd_check.sh`
+## 8. `scripts/wsd_check.sh`
 
 Função: checker local mínimo.
 
 Deve validar:
 
 - repo Git;
-- `.context.json`;
+- `+context.json`;
 - `+logs/error_vault.json`;
 - spec exigida para L1/L2;
 - status da spec;
@@ -222,7 +248,31 @@ Deve validar:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 8. Sincronização de Artefatos
+## 9. `+wsd/` — Vendor Tree
+
+O diretório `+wsd/` é criado pelo installer e contém o WSD vendorizado para uso local no projeto. É versionado no repositório (exceto `snapshot.json` e `.last-check.json`).
+
+Estrutura principal:
+
+| Caminho | Função |
+|---|---|
+| `+wsd/bin/wsd` | CLI local — `wsd start`, `check`, `finish`, `doctor`, `update`, `git`, `party`, `snapshot` |
+| `+wsd/bin/wsd-validate-context.cjs` | Validador zero-deps do `+context.json` contra o schema |
+| `+wsd/bin/wsd-snapshot.cjs` | Gerador do `+wsd/snapshot.json` (resumo do estado do projeto) |
+| `+wsd/schemas/context.schema.json` | JSON Schema 2020-12 canônico do `+context.json` |
+| `+wsd/config.json` | Metadados da instalação: versão, source, ferramentas, data |
+| `+wsd/docs/` | Documentação operacional do método (01–16) |
+| `+wsd/party-mode/` | Sistema de orquestração multi-agente (agents, steps, templates) |
+| `+wsd/templates/` | Templates de specs, comandos e repo (somente leitura) |
+| `+wsd/profiles/` | Perfis de projeto (python_api, node_frontend, etc.) |
+
+**Arquivos ignorados:** `+wsd/snapshot.json` (estado efêmero) e `+wsd/.last-check.json` (timestamp do último check).
+
+**Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json` e atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/` sem tocar em artefatos do projeto.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 10. Sincronização de Artefatos
 
 Ao alterar qualquer contrato desta nota, revisar:
 
@@ -233,17 +283,18 @@ Ao alterar qualquer contrato desta nota, revisar:
 - [[wsd/docs/04_playbook_implantacao|04 Playbook]];
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]].
 
-Se o contrato alterar `.context.json`, também revisar `profiles/*.profile.yaml` E `schemas/context.schema.json` (e suas validações em `scripts/wsd_self_check.sh`).
+Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml` E `schemas/context.schema.json` (e suas validações em `scripts/wsd_self_check.sh`).
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 9. 🕒 Registro de Alterações por Agentes
+## 11. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
 | 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
 | 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Inclusão da regra de sincronização entre contrato, templates, checker e notas derivadas. |
-| 07/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Documentação do schema canônico `schemas/context.schema.json` e validador `wsd-validate-context.js` na seção `.context.json` e na regra de sincronização de artefatos (v0.1.5-alpha). |
+| 07/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Documentação do schema canônico `schemas/context.schema.json` e validador `wsd-validate-context.js` na seção `+context.json` e na regra de sincronização de artefatos (v0.1.5-alpha). |
 | 07/05/2026 — | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Marcação do bloco `git_governance` como implementado e validado pelo schema na `v0.1.10-alpha`. |
+| 11/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Adição das seções: `+specs/project/` (ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md — v0.1.1/v0.1.2) e `+wsd/` vendor tree (estrutura, arquivos ignorados, `wsd update`). Renúmeração de seções 6→11. Fix: referências `.js` → `.cjs` para wsd-validate-context e wsd-snapshot (v0.1.3). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

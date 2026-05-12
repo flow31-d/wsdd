@@ -176,7 +176,7 @@ Uma skill de governança só funciona se estiver no contexto do agente em **toda
 
 **Camada 1 — AGENTS.md (contexto ao ler):** o Claude lê AGENTS.md por convenção ao iniciar sessão em um repo. O conteúdo de governança da regra `wsd` deve viver no AGENTS.md gerado pelo `wsd install`, não num comando.
 
-**Camada 2 — Hooks (enforcement técnico):** hooks `PreToolUse` leem `.context.json` e bloqueiam operações em `forbidden_paths` ou sem spec aprovada para L1/L2. O enforcement não depende do agente lembrar de carregar nada.
+**Camada 2 — Hooks (enforcement técnico):** hooks `PreToolUse` leem `+context.json` e bloqueiam operações em `forbidden_paths` ou sem spec aprovada para L1/L2. O enforcement não depende do agente lembrar de carregar nada.
 
 Ver [[r.3.7_spec_driven_development/r.3.7.9_enforcement_agentes_cli#4. Nível 3 — Hooks PreToolUse|r.3.7.9 § Hooks PreToolUse]].
 
@@ -206,7 +206,7 @@ Ver [[r.3.7_spec_driven_development/r.3.7.9_enforcement_agentes_cli#4. Nível 3 
 **Adaptações necessárias:**
 1. `description` precisa incluir triggers em português e o slash command `/wsd-start`
 2. Adicionar `allowed-tools: [Bash, Read]` para restringir escopo
-3. Adicionar step de Read explícito de `.context.json` e `AGENTS.md`
+3. Adicionar step de Read explícito de `+context.json` e `AGENTS.md`
 4. Adicionar `argument-hint` para path opcional
 
 ---
@@ -294,7 +294,7 @@ git remote show origin
 **3. Ler contexto do projeto:**
 
 - Ler `AGENTS.md` se presente
-- Ler `.context.json` se presente — identificar `write_paths`, `forbidden_paths`, `validation` e `wsd.risk_default`
+- Ler `+context.json` se presente — identificar `write_paths`, `forbidden_paths`, `validation` e `wsd.risk_default`
 - Ler `+specs/context/*.md` seletivamente (project-rules.md, active-debts.md)
 
 **4. Se WSD presente, executar checker:**
@@ -318,7 +318,7 @@ gh pr list --state open --limit 20 2>/dev/null || true
 - contexto presente/ausente
 - specs encontradas (id, título, status, risco)
 - classificação inicial de risco da tarefa
-- paths permitidos e proibidos do `.context.json`
+- paths permitidos e proibidos do `+context.json`
 - próxima ação segura
 
 ## Limite
@@ -419,7 +419,7 @@ Este repositório usa WSD (Wolff Spec Driven). Antes de qualquer edição:
 - L2: produção, deploy, banco, auth, secrets, dados sensíveis → spec aprovada + aprovação humana
 
 **Regras operacionais:**
-- Ler `.context.json` para `write_paths` e `forbidden_paths` antes de editar
+- Ler `+context.json` para `write_paths` e `forbidden_paths` antes de editar
 - Não usar `git add .`
 - Não esconder worktree suja (proibido: stash, reset, clean sem decisão explícita)
 - Não registrar secrets em nenhum artefato (Git, spec, log, prompt)
@@ -446,7 +446,7 @@ O `wsd install --tools claudecode` deve gerar `.claude/settings.json` com:
         "hooks": [
           {
             "type": "command",
-            "command": "bash .wsd/hooks/pre-tool.sh",
+            "command": "bash +wsd/hooks/pre-tool.sh",
             "timeout": 10
           }
         ]
@@ -467,25 +467,25 @@ O `wsd install --tools claudecode` deve gerar `.claude/settings.json` com:
 }
 ```
 
-E o script `.wsd/hooks/pre-tool.sh`:
+E o script `+wsd/hooks/pre-tool.sh`:
 
 ```bash
 #!/bin/bash
-# Hook WSD PreToolUse — lê .context.json e bloqueia forbidden_paths
+# Hook WSD PreToolUse — lê +context.json e bloqueia forbidden_paths
 
 TOOL_INPUT=$(cat)
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name // ""')
 FILE_PATH=$(echo "$TOOL_INPUT" | jq -r \
   '.tool_input.file_path // .tool_input.path // .tool_input.command // ""')
 
-# Se não há .context.json, libera
-[ ! -f ".context.json" ] && exit 0
+# Se não há +context.json, libera
+[ ! -f "+context.json" ] && exit 0
 
 # Verifica forbidden_paths
-FORBIDDEN=$(jq -r '.permissions.forbidden_paths[]? // empty' .context.json 2>/dev/null)
+FORBIDDEN=$(jq -r '.permissions.forbidden_paths[]? // empty' +context.json 2>/dev/null)
 for fp in $FORBIDDEN; do
   if [[ "$FILE_PATH" == *"$fp"* ]]; then
-    echo "WSD BLOCK: path '$FILE_PATH' está em forbidden_paths ($fp). Verifique .context.json." >&2
+    echo "WSD BLOCK: path '$FILE_PATH' está em forbidden_paths ($fp). Verifique +context.json." >&2
     exit 2
   fi
 done
@@ -508,9 +508,9 @@ Checklist do que `wsd install` deve gerar por agente:
 - [x] `.claude/commands/wsd-start.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/wsd-finish.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/settings.json` com hooks quando `--tools claude-code` estiver ativo.
-- [x] `.wsd/hooks/pre-tool.sh` quando `--tools claude-code` estiver ativo.
+- [x] `+wsd/hooks/pre-tool.sh` quando `--tools claude-code` estiver ativo.
 - [x] `AGENTS.md` com seção WSD quando `--tools codex` ou `--tools claude-code` estiverem ativos.
-- [x] `.context.json` quando `--tools codex` ou `--tools claude-code` estiverem ativos.
+- [x] `+context.json` quando `--tools codex` ou `--tools claude-code` estiverem ativos.
 
 ### Flag `--tools both`
 
@@ -519,7 +519,7 @@ Checklist do que `wsd install` deve gerar por agente:
 ### Estrutura final após `wsd install --tools claude-code`
 
 ```
-.wsd/
++wsd/
   bin/wsd                  ← CLI local
   hooks/
     pre-tool.sh            ← hook de enforcement
@@ -529,7 +529,7 @@ Checklist do que `wsd install` deve gerar por agente:
     wsd-start.md
     wsd-finish.md
 AGENTS.md                  ← governança WSD + regras do projeto
-.context.json              ← permissões, validação, host
++context.json              ← permissões, validação, host
 +specs/
 +logs/
   error_vault.json

@@ -5,7 +5,7 @@ modified: 07/05/2026
 feature: git-governance-mvp
 risco: L1
 status: approved
-owner: lpo
+owner: flow31-d
 ---
 
 # Spec — Git/GitHub Governance MVP (v0.1.10-alpha)
@@ -22,9 +22,9 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 - [ ] O modo `none` preserva o comportamento atual e nao exige GitHub.
 - [ ] O modo `basic` gera politica Git local e comandos `wsd git` sem exigir `gh`.
 - [ ] O modo `full` gera templates de PR/Issue e orienta validacao GitHub/`gh`.
-- [ ] `.context.json` renderizado declara `git_governance`.
+- [ ] `+context.json` renderizado declara `git_governance`.
 - [ ] `AGENTS.md` renderizado orienta agentes sobre o modo Git/GitHub escolhido.
-- [ ] `.wsd/bin/wsd` suporta `git doctor`, `git preflight` e `git pr-check`.
+- [ ] `+wsd/bin/wsd` suporta `git doctor`, `git preflight` e `git pr-check`.
 - [ ] Testes de instalacao cobrem `none`, `basic` e `full`.
 
 ## Fora de Escopo
@@ -49,7 +49,7 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 **Acceptance Criteria:**
 
 1. WHEN `wsd-method install --git-policy none --github skip` roda THEN o instalador SHALL concluir sem exigir `gh`, remote GitHub ou templates `.github/`.
-2. WHEN `--git-policy none` e usado THEN o `.context.json` SHALL declarar `git_governance.enabled = false` e `mode = "none"`.
+2. WHEN `--git-policy none` e usado THEN o `+context.json` SHALL declarar `git_governance.enabled = false` e `mode = "none"`.
 3. WHEN `npm test` roda THEN as suites existentes SHALL continuar passando sem alterar o comportamento default do core.
 
 ### P1: Operador instalando politica local basica
@@ -59,8 +59,8 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 **Acceptance Criteria:**
 
 4. WHEN `wsd-method install --git-policy basic` roda THEN o instalador SHALL gerar `git_governance.enabled = true`, `mode = "basic"` e campos de branch, sync, dirty worktree e commit style.
-5. WHEN `--git-policy basic` e usado THEN `AGENTS.md` SHALL conter uma secao Git/GitHub com comandos `./.wsd/bin/wsd git doctor` e `./.wsd/bin/wsd git preflight`.
-6. WHEN `./.wsd/bin/wsd git preflight` roda em worktree suja THEN o comando SHALL reportar a sujeira e sair com codigo diferente de zero.
+5. WHEN `--git-policy basic` e usado THEN `AGENTS.md` SHALL conter uma secao Git/GitHub com comandos `./+wsd/bin/wsd git doctor` e `./+wsd/bin/wsd git preflight`.
+6. WHEN `./+wsd/bin/wsd git preflight` roda em worktree suja THEN o comando SHALL reportar a sujeira e sair com codigo diferente de zero.
 
 ### P1: Operador instalando governanca GitHub completa
 
@@ -70,9 +70,9 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 
 7. WHEN `wsd-method install --git-policy full` roda THEN o instalador SHALL gerar `.github/PULL_REQUEST_TEMPLATE.md`.
 8. WHEN `wsd-method install --git-policy full` roda THEN o instalador SHALL gerar `.github/ISSUE_TEMPLATE/task.md`, `bug.md` e `decision.md`.
-9. WHEN `./.wsd/bin/wsd git doctor` roda em modo `full` sem `gh` THEN o comando SHALL emitir warning e nao falhar por padrao.
-10. WHEN `./.wsd/bin/wsd git pr-check` roda em `main` ou `master` THEN o comando SHALL falhar informando que PR deve sair de branch dedicada.
-11. WHEN `./.wsd/bin/wsd git pr-check` roda sem diff local e sem commits ahead THEN o comando SHALL falhar informando que nao ha mudanca pronta para PR.
+9. WHEN `./+wsd/bin/wsd git doctor` roda em modo `full` sem `gh` THEN o comando SHALL emitir warning e nao falhar por padrao.
+10. WHEN `./+wsd/bin/wsd git pr-check` roda em `main` ou `master` THEN o comando SHALL falhar informando que PR deve sair de branch dedicada.
+11. WHEN `./+wsd/bin/wsd git pr-check` roda sem diff local e sem commits ahead THEN o comando SHALL falhar informando que nao ha mudanca pronta para PR.
 
 ### P2: Manutencao do pacote WSD
 
@@ -93,7 +93,7 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 - `bin/wsd-method.js`
 - `package.json`
 - `templates/local-wsd/bin/wsd`
-- `templates/repo/.context.json.template`
+- `templates/repo/+context.json.template`
 - `templates/repo/AGENTS.md.template`
 - `templates/modules/git-governance/`
 - `scripts/wsd_docs_check.sh`
@@ -115,7 +115,7 @@ Hoje `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check` e tem
 **Paths proibidos:**
 
 - `wsd_philo/`
-- `+wsd/`
+- `+imbox/`
 - arquivos de secrets, `.env`, chaves ou credenciais reais
 - `+specs/analise_party_mode_integracao.md` (mudanca preexistente nao relacionada)
 

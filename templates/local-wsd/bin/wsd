@@ -10,14 +10,14 @@ cd "$project_root"
 
 _context_get() {
   local key_path="${1:-}"
-  [[ -f .context.json ]] || return 0
+  [[ -f +context.json ]] || return 0
   command -v python3 >/dev/null || return 0
   WSD_KEY_PATH="$key_path" python3 - <<'PY' 2>/dev/null || true
 import json
 import os
 
 path = os.environ.get("WSD_KEY_PATH", "")
-with open(".context.json", encoding="utf-8") as fh:
+with open("+context.json", encoding="utf-8") as fh:
     data = json.load(fh)
 cur = data
 for part in path.split("."):
@@ -217,15 +217,20 @@ open(f, 'w').writelines(out)
         fi
       fi
     fi
+
+    # --- Generate snapshot ---
+    if [[ -f +wsd/bin/wsd-snapshot.cjs ]]; then
+      node +wsd/bin/wsd-snapshot.cjs 2>/dev/null && echo ">> +wsd/snapshot.json atualizado" || true
+    fi
     ;;
   doctor)
     echo "== WSD Doctor =="
-    test -f .wsd/config.json && echo "ok: .wsd/config.json" || echo "missing: .wsd/config.json"
-    test -f .wsd/docs/10_matriz_sincronizacao_notas.md && echo "ok: .wsd/docs/10_matriz_sincronizacao_notas.md" || echo "missing: .wsd/docs/10_matriz_sincronizacao_notas.md"
-    test -f .wsd/schemas/context.schema.json && echo "ok: .wsd/schemas/context.schema.json" || echo "missing: .wsd/schemas/context.schema.json"
-    test -x .wsd/bin/wsd-validate-context.js && echo "ok: .wsd/bin/wsd-validate-context.js" || echo "missing: .wsd/bin/wsd-validate-context.js"
+    test -f +wsd/config.json && echo "ok: +wsd/config.json" || echo "missing: +wsd/config.json"
+    test -f +wsd/docs/10_matriz_sincronizacao_notas.md && echo "ok: +wsd/docs/10_matriz_sincronizacao_notas.md" || echo "missing: +wsd/docs/10_matriz_sincronizacao_notas.md"
+    test -f +wsd/schemas/context.schema.json && echo "ok: +wsd/schemas/context.schema.json" || echo "missing: +wsd/schemas/context.schema.json"
+    test -x +wsd/bin/wsd-validate-context.cjs && echo "ok: +wsd/bin/wsd-validate-context.cjs" || echo "missing: +wsd/bin/wsd-validate-context.cjs"
     test -f AGENTS.md && echo "ok: AGENTS.md" || echo "missing: AGENTS.md"
-    test -f .context.json && echo "ok: .context.json" || echo "missing: .context.json"
+    test -f +context.json && echo "ok: +context.json" || echo "missing: +context.json"
     test -d +specs && echo "ok: +specs" || echo "missing: +specs"
     test -f +specs/project/STATE.md && echo "ok: +specs/project/STATE.md" || echo "missing: +specs/project/STATE.md"
     test -f +specs/project/PROJECT.md && echo "ok: +specs/project/PROJECT.md" || echo "missing: +specs/project/PROJECT.md"
@@ -239,7 +244,7 @@ open(f, 'w').writelines(out)
     command -v python3 >/dev/null && echo "ok: python3" || echo "missing: python3"
     command -v gh >/dev/null && echo "ok: gh optional" || echo "missing: gh optional"
     echo "ok: git namespace available (doctor, preflight, pr-check)"
-    if [[ -f .wsd/party-mode/agents-wsd.csv ]]; then
+    if [[ -f +wsd/party-mode/agents-wsd.csv ]]; then
       echo "ok: party-mode instalado"
     else
       echo "info: party-mode ausente (reinstale com --force para instalar)"
@@ -248,7 +253,7 @@ open(f, 'w').writelines(out)
       if [[ -x ".git/hooks/$hook" ]]; then
         echo "ok: .git/hooks/$hook"
       else
-        echo "missing: .git/hooks/$hook (run: ./.wsd/bin/wsd hooks)"
+        echo "missing: .git/hooks/$hook (run: ./+wsd/bin/wsd hooks)"
       fi
     done
     ;;
@@ -267,15 +272,15 @@ open(f, 'w').writelines(out)
     fi
     ;;
   update)
-    if [[ ! -f .wsd/config.json ]]; then
-      echo "FAIL: .wsd/config.json not found — run wsd-method install first" >&2
+    if [[ ! -f +wsd/config.json ]]; then
+      echo "FAIL: +wsd/config.json not found — run wsd-method install first" >&2
       exit 1
     fi
-    _wsd_src="$(python3 -c "import json; print(json.load(open('.wsd/config.json')).get('wsd_source',''))" 2>/dev/null || echo '')"
+    _wsd_src="$(python3 -c "import json; print(json.load(open('+wsd/config.json')).get('wsd_source',''))" 2>/dev/null || echo '')"
     if [[ -n "$_wsd_src" && -f "$_wsd_src/bin/wsd-method.js" ]]; then
       node "$_wsd_src/bin/wsd-method.js" update --directory .
     else
-      echo "warn: wsd_source ausente ou invalido em .wsd/config.json"
+      echo "warn: wsd_source ausente ou invalido em +wsd/config.json"
       echo "Execute: node /caminho/para/wsd/bin/wsd-method.js update --directory ."
     fi
     ;;
@@ -380,11 +385,11 @@ open(f, 'w').writelines(out)
         echo "ok: pr-check passed"
         ;;
       help|--help|-h)
-        echo "Usage: ./.wsd/bin/wsd git doctor|preflight|pr-check"
+        echo "Usage: ./+wsd/bin/wsd git doctor|preflight|pr-check"
         ;;
       *)
         echo "Unknown WSD git command: $subcommand" >&2
-        echo "Usage: ./.wsd/bin/wsd git doctor|preflight|pr-check" >&2
+        echo "Usage: ./+wsd/bin/wsd git doctor|preflight|pr-check" >&2
         exit 1
         ;;
     esac
@@ -394,20 +399,20 @@ open(f, 'w').writelines(out)
     shift || true
     case "$subcommand" in
       status)
-        if [[ -f .wsd/party-mode/agents-wsd.csv ]]; then
-          count=$(tail -n +2 .wsd/party-mode/agents-wsd.csv | grep -c '' || true)
+        if [[ -f +wsd/party-mode/agents-wsd.csv ]]; then
+          count=$(tail -n +2 +wsd/party-mode/agents-wsd.csv | grep -c '' || true)
           echo "ok: party-mode instalado — $count agentes disponíveis"
         else
-          echo "FAIL: party-mode não instalado — .wsd/party-mode/agents-wsd.csv ausente" >&2
+          echo "FAIL: party-mode não instalado — +wsd/party-mode/agents-wsd.csv ausente" >&2
           exit 1
         fi
         ;;
       list-agents)
-        [[ -f .wsd/party-mode/agents-wsd.csv ]] || { echo "FAIL: .wsd/party-mode/agents-wsd.csv ausente" >&2; exit 1; }
+        [[ -f +wsd/party-mode/agents-wsd.csv ]] || { echo "FAIL: +wsd/party-mode/agents-wsd.csv ausente" >&2; exit 1; }
         command -v python3 >/dev/null || { echo "FAIL: python3 necessário para list-agents" >&2; exit 1; }
         python3 - <<'PY'
 import csv
-with open(".wsd/party-mode/agents-wsd.csv", encoding="utf-8") as f:
+with open("+wsd/party-mode/agents-wsd.csv", encoding="utf-8") as f:
     for row in csv.DictReader(f):
         icon = row.get("icon", "•")
         name = row.get("displayName", row.get("name", "?"))
@@ -437,19 +442,26 @@ Comando Claude Code: /wsd-party-mode
 USAGE
         ;;
       help|*)
-        echo "Usage: ./.wsd/bin/wsd party <subcommand>"
+        echo "Usage: ./+wsd/bin/wsd party <subcommand>"
         echo "  status       — verifica se party-mode está instalado"
         echo "  list-agents  — lista os 26 agentes disponíveis"
         echo "  when-to-use  — decision tree de quando usar"
         ;;
     esac
     ;;
+  snapshot)
+    if [[ ! -f +wsd/bin/wsd-snapshot.cjs ]]; then
+      echo "FAIL: +wsd/bin/wsd-snapshot.cjs não encontrado — reinstale com wsd-method install --force" >&2
+      exit 1
+    fi
+    node +wsd/bin/wsd-snapshot.cjs
+    ;;
   help|--help|-h)
-    echo "Usage: ./.wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party"
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot"
     ;;
   *)
     echo "Unknown WSD command: $command" >&2
-    echo "Usage: ./.wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party" >&2
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot" >&2
     exit 1
     ;;
 esac

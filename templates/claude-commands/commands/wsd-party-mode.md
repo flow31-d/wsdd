@@ -27,7 +27,7 @@ arquitetura, risco e code review. Cada agente tem voz, estilo e expertise distin
 **1. Carregar manifest de agentes:**
 
 ```bash
-cat .wsd/party-mode/agents-wsd.csv 2>/dev/null || cat /srv/CLI/x/wsd/party-mode/agents-wsd.csv
+cat +wsd/party-mode/agents-wsd.csv
 ```
 
 **2. Detectar contexto WSD atual:**
@@ -52,8 +52,7 @@ cat +specs/HANDOFF.md 2>/dev/null | head -30
 **4. Carregar step-01 (inicialização):**
 
 ```bash
-cat .wsd/party-mode/steps/step-01-agent-loading.md 2>/dev/null \
-  || cat /srv/CLI/x/wsd/party-mode/steps/step-01-agent-loading.md
+cat +wsd/party-mode/steps/step-01-agent-loading.md
 ```
 
 Seguir as instruções do step-01: apresentar boas-vindas com amostra de agentes,
@@ -62,8 +61,7 @@ aguardar confirmação do usuário antes de iniciar o debate.
 **5. Executar debate (step-02):**
 
 ```bash
-cat .wsd/party-mode/steps/step-02-discussion-orchestration.md 2>/dev/null \
-  || cat /srv/CLI/x/wsd/party-mode/steps/step-02-discussion-orchestration.md
+cat +wsd/party-mode/steps/step-02-discussion-orchestration.md
 ```
 
 Para cada mensagem do usuário:
@@ -75,8 +73,7 @@ Para cada mensagem do usuário:
 **6. Encerramento (step-03):**
 
 ```bash
-cat .wsd/party-mode/steps/step-03-graceful-exit.md 2>/dev/null \
-  || cat /srv/CLI/x/wsd/party-mode/steps/step-03-graceful-exit.md
+cat +wsd/party-mode/steps/step-03-graceful-exit.md
 ```
 
 Ao detectar trigger de saída (`/encerrar`, `/sair`, `end party`, `goodbye`):
@@ -88,8 +85,7 @@ Ao detectar trigger de saída (`/encerrar`, `/sair`, `end party`, `goodbye`):
 Salvar em `+specs/features/<slug>/PARTY_ANALYSIS.md` usando o template:
 
 ```bash
-cat .wsd/party-mode/templates/PARTY_ANALYSIS.md.template 2>/dev/null \
-  || cat /srv/CLI/x/wsd/party-mode/templates/PARTY_ANALYSIS.md.template
+cat +wsd/party-mode/templates/PARTY_ANALYSIS.md.template
 ```
 
 ## Regras de Personagem

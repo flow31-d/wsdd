@@ -14,7 +14,7 @@ const PROFILE_PRESETS = {
   generic_node_frontend: {
     project_type: 'node_frontend',
     primary_language: 'TypeScript',
-    write_paths: ['./src', './tests', './public', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './.context.json'],
+    write_paths: ['./src', './tests', './public', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './+context.json'],
     forbidden_paths: ['./.git', './.env', './secrets', './keys', './certs'],
     tools: ['bash', 'git', 'gh', 'node', 'npm', 'python3'],
     lint: ['npm run lint'],
@@ -29,7 +29,7 @@ const PROFILE_PRESETS = {
   generic_python_api: {
     project_type: 'python_api',
     primary_language: 'Python',
-    write_paths: ['./app', './tests', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './.context.json'],
+    write_paths: ['./app', './tests', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './+context.json'],
     forbidden_paths: ['./.git', './.env', './secrets', './keys', './certs', './alembic/versions'],
     tools: ['bash', 'git', 'gh', 'python3', 'pytest', 'ruff', 'docker'],
     lint: ['ruff check app tests'],
@@ -40,7 +40,8 @@ const PROFILE_PRESETS = {
     test_full: 'ruff check app tests && pytest',
     test_build: 'ruff check app tests && pytest && docker compose config',
     l2_areas: ['migracao de banco', 'auth/autorizacao', 'secrets', 'producao', 'dados sensiveis']
-  }
+  },
+
 };
 
 main().catch((error) => {
@@ -164,6 +165,7 @@ async function install(args) {
   installGitGovernanceModule(directory, settings, Boolean(args.force));
   installPartyMode(directory, Boolean(args.force));
   writeProjectConfig(directory, settings);
+  appendSnapshotGitignore(directory);
 
   handleGitHubMode(directory, settings, args);
 
@@ -171,22 +173,22 @@ async function install(args) {
   console.log(`WSD installed in ${directory}`);
   console.log('Next steps:');
   console.log('  1. Review generated files.');
-  console.log('  2. Run: ./.wsd/bin/wsd doctor');
-  console.log('  3. Run: ./.wsd/bin/wsd check');
+  console.log('  2. Run: ./+wsd/bin/wsd doctor');
+  console.log('  3. Run: ./+wsd/bin/wsd check');
   console.log('  4. Commit generated WSD files on a dedicated branch.');
 }
 
 async function update(args) {
   const directory = path.resolve(args.directory || process.cwd());
-  const configPath = path.join(directory, '.wsd', 'config.json');
+  const configPath = path.join(directory, '+wsd', 'config.json');
 
   if (!fs.existsSync(configPath)) {
-    throw new Error('.wsd/config.json not found in ' + directory + '. Run install first.');
+    throw new Error('+wsd/config.json not found in ' + directory + '. Run install first.');
   }
 
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const prevVersion = config.version || 'unknown';
-  const vendor = path.join(directory, '.wsd');
+  const vendor = path.join(directory, '+wsd');
 
   for (const name of ['docs', 'templates', 'profiles', 'scripts', 'examples', 'schemas']) {
     copyDir(path.join(WSD_ROOT, name), path.join(vendor, name));
@@ -195,8 +197,10 @@ async function update(args) {
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd'), 0o755);
-  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-validate-context.js'), path.join(vendor, 'bin', 'wsd-validate-context.js'));
-  fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.js'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-validate-context.cjs'), path.join(vendor, 'bin', 'wsd-validate-context.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.cjs'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
 
   for (const name of ['README.md', 'wsd.md', 'AGENTS.md', 'CHANGELOG.md', 'ROADMAP.md']) {
     copyFile(path.join(WSD_ROOT, name), path.join(vendor, name));
@@ -209,10 +213,10 @@ async function update(args) {
 
   console.log('');
   console.log(`WSD updated: ${prevVersion} -> ${VERSION}`);
-  console.log('Refreshed: .wsd/{docs,templates,profiles,schemas,scripts,examples,bin}');
-  console.log('Preserved: .context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
+  console.log('Refreshed: +wsd/{docs,templates,profiles,schemas,scripts,examples,bin}');
+  console.log('Preserved: +context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
   console.log('');
-  console.log('Run: ./.wsd/bin/wsd doctor');
+  console.log('Run: ./+wsd/bin/wsd doctor');
 }
 
 function buildSettings(profile, detected, args, directory) {
@@ -253,7 +257,7 @@ function buildSettings(profile, detected, args, directory) {
     BRANCH_NAMING: String(args['branch-naming'] || 'issue-<number>-<slug>'),
     COMMIT_STYLE: String(args['commit-style'] || 'conventional_commits'),
     TOOLS: tools,
-    WRITE_PATHS: profile.write_paths || ['./src', './tests', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './.context.json'],
+    WRITE_PATHS: profile.write_paths || ['./src', './tests', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './+context.json'],
     FORBIDDEN_PATHS: profile.forbidden_paths || ['./.git', './.env', './secrets', './keys', './certs'],
     TOOL_ALLOWLIST: profile.tools || ['bash', 'git', 'gh', 'python3'],
     LINT_COMMANDS: profile.lint || [],
@@ -287,6 +291,7 @@ function buildSettings(profile, detected, args, directory) {
 }
 
 function normalizeSettings(settings) {
+  settings.PROJECT_SLUG = settings.PROJECT_NAME.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   settings.GIT_POLICY = normalizeGitPolicy(settings.GIT_POLICY);
   settings.GIT_GOVERNANCE_ENABLED = settings.GIT_POLICY === 'none' ? 'false' : 'true';
   settings.GIT_GOVERNANCE_MODE = settings.GIT_POLICY;
@@ -345,7 +350,7 @@ function keyToPlaceholder(key) {
 }
 
 function installVendorTree(directory, settings) {
-  const vendor = path.join(directory, '.wsd');
+  const vendor = path.join(directory, '+wsd');
   ensureDir(vendor);
   for (const name of ['docs', 'templates', 'profiles', 'scripts', 'examples', 'schemas']) {
     copyDir(path.join(WSD_ROOT, name), path.join(vendor, name), { skipGit: true });
@@ -353,8 +358,10 @@ function installVendorTree(directory, settings) {
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd'), 0o755);
-  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-validate-context.js'), path.join(vendor, 'bin', 'wsd-validate-context.js'));
-  fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.js'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-validate-context.cjs'), path.join(vendor, 'bin', 'wsd-validate-context.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.cjs'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
   for (const name of ['README.md', 'wsd.md', 'AGENTS.md', 'CHANGELOG.md', 'ROADMAP.md']) {
     copyFile(path.join(WSD_ROOT, name), path.join(vendor, name));
   }
@@ -429,7 +436,7 @@ function installGitHooks(directory, force, skip) {
 function installPartyMode(directory, force) {
   const sourceRoot = path.join(WSD_ROOT, 'party-mode');
   if (!fs.existsSync(sourceRoot)) return;
-  const targetRoot = path.join(directory, '.wsd', 'party-mode');
+  const targetRoot = path.join(directory, '+wsd', 'party-mode');
   for (const src of walkFiles(sourceRoot)) {
     const rel = path.relative(sourceRoot, src);
     const dest = path.join(targetRoot, rel);
@@ -462,15 +469,25 @@ function installClaudeCommands(directory, settings, force) {
   const commandsTargetRoot = path.join(directory, '.claude', 'commands');
   for (const src of walkFiles(commandsSourceRoot)) {
     const rel = path.relative(commandsSourceRoot, src);
+    if (path.basename(src) === 'wsd-idea.md') continue; // renamed below
     const dest = path.join(commandsTargetRoot, rel);
     if (fs.existsSync(dest) && !force) continue;
     ensureDir(path.dirname(dest));
     fs.writeFileSync(dest, render(fs.readFileSync(src, 'utf8'), settings));
   }
+  // wsd-idea.md → idea-{PROJECT_SLUG}.md (personalized per project)
+  const wsdIdeaSrc = path.join(commandsSourceRoot, 'wsd-idea.md');
+  if (fs.existsSync(wsdIdeaSrc)) {
+    const ideaDest = path.join(commandsTargetRoot, `idea-${settings.PROJECT_SLUG || 'project'}.md`);
+    if (!fs.existsSync(ideaDest) || force) {
+      ensureDir(path.dirname(ideaDest));
+      fs.writeFileSync(ideaDest, render(fs.readFileSync(wsdIdeaSrc, 'utf8'), settings));
+    }
+  }
 
-  // hooks → .wsd/hooks/
+  // hooks → +wsd/hooks/
   const hooksSourceRoot = path.join(templateRoot, 'hooks');
-  const hooksTargetRoot = path.join(directory, '.wsd', 'hooks');
+  const hooksTargetRoot = path.join(directory, '+wsd', 'hooks');
   for (const src of walkFiles(hooksSourceRoot)) {
     const rel = path.relative(hooksSourceRoot, src);
     const dest = path.join(hooksTargetRoot, rel);
@@ -488,9 +505,21 @@ function installClaudeCommands(directory, settings, force) {
     fs.writeFileSync(settingsDest, fs.readFileSync(settingsSrc, 'utf8'));
   }
 }
+function appendSnapshotGitignore(directory) {
+  const gitignorePath = path.join(directory, '.gitignore');
+  const entries = ['+wsd/snapshot.json', '+wsd/.last-check.json'];
+  let existing = '';
+  if (fs.existsSync(gitignorePath)) existing = fs.readFileSync(gitignorePath, 'utf8');
+  const toAdd = entries.filter(e => !existing.includes(e));
+  if (toAdd.length > 0) {
+    const block = '\n# WSD generated (local state)\n' + toAdd.join('\n') + '\n';
+    fs.writeFileSync(gitignorePath, existing + block);
+  }
+}
+
 
 function writeProjectConfig(directory, settings) {
-  const configPath = path.join(directory, '.wsd', 'config.json');
+  const configPath = path.join(directory, '+wsd', 'config.json');
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   config.context = {
     canonical_host: settings.CANONICAL_HOST,
@@ -705,8 +734,8 @@ function help() {
   console.log('  --test-full STR  Override full gate command');
   console.log('  --test-build STR Override build gate command');
   console.log('');
-  console.log('update: refreshes .wsd/ vendor tree (docs, templates, schemas, bin) from WSD source.');
-  console.log('  Preserves: .context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
+  console.log('update: refreshes +wsd/ vendor tree (docs, templates, schemas, bin) from WSD source.');
+  console.log('  Preserves: +context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
   console.log('');
   console.log('Examples:');
   console.log('  npx wsd-method install');

@@ -10,7 +10,7 @@ tags:
 status: ativo
 tipo: guia
 parent: "[[wsd/wsd]]"
-links: "[[wsd/wsd]], [[wsd/PRIVATE_USE_NOTICE]], [[wsd/README]], [[wsd/CHANGELOG]], [[wsd/docs/10_matriz_sincronizacao_notas]]"
+links: "[[wsd/wsd]], [[wsd/PRIVATE_USE_NOTICE]], [[wsd/README]], [[wsd/CHANGELOG]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/15_repositorio_publico_e_quick_start]]"
 otimizado_para_obsidian: true
 ---
 # 09 — Publicação do WSD em GitHub Privado
@@ -48,6 +48,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Atualização para `v0.1.10-alpha` — MVP Git/GitHub Governance. Tags e versão atualizadas.
 - 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration (slash command, subcomando `wsd party`, AGENTS.md, gate de teste). Tags e versão atualizadas.
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Versão atual e tag de exemplo atualizadas. Lista de tags alpha consolidada como histórico.
+- 11/05/2026 — Claude: Adição de link para `docs/15_repositorio_publico_e_quick_start.md` — novo documento de estratégia privado × público e quick start via GitHub.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -77,7 +78,7 @@ Confirmar:
 Repositório privado atual:
 
 ```text
-https://github.com/flow31-d/wsdd
+https://github.com/flow31-d/WSD
 ```
 
 Branch principal:
@@ -99,13 +100,13 @@ Tags alpha já usadas:
 - `v0.1.2-alpha`: matriz/checker de sincronização documental;
 - `v0.1.3-alpha`: suporte operacional ao Claude Code;
 - `v0.1.4-alpha`: integração TLC Spec-Driven (auto-sizing, STATE.md/HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, Conventional Commits, `--brownfield`);
-- `v0.1.5-alpha`: JSON Schema 2020-12 para `.context.json` (`schemas/context.schema.json`) + validador zero-deps `wsd-validate-context.js` integrado a `wsd_check.sh`;
+- `v0.1.5-alpha`: JSON Schema 2020-12 para `+context.json` (`schemas/context.schema.json`) + validador zero-deps `wsd-validate-context.js` integrado a `wsd_check.sh`;
 - `v0.1.6-alpha`: ghost spec detector em `wsd_check.sh` + git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`) instalados pelo `wsd-method install`. Subcomando `wsd hooks` para reinstalar. Flag `--no-git-hooks` para opt-out.
 - `v0.1.7-alpha`: `wsd finish` automatizado — gera `+specs/HANDOFF.md` + prompts interativos para STATE.md (lições, decisões, bloqueadores). Fecha o último item da Fase 3.
 - `v0.1.8-alpha`: instalação interativa rica (linguagem, path, test/build/lint, forbidden_paths), `wsd update` real via `wsd_source`, WHEN+THEN+SHALL todos obrigatórios no ghost scan e L1/L2.
 - `v0.1.9-alpha`: saneamento documental operacional (`docs/00`, `docs/12`, README, hub, ROADMAP, CHANGELOG, STATE), com `wsd_philo/` preservado como referência histórica/pesquisa.
 - `v0.1.10-alpha`: MVP Git/GitHub Governance (`--git-policy none|basic|full`, `git_governance`, `wsd git doctor|preflight|pr-check`, templates PR/Issue e testes por modo).
-- `v0.1.11-alpha`: Party Mode Integration — `installPartyMode` (26 agentes em `.wsd/party-mode/`), comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção `## Party Mode` no `AGENTS.md` gerado e `test:install-party-mode` no pipeline `npm test` (7/7 PASS). Fase 3.5 fechada.
+- `v0.1.11-alpha`: Party Mode Integration — `installPartyMode` (26 agentes em `+wsd/party-mode/`), comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção `## Party Mode` no `AGENTS.md` gerado e `test:install-party-mode` no pipeline `npm test` (7/7 PASS). Fase 3.5 fechada.
 
 Release estável:
 
@@ -184,6 +185,9 @@ Não commitar:
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 8. Sincronização de Release
+
+> [!tip] Quick Start
+> Usuários podem instalar o WSD diretamente do repositório público sem nenhuma configuração adicional: `npx github:flow31-d/wsdd install`. O fluxo completo de distribuição — incluindo regras de compatibilidade privado × público, checklist de release e separação de conteúdo — está em [[wsd/docs/15_repositorio_publico_e_quick_start|15 — Repositório Público e Quick Start]].
 
 Toda release/tag do WSD deve revisar:
 

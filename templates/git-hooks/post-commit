@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# WSD post-commit hook — regenerates +wsd/snapshot.json after each commit.
+# Auto-installed by wsd-method install. Versioned copy: scripts/git-hooks/post-commit
+# Reinstall: ./+wsd/bin/wsd hooks
+
+if [[ -f "+wsd/bin/wsd-snapshot.js" ]]; then
+  node +wsd/bin/wsd-snapshot.js 2>/dev/null || true
+fi

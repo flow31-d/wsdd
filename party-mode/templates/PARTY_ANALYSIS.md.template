@@ -156,7 +156,7 @@ Após resolver pendências:
 ## 🕒 Histórico
 
 Esta análise foi gerada automaticamente pelo sistema Party Mode WSD em {{DATE}}.
-Para retomar o debate ou adicionar insights depois, reabre este arquivo + `.wsd/bin/wsd party-review --resume`.
+Para retomar o debate ou adicionar insights depois, reabre este arquivo + `+wsd/bin/wsd party-review --resume`.
 
 ---
 

@@ -41,7 +41,7 @@ otimizado_para_obsidian: true
 Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
 
 - 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Atualização do ciclo para recomendar o CLI local `.wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar.
+- 05/05/2026 14:13:39 -03 — Codex: Atualização do ciclo para recomendar o CLI local `+wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar.
 - 07/05/2026 — Codex: Planejamento do encaixe do MVP Git/GitHub Governance no ciclo operacional (`v0.1.10-alpha`).
 - 07/05/2026 — Codex: Atualização do ciclo para refletir `v0.1.10-alpha` implementado com `wsd git preflight`, `doctor` e `pr-check`.
 
@@ -63,15 +63,15 @@ git remote show origin
 Se existir WSD local:
 
 ```bash
-./.wsd/bin/wsd start
+./+wsd/bin/wsd start
 bash scripts/wsd_check.sh --risk L0 .
 ```
 
 Quando o módulo Git/GitHub Governance estiver instalado (`--git-policy basic|full`), a abertura deve incluir:
 
 ```bash
-./.wsd/bin/wsd git preflight
-./.wsd/bin/wsd git doctor
+./+wsd/bin/wsd git preflight
+./+wsd/bin/wsd git doctor
 ```
 
 O agente deve reportar:
@@ -175,7 +175,7 @@ Para L1/L2, PR deve citar spec.
 Quando o módulo Git/GitHub Governance estiver instalado, antes de abrir ou atualizar PR:
 
 ```bash
-./.wsd/bin/wsd git pr-check
+./+wsd/bin/wsd git pr-check
 ```
 
 O `pr-check` deve ser o gate local antes do PR.
@@ -189,7 +189,7 @@ Spec/Issue e validação seguem obrigatórios no fluxo L1/L2, mas a checagem aut
 Checklist:
 
 ```bash
-./.wsd/bin/wsd finish
+./+wsd/bin/wsd finish
 git status --short --branch
 git diff --stat
 git diff --check
@@ -225,7 +225,7 @@ Ao alterar este ciclo, revisar:
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
 | 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Atualização do ciclo para recomendar o CLI local `.wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar. |
+| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Atualização do ciclo para recomendar o CLI local `+wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar. |
 | 07/05/2026 — | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Planejamento do encaixe de `wsd git preflight`, `doctor` e `pr-check` no ciclo operacional da v0.1.10-alpha. |
 | 07/05/2026 — | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Atualização do ciclo para refletir `v0.1.10-alpha` implementado com Git namespace local. |
 

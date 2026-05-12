@@ -34,7 +34,7 @@ otimizado_para_obsidian: true
 4. [[#4. Passo 2 — Escolher Perfil]]
 5. [[#5. Passo 3 — Instalar WSD]]
 6. [[#6. Passo 4 — Revisar Arquivos Gerados]]
-7. [[#7. Passo 5 — Ajustar `.context.json`]]
+7. [[#7. Passo 5 — Ajustar `+context.json`]]
 8. [[#8. Passo 6 — Atualizar `AGENTS.md`]]
 9. [[#9. Passo 7 — Auto-sizing e Fluxo de 4 Fases]]
 10. [[#10. Passo 8 — Criar Primeira Spec]]
@@ -101,8 +101,8 @@ Perfis iniciais:
 
 - `generic_node_frontend.profile.yaml`;
 - `generic_python_api.profile.yaml`;
-- `exemplo_saas_a.profile.yaml`;
-- `exemplo_saas_b.profile.yaml`.
+- `prescreve_mais.profile.yaml`;
+- `koomplet_office.profile.yaml`.
 
 Se nenhum perfil servir, criar um novo.
 
@@ -144,14 +144,14 @@ node bin/wsd-method.js install \
   --yes
 ```
 
-O modo `full` deve gerar política explícita de branch, remote, Issue, PR, `gh`, templates GitHub e comandos `./.wsd/bin/wsd git doctor|preflight|pr-check`.
+O modo `full` deve gerar política explícita de branch, remote, Issue, PR, `gh`, templates GitHub e comandos `./+wsd/bin/wsd git doctor|preflight|pr-check`.
 
 Arquivos esperados (greenfield mínimo):
 
 ```text
-.wsd/
++wsd/
 AGENTS.md
-.context.json
++context.json
 +specs/project/PROJECT.md
 +specs/project/STATE.md
 +specs/features/wsd-bootstrap/spec.md
@@ -182,13 +182,13 @@ O instalador renderiza placeholders automaticamente a partir do perfil, detecç�
 Mesmo assim, o agente deve revisar:
 
 - `AGENTS.md`;
-- `.context.json`;
+- `+context.json`;
 - `+specs/project/PROJECT.md`;
 - `+specs/project/STATE.md`;
 - `+specs/features/wsd-bootstrap/spec.md`;
 - `+specs/codebase/*.md` quando `--brownfield`;
 - `scripts/wsd_check.sh`;
-- `.wsd/config.json`;
+- `+wsd/config.json`;
 - `.codex/skills/*/SKILL.md`, quando `--tools codex` for usado;
 - `.claude/commands/*.md`, quando `--tools claude-code` for usado.
 
@@ -210,9 +210,9 @@ Se algum placeholder sobreviver à instalação, corrigir o perfil, o comando `-
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 7. Passo 5 — Ajustar `.context.json`
+## 7. Passo 5 — Ajustar `+context.json`
 
-O `.context.json` deve declarar:
+O `+context.json` deve declarar:
 
 - identidade do ambiente;
 - repo;
@@ -300,9 +300,9 @@ Status pode ser `approved` se o operador humano já autorizou o bootstrap.
 Rodar:
 
 ```bash
-./.wsd/bin/wsd doctor
-./.wsd/bin/wsd check
-python3 -m json.tool .context.json
+./+wsd/bin/wsd doctor
+./+wsd/bin/wsd check
+python3 -m json.tool +context.json
 bash scripts/wsd_check.sh --risk L0 .
 git diff --check
 ```
@@ -321,7 +321,7 @@ Usar branch dedicada:
 
 ```bash
 git switch -c docs/wsd-bootstrap
-git add AGENTS.md .context.json +specs +logs scripts/wsd_check.sh
+git add AGENTS.md +context.json +specs +logs scripts/wsd_check.sh
 git commit -m "docs: bootstrap WSD governance"
 git push -u origin docs/wsd-bootstrap
 gh pr create

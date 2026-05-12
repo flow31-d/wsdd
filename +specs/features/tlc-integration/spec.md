@@ -5,7 +5,7 @@ modified: 06/05/2026
 feature: tlc-integration
 risco: L1
 status: approved
-owner: lpo
+owner: flow31-d
 ---
 
 # Spec — TLC Integration (v0.1.4-alpha)

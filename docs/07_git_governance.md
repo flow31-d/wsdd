@@ -207,7 +207,7 @@ Host B = deploy/publicação
 Host C = auditoria/laboratório
 ```
 
-O `.context.json` deve ser a fonte local dessa decisão.
+O `+context.json` deve ser a fonte local dessa decisão.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -228,7 +228,7 @@ Localização:
 Para reinstalar (ex.: após clonar o repo):
 
 ```bash
-./.wsd/bin/wsd hooks
+./+wsd/bin/wsd hooks
 ```
 
 Para instalar sem hooks:
@@ -252,8 +252,8 @@ Regra: não transformar o WSD core em dependente de GitHub, `gh`, Issue ou topol
 Entrega `v0.1.10-alpha`:
 
 - Modos: `--git-policy none|basic|full`.
-- Comandos: `./.wsd/bin/wsd git doctor`, `preflight`, `pr-check`.
-- Artefatos: campos `git_governance` no `.context.json`, template de PR, templates simples de Issue e seção GitHub explícita no `AGENTS.md`.
+- Comandos: `./+wsd/bin/wsd git doctor`, `preflight`, `pr-check`.
+- Artefatos: campos `git_governance` no `+context.json`, template de PR, templates simples de Issue e seção GitHub explícita no `AGENTS.md`.
 - `pr-check` valida branch dedicada, worktree limpa e commits à frente da base antes do PR; `upstream`/`origin` viram sinalização adicional, não bloqueio absoluto neste alpha.
 - Fora do primeiro MVP: `multi-host`, server-side hooks, OPA/Rego, bootstrap automático destrutivo ou alterações administrativas sensíveis no GitHub.
 

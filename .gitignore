@@ -25,3 +25,11 @@ venv/
 secrets/
 keys/
 certs/
+
+# Runtime/external
+.agents/
+xmodelos/
+
+# WSD generated (local state)
++wsd/snapshot.json
++wsd/.last-check.json

@@ -60,8 +60,8 @@ A separação `método global / template copiável / adapter por repo / rotina d
 O que cada camada faz e por que importa:
 
 - **Método global** (`docs/01` a `docs/11`): os princípios que não mudam de projeto para projeto. Nenhum agente reinventa o que é L2 ou o que é "worktree suja".
-- **Template copiável** (`templates/repo/`, `templates/specs/`): artefatos com `{{placeholders}}` que o instalador renderiza. O agente nunca precisa inventar a estrutura do `.context.json` ou de uma spec L1 — existe um contrato explícito. Ver [[wsd/docs/05_contrato_artefatos|05 — Contrato de Artefatos]].
-- **Adapter por repo** (`AGENTS.md` local, `.context.json`, `+specs/context/*.md`): o que é específico ao projeto. Write paths, forbidden paths, comandos de validação reais, host canônico. O método global não presume nada sobre o projeto — o adapter declara.
+- **Template copiável** (`templates/repo/`, `templates/specs/`): artefatos com `{{placeholders}}` que o instalador renderiza. O agente nunca precisa inventar a estrutura do `+context.json` ou de uma spec L1 — existe um contrato explícito. Ver [[wsd/docs/05_contrato_artefatos|05 — Contrato de Artefatos]].
+- **Adapter por repo** (`AGENTS.md` local, `+context.json`, `+specs/context/*.md`): o que é específico ao projeto. Write paths, forbidden paths, comandos de validação reais, host canônico. O método global não presume nada sobre o projeto — o adapter declara.
 - **Rotina de sessão** (`wsd start` / `wsd check` / `wsd finish`): o procedimento de abertura e encerramento que garante que o agente não começa cego e não termina sem deixar rastreabilidade.
 
 Essa separação também permite evolução independente: mudar os templates não quebra o método; mudar as regras de um repo não afeta os outros.
@@ -123,7 +123,7 @@ Sem esse documento, atualizações parciais são a norma: o CHANGELOG é atualiz
 
 ### 2.6 CLI local vendorizado — approach correto para portabilidade
 
-O padrão `.wsd/bin/wsd` instalado dentro do repositório alvo (não como dependência global) resolve um problema prático: diferentes projetos podem ter versões diferentes do WSD sem conflito, e o CLI funciona mesmo sem `npm install -g` ou qualquer configuração de ambiente. O `install.sh` copia os artefatos necessários e os deixa autossuficientes no repo.
+O padrão `+wsd/bin/wsd` instalado dentro do repositório alvo (não como dependência global) resolve um problema prático: diferentes projetos podem ter versões diferentes do WSD sem conflito, e o CLI funciona mesmo sem `npm install -g` ou qualquer configuração de ambiente. O `install.sh` copia os artefatos necessários e os deixa autossuficientes no repo.
 
 O `wsd-method.js` já implementa `install`, `doctor`, `help`, `update` e `--list-options` — um CLI funcional, não apenas um script de bootstrap.
 
@@ -133,9 +133,9 @@ O status lifecycle das specs — `draft` → `approved` → `implemented` → `v
 
 ### 2.8 Perfis de projeto — parametrização que funciona
 
-Os 4 perfis existentes (`generic_node_frontend`, `generic_python_api`, `exemplo_saas_b`, `exemplo_saas_a`) demonstram que a abstração de perfil resolve o problema de personalização sem poluir os templates genéricos. Cada perfil declara write_paths, forbidden_paths, ferramentas, comandos de validação e áreas L2 específicas do tipo de projeto.
+Os 4 perfis existentes (`generic_node_frontend`, `generic_python_api`, `koomplet_office`, `prescreve_mais`) demonstram que a abstração de perfil resolve o problema de personalização sem poluir os templates genéricos. Cada perfil declara write_paths, forbidden_paths, ferramentas, comandos de validação e áreas L2 específicas do tipo de projeto.
 
-O installer renderiza o `.context.json` a partir do perfil — o agente não precisa preencher campos manualmente; a estrutura correta emerge do tipo de projeto.
+O installer renderiza o `+context.json` a partir do perfil — o agente não precisa preencher campos manualmente; a estrutura correta emerge do tipo de projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -159,7 +159,7 @@ O equivalente para Claude Code ainda não está no mesmo nível de maturidade. S
 
 **O que isso significa na prática:** ao abrir uma sessão Claude Code em um repositório WSD, o agente ainda pode deixar de executar automaticamente o checklist da Fase 1 (git status, branch, remote, worktree) se a integração própria não estiver instalada. Vai começar a trabalhar diretamente — o exato problema que o WSD foi projetado para resolver.
 
-**Mitigação até o suporte chegar:** adicionar no `AGENTS.md` local do repo uma instrução explícita — "ao iniciar qualquer sessão, execute `.wsd/bin/wsd start` antes de qualquer ação" — e no `CLAUDE.md` global um lembrete equivalente.
+**Mitigação até o suporte chegar:** adicionar no `AGENTS.md` local do repo uma instrução explícita — "ao iniciar qualquer sessão, execute `+wsd/bin/wsd start` antes de qualquer ação" — e no `CLAUDE.md` global um lembrete equivalente.
 
 ### 3.2 Nenhuma enforcement técnica das regras
 
@@ -168,7 +168,7 @@ O equivalente para Claude Code ainda não está no mesmo nível de maturidade. S
 
 **O que especificamente fica sem cobertura:**
 
-- Um agente pode editar arquivos em `forbidden_paths` declarados no `.context.json` sem qualquer bloqueio
+- Um agente pode editar arquivos em `forbidden_paths` declarados no `+context.json` sem qualquer bloqueio
 - Um agente pode fazer commit sem spec aprovada em uma tarefa L1 — o `pre-commit` padrão não existe no bootstrap atual
 - Um agente pode executar `git push` sem encerrar a sessão WSD corretamente
 - Nada impede `git add .` mesmo com a Regra 4 proibindo explicitamente
@@ -180,7 +180,7 @@ Em uso solo com um único agente bem configurado, a convenção funciona — o a
 - Sessões sem carregamento completo do contexto (contexto truncado, sessão nova)
 - Outros desenvolvedores ou agentes sem conhecimento do WSD
 
-**O caminho de solução já existe na estrutura:** `allowed_scopes` e `forbidden_scopes` nas specs, `write_paths` e `forbidden_paths` no `.context.json` — esses dados são exatamente o que um hook PreToolUse precisaria consultar para enforcement técnico. A informação está lá; falta a camada que a usa.
+**O caminho de solução já existe na estrutura:** `allowed_scopes` e `forbidden_scopes` nas specs, `write_paths` e `forbidden_paths` no `+context.json` — esses dados são exatamente o que um hook PreToolUse precisaria consultar para enforcement técnico. A informação está lá; falta a camada que a usa.
 
 Para o mapa completo de estudo mecanismos disponíveis (teoria): [[r.3.7_spec_driven_development/r.3.7.9_enforcement_agentes_cli|r.3.7.9 — Enforcement Técnico em Agentes CLI]].
 
@@ -229,7 +229,7 @@ O schema do `error_vault.json` com campos `id`, `data`, `escopo`, `sintoma`, `ca
 
 ### 3.6 `$schema` sem validação real
 
-O `.context.json` declara `"$schema": "wsd/context/v1"` mas essa string não aponta para nenhum schema JSON validável por ferramentas externas (não é uma URL, não é um path resolvível). O mesmo vale para `"$schema": "wsd/spec/v1"` nas specs.
+O `+context.json` declara `"$schema": "wsd/context/v1"` mas essa string não aponta para nenhum schema JSON validável por ferramentas externas (não é uma URL, não é um path resolvível). O mesmo vale para `"$schema": "wsd/spec/v1"` nas specs.
 
 **Consequência:** ferramentas de validação JSON Schema (`ajv`, VS Code, etc.) não conseguem validar os arquivos contra o schema declarado. A validação fica restrita ao `wsd_check.sh`, que valida presença de campos mas não tipos, formatos ou valores válidos.
 
@@ -256,25 +256,25 @@ O núcleo do WSD — Constituição + Matriz de Risco + Ciclo Operacional + Cont
 
 ### 4.2 Ação de médio prazo — enforcement técnico via hooks
 
-- [x] Gerar `.claude/settings.json` com hooks `PreToolUse` que consultam `.context.json`. (`v0.1.3-alpha`)
+- [x] Gerar `.claude/settings.json` com hooks `PreToolUse` que consultam `+context.json`. (`v0.1.3-alpha`)
 - [x] Bloquear `write_paths` e `forbidden_paths` fora da política do projeto via `pre-tool.sh`. (`v0.1.3-alpha`)
 - [ ] Validar `git push` sem spec aprovada para L1/L2 (parcial: `pre-push` roda WSD gate, mas não verifica spec por branch).
 - [x] Registrar a política em `AGENTS.md` gerado. (`v0.1.3-alpha`)
 
 ```bash
 #!/bin/bash
-# .wsd/hooks/pre-tool.sh
-# Lê forbidden_paths do .context.json e bloqueia writes fora de write_paths
+# +wsd/hooks/pre-tool.sh
+# Lê forbidden_paths do +context.json e bloqueia writes fora de write_paths
 
 TOOL_INPUT=$(cat)
 TOOL_NAME=$(echo "$TOOL_INPUT" | jq -r '.tool_name')
 PATH_ARG=$(echo "$TOOL_INPUT" | jq -r '.tool_input.path // .tool_input.command // ""')
 
-if [ -f ".context.json" ]; then
-  FORBIDDEN=$(jq -r '.permissions.forbidden_paths[]' .context.json 2>/dev/null)
+if [ -f "+context.json" ]; then
+  FORBIDDEN=$(jq -r '.permissions.forbidden_paths[]' +context.json 2>/dev/null)
   for fp in $FORBIDDEN; do
     if [[ "$PATH_ARG" == *"$fp"* ]]; then
-      echo "WSD: path proibido pelo .context.json: $fp" >&2
+      echo "WSD: path proibido pelo +context.json: $fp" >&2
       exit 2
     fi
   done
@@ -282,7 +282,7 @@ fi
 exit 0
 ```
 
-Isso transforma as regras de convenção do `.context.json` em enforcement técnico real sem overhead de desenvolvimento significativo. Ver [[r.3.7_spec_driven_development/r.3.7.9_enforcement_agentes_cli#4. Nível 3 — Hooks PreToolUse|r.3.7.9 § Hooks PreToolUse]].
+Isso transforma as regras de convenção do `+context.json` em enforcement técnico real sem overhead de desenvolvimento significativo. Ver [[r.3.7_spec_driven_development/r.3.7.9_enforcement_agentes_cli#4. Nível 3 — Hooks PreToolUse|r.3.7.9 § Hooks PreToolUse]].
 
 ### 4.3 Ação de médio prazo — git hooks no bootstrap
 
@@ -294,7 +294,7 @@ Isso transforma as regras de convenção do `.context.json` em enforcement técn
 
 ### 4.4 Ação de longo prazo — piloto antes de escalar
 
-- [x] Completar o piloto no `exemplo-saas-b` antes de replicar para todos os projetos. (07/05/2026)
+- [x] Completar o piloto no `koomplet-office` antes de replicar para todos os projetos. (07/05/2026)
 - [x] Medir se partes do `wsd start` são redundantes em sessões curtas. (lições em STATE.md)
 - [x] Verificar `error_vault.json` — substituído por `STATE.md` em `v0.1.4-alpha`.
 - [x] Validar se o template de spec L1 cobre os campos que projetos reais precisam. (9/9 acceptance criteria atendidos no piloto)
@@ -305,7 +305,7 @@ Isso transforma as regras de convenção do `.context.json` em enforcement técn
 - [x] Skills Claude Code (`wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`) — `v0.1.3/v0.1.4-alpha`.
 - [x] Hook `PreToolUse` gerado pelo `wsd install` — `v0.1.3-alpha`.
 - [x] Git hooks instalados no bootstrap — `v0.1.6-alpha`.
-- [x] Piloto `exemplo-saas-b` completo — 07/05/2026 (`v0.1.4-alpha`).
+- [x] Piloto `koomplet-office` completo — 07/05/2026 (`v0.1.4-alpha`).
 - [x] `$schema` como arquivo JSON real (`schemas/context.schema.json`) — `v0.1.5-alpha`.
 - [x] Prompt de lição aprendida no `wsd finish` — HANDOFF.md + prompts STATE.md implementados em `v0.1.7-alpha`.
 - [x] MVP Git/GitHub Governance antes da estável — `v0.1.10-alpha` (`--git-policy`, `wsd git doctor/preflight/pr-check`, PR/Issue templates).

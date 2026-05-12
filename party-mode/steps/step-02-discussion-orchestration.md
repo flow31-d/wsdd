@@ -296,7 +296,7 @@ EXECUÇÃO:
   - HANDOFF.md atualizado?"
 
   💻 Amelia: "Code-wise: 3 arquivos tocados, ok.
-  Mas esse path aqui... verifica forbidden_paths no .context.json."
+  Mas esse path aqui... verifica forbidden_paths no +context.json."
 
   🏗️ Winston: "Design ok. Mas considerando que isso é L1,
   o THEN da spec está 100% implementado? CI/CD hooks passaram?"

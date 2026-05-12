@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "wsd/context/v1",
-  "title": "WSD .context.json contract",
-  "description": "Runtime contract every WSD-governed repo declares for agents. Validated by .wsd/bin/wsd-validate-context.js.",
+  "title": "WSD +context.json contract",
+  "description": "Runtime contract every WSD-governed repo declares for agents. Validated by +wsd/bin/wsd-validate-context.js.",
   "type": "object",
   "required": [
     "$schema",

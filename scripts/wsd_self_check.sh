@@ -34,7 +34,7 @@ required_files=(
   "docs/14_qualidade_desenvolvimento.md"
   "schemas/context.schema.json"
   "templates/repo/AGENTS.md.template"
-  "templates/repo/.context.json.template"
+  "templates/repo/+context.json.template"
   "templates/repo/+specs/project/PROJECT.md.template"
   "templates/repo/+specs/project/STATE.md.template"
   "templates/repo/+specs/codebase/TESTING.md.template"
@@ -43,7 +43,7 @@ required_files=(
   "templates/specs/feature-tasks.md.template"
   "templates/repo/scripts/wsd_check.sh"
   "templates/local-wsd/bin/wsd"
-  "templates/local-wsd/bin/wsd-validate-context.js"
+  "templates/local-wsd/bin/wsd-validate-context.cjs"
   "templates/codex-skills/wsd-specify/SKILL.md"
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
@@ -73,7 +73,7 @@ done
 ok "shell scripts parse"
 
 node --check bin/wsd-method.js >/dev/null || fail "node syntax failed: bin/wsd-method.js"
-node --check templates/local-wsd/bin/wsd-validate-context.js >/dev/null || fail "node syntax failed: templates/local-wsd/bin/wsd-validate-context.js"
+node --check templates/local-wsd/bin/wsd-validate-context.cjs >/dev/null || fail "node syntax failed: templates/local-wsd/bin/wsd-validate-context.cjs"
 ok "node cli parses"
 
 python3 -m json.tool schemas/context.schema.json >/dev/null || fail "schemas/context.schema.json is invalid JSON"
@@ -97,7 +97,7 @@ cat >"$tmpvalidator/valid.json" <<'JSON'
   "wsd": { "method": "Wolff Spec Driven", "context_documents": ["+specs/project/PROJECT.md"] }
 }
 JSON
-node templates/local-wsd/bin/wsd-validate-context.js "$tmpvalidator/valid.json" --schema schemas/context.schema.json >/dev/null \
+node templates/local-wsd/bin/wsd-validate-context.cjs "$tmpvalidator/valid.json" --schema schemas/context.schema.json >/dev/null \
   || fail "validator self-test: minimal valid sample rejected"
 
 cat >"$tmpvalidator/missing.json" <<'JSON'
@@ -115,7 +115,7 @@ cat >"$tmpvalidator/missing.json" <<'JSON'
   "wsd": { "method": "WSD", "context_documents": [] }
 }
 JSON
-if node templates/local-wsd/bin/wsd-validate-context.js "$tmpvalidator/missing.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
+if node templates/local-wsd/bin/wsd-validate-context.cjs "$tmpvalidator/missing.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
   fail "validator self-test: missing required field accepted"
 fi
 
@@ -135,7 +135,7 @@ cat >"$tmpvalidator/badenum.json" <<'JSON'
   "wsd": { "method": "WSD", "context_documents": [] }
 }
 JSON
-if node templates/local-wsd/bin/wsd-validate-context.js "$tmpvalidator/badenum.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
+if node templates/local-wsd/bin/wsd-validate-context.cjs "$tmpvalidator/badenum.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
   fail "validator self-test: invalid enum accepted"
 fi
 
@@ -156,7 +156,7 @@ cat >"$tmpvalidator/badtype.json" <<'JSON'
   "wsd": { "method": "WSD", "context_documents": [] }
 }
 JSON
-if node templates/local-wsd/bin/wsd-validate-context.js "$tmpvalidator/badtype.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
+if node templates/local-wsd/bin/wsd-validate-context.cjs "$tmpvalidator/badtype.json" --schema schemas/context.schema.json >/dev/null 2>&1; then
   fail "validator self-test: wrong type accepted"
 fi
 rm -rf "$tmpvalidator"
@@ -183,7 +183,7 @@ done
 ok "git hook templates are executable"
 
 grep -q 'git-policy' bin/wsd-method.js || fail "bin/wsd-method.js missing --git-policy support"
-grep -q 'git_governance' templates/repo/.context.json.template || fail ".context.json.template missing git_governance block"
+grep -q 'git_governance' templates/repo/+context.json.template || fail "+context.json.template missing git_governance block"
 grep -q 'git doctor' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing git namespace"
 ok "git governance MVP artifacts present"
 

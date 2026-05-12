@@ -91,7 +91,7 @@ function parseArgs(argv) {
 function printHelp() {
   console.log('Usage: wsd-validate-context.js <path-to-context.json> [--schema <path>]');
   console.log('');
-  console.log('  Validates a .context.json against the WSD JSON Schema.');
+  console.log('  Validates a +context.json against the WSD JSON Schema.');
   console.log('  Default schema: <script_dir>/../schemas/context.schema.json');
   console.log('');
   console.log('Exit codes: 0 ok, 1 schema fail, 2 IO/parse, 3 unsupported keyword');

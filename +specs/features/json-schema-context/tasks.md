@@ -1,12 +1,12 @@
 ---
-title: "Tasks — JSON Schema validation for .context.json (v0.1.5-alpha)"
+title: "Tasks — JSON Schema validation for +context.json (v0.1.5-alpha)"
 created: 07/05/2026
 modified: 07/05/2026
 feature: json-schema-context
 status: in_progress
 ---
 
-# Tasks — JSON Schema validation for `.context.json`
+# Tasks — JSON Schema validation for `+context.json`
 
 Atomic tasks com gates RED/GREEN/VERIFY explícitos. Cada uma deve fechar com commit Conventional Commits 1.0.0.
 
@@ -30,20 +30,20 @@ Atomic tasks com gates RED/GREEN/VERIFY explícitos. Cada uma deve fechar com co
 
 ## T3. Vendor schema + validator no installer
 
-- [ ] `bin/wsd-method.js` `installVendorTree`: copiar `schemas/` → `.wsd/schemas/`.
-- [ ] Copiar `templates/local-wsd/bin/wsd-validate-context.js` → `.wsd/bin/wsd-validate-context.js` (chmod 755).
+- [ ] `bin/wsd-method.js` `installVendorTree`: copiar `schemas/` → `+wsd/schemas/`.
+- [ ] Copiar `templates/local-wsd/bin/wsd-validate-context.js` → `+wsd/bin/wsd-validate-context.js` (chmod 755).
 - [ ] **VERIFY:** rodar `npm run test:install` e checar que arquivos aparecem.
 
 ## T4. Hook em wsd_check.sh
 
 - [ ] `templates/repo/scripts/wsd_check.sh`: após JSON syntax, testar `command -v node`.
-- [ ] Se Node OK: `node .wsd/bin/wsd-validate-context.js .context.json` (hard-fail).
+- [ ] Se Node OK: `node +wsd/bin/wsd-validate-context.js +context.json` (hard-fail).
 - [ ] Se Node ausente: `warn: node missing — schema validation skipped`.
 - [ ] **VERIFY:** rodar com Node presente em fixture válida (PASS); com Node em fixture inválida (FAIL com path).
 
 ## T5. Atualizar doctor (local-wsd)
 
-- [ ] `templates/local-wsd/bin/wsd doctor`: linhas para `.wsd/schemas/context.schema.json` e `.wsd/bin/wsd-validate-context.js`.
+- [ ] `templates/local-wsd/bin/wsd doctor`: linhas para `+wsd/schemas/context.schema.json` e `+wsd/bin/wsd-validate-context.js`.
 - [ ] **VERIFY:** rodar doctor em projeto de teste e confirmar duas linhas novas.
 
 ## T6. Self-tests inline
@@ -57,8 +57,8 @@ Atomic tasks com gates RED/GREEN/VERIFY explícitos. Cada uma deve fechar com co
 
 ## T7. Estender npm test
 
-- [ ] `package.json` `test:install`: assertar `.wsd/schemas/context.schema.json` e `.wsd/bin/wsd-validate-context.js`.
-- [ ] Adicionar invocação `node .wsd/bin/wsd-validate-context.js .context.json` na suite.
+- [ ] `package.json` `test:install`: assertar `+wsd/schemas/context.schema.json` e `+wsd/bin/wsd-validate-context.js`.
+- [ ] Adicionar invocação `node +wsd/bin/wsd-validate-context.js +context.json` na suite.
 - [ ] Idem `test:install-claude` e `test:install-brownfield`.
 - [ ] **VERIFY:** `npm test` PASS.
 

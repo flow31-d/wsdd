@@ -29,7 +29,7 @@ wsd_expertise: implementação de specs WSD, WHEN→código, forbidden_paths com
 ```
 pre-commit hook: roda wsd_check.sh — spec aprovada?
 commit-msg hook: Conventional Commits 1.0.0 obrigatório
-forbidden_paths: verificar .context.json antes de tocar arquivo
+forbidden_paths: verificar +context.json antes de tocar arquivo
 branch: feature/slug para L1, fix/slug para L0
 HANDOFF.md: atualizar ao fim da sessão via wsd finish
 ghost spec: spec 'approved' sem WHEN/THEN/SHALL bloqueia em L1/L2

@@ -48,7 +48,7 @@ done
 ok "git-governance module plan referenced"
 
 for file in README.md wsd.md docs/04_playbook_implantacao.md docs/08_rotinas_sessao.md; do
-  grep -qE "wsd-method|install\\.sh|\\.wsd/bin/wsd" "$file" || fail "current installer/local CLI not documented in $file"
+  grep -qE "wsd-method|install\\.sh|\\+wsd/bin/wsd" "$file" || fail "current installer/local CLI not documented in $file"
 done
 ok "installer and local CLI documented"
 
@@ -116,9 +116,9 @@ ok "feature-spec template uses WHEN/THEN/SHALL"
 grep -qE 'Conventional Commits' docs/07_git_governance.md || fail "Conventional Commits not documented in 07_git_governance.md"
 ok "Conventional Commits documented"
 
-# v0.1.5-alpha: JSON Schema for .context.json
+# v0.1.5-alpha: JSON Schema for +context.json
 [[ -f schemas/context.schema.json ]] || fail "schemas/context.schema.json missing"
-[[ -f templates/local-wsd/bin/wsd-validate-context.js ]] || fail "templates/local-wsd/bin/wsd-validate-context.js missing"
+[[ -f templates/local-wsd/bin/wsd-validate-context.cjs ]] || fail "templates/local-wsd/bin/wsd-validate-context.cjs missing"
 grep -qE 'context\.schema\.json|wsd-validate-context' docs/05_contrato_artefatos.md || fail "context schema not documented in 05_contrato_artefatos.md"
 grep -qE 'context\.schema\.json|wsd-validate-context' docs/10_matriz_sincronizacao_notas.md || fail "context schema not referenced in 10_matriz_sincronizacao_notas.md"
 ok "context JSON Schema artifacts present and documented"
@@ -137,7 +137,7 @@ ok "git hooks templates present and WHEN/THEN/SHALL gate in wsd_check.sh"
 [[ -f templates/modules/git-governance/.github/ISSUE_TEMPLATE/bug.md ]] || fail "Git Governance bug issue template missing"
 [[ -f templates/modules/git-governance/.github/ISSUE_TEMPLATE/decision.md ]] || fail "Git Governance decision issue template missing"
 grep -q -- '--git-policy' bin/wsd-method.js || fail "bin/wsd-method.js missing --git-policy"
-grep -q 'git_governance' templates/repo/.context.json.template || fail ".context.json.template missing git_governance"
+grep -q 'git_governance' templates/repo/+context.json.template || fail "+context.json.template missing git_governance"
 grep -q 'wsd git doctor' README.md docs/00_planejamento_instalacao_wsd.md docs/11_modulo_git_governance.md || fail "wsd git commands not documented"
 ok "Git/GitHub Governance MVP artifacts present and documented"
 

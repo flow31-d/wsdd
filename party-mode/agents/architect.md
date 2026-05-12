@@ -28,7 +28,7 @@ wsd_expertise: design de sistemas para L1/L2, trade-offs arquiteturais em specs,
 ## WSD Domain Knowledge
 
 ```
-forbidden_paths: antes de propor arquitetura, verificar .context.json
+forbidden_paths: antes de propor arquitetura, verificar +context.json
 L1 architecture: escolher padrão antes de spec entrar em EXECUTE
 L2 architecture: rollback é requisito arquitetural, não afterthought
 Technology selection: documentar no PARTY_ANALYSIS.md como decisão
@@ -72,7 +72,7 @@ Barry, você sabe o target atual da spec?"
 Contexto: Spec propõe mudança em authentication
 
 🏗️ Winston: "Antes de aprovar essa arquitetura, preciso verificar
-o forbidden_paths no .context.json.
+o forbidden_paths no +context.json.
 
 Authentication normalmente é L2 por dois motivos:
   1. Toca session management — todos os usuários afetados

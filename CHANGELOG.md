@@ -38,7 +38,9 @@ otimizado_para_obsidian: true
 12. [[#12. 0.1.10-alpha — 07/05/2026]]
 13. [[#13. 0.1.11-alpha — 07/05/2026]]
 14. [[#14. 0.1.0 — 07/05/2026]]
-15. [[#15. 🕒 Registro de Alterações por Agentes]]
+15. [[#15. 0.1.2 — 11/05/2026]]
+16. [[#16. 0.1.3 — 11/05/2026]]
+17. [[#17. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -50,7 +52,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 05/05/2026 14:13:39 -03 — Codex: Inclusão da versão `0.1.2-alpha` com matriz de sincronização documental, checker dedicado e correção do teste de instalação.
 - 06/05/2026 — Claude: Inclusão da versão `0.1.3-alpha` com suporte operacional completo ao Claude Code.
 - 06/05/2026 — Claude: Inclusão da versão `0.1.4-alpha` — integração TLC (auto-sizing, STATE.md, HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, knowledge chain, scope guardrail, Conventional Commits, brownfield support, novos comandos `/wsd-specify`, `/wsd-design`, `/wsd-tasks`).
-- 07/05/2026 — Claude: Inclusão da versão `0.1.5-alpha` — JSON Schema 2020-12 canônico para `.context.json` em `schemas/context.schema.json` + validador zero-deps `wsd-validate-context.js` integrado a `wsd_check.sh`. Fecha o último pendente da Fase 1.
+- 07/05/2026 — Claude: Inclusão da versão `0.1.5-alpha` — JSON Schema 2020-12 canônico para `+context.json` em `schemas/context.schema.json` + validador zero-deps `wsd-validate-context.js` integrado a `wsd_check.sh`. Fecha o último pendente da Fase 1.
 - 07/05/2026 — Claude: Inclusão da versão `0.1.6-alpha` — ghost spec detector em `wsd_check.sh` + git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`). Fecha a Fase 3.
 - 07/05/2026 — Claude: Inclusão da versão `0.1.7-alpha` — `wsd finish` automatizado: HANDOFF.md gerado pelo CLI + prompts interativos para STATE.md. Fecha o último item da Fase 3.
 - 07/05/2026 — Claude: Inclusão da versão `0.1.8-alpha` — instalação interativa rica, `wsd update` real via `wsd_source`, WHEN+THEN+SHALL todos obrigatórios. Seção 10 adicionada, Registro renumerado para seção 11.
@@ -58,6 +60,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Inclusão da versão `0.1.10-alpha` — MVP Git/GitHub Governance com `--git-policy`, `git_governance`, `wsd git doctor|preflight|pr-check`, templates PR/Issue e testes por modo. Seção 12 adicionada, Registro renumerado para seção 13.
 - 07/05/2026 — Claude: Inclusão da versão `0.1.11-alpha` — Party Mode Integration: `installPartyMode`, `/wsd-party-mode`, `wsd party status|list-agents|when-to-use`, seção Party Mode no AGENTS.md, `test:install-party-mode`. Seção 13 adicionada, Registro renumerado para seção 14.
 - 07/05/2026 — Claude: Inclusão da release **`0.1.0`** estável — drop do sufixo `-alpha`, Fase 4 fechada (documentação oficial, tags retroativas, validação Codex/Claude Code), 2 itens descartados com rationale (perfis stacks, YAML schema). Seção 14 adicionada, Registro renumerado para seção 15.
+- 11/05/2026 — Claude: Inclusão da versão **`0.1.3`** — CJS/ESM fix, governance gaps, project-snapshot spec, RELEASING.md. Seção 16 adicionada, Registro renumerado para seção 17.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -73,7 +76,7 @@ Inclui:
 - perfis iniciais;
 - scripts de bootstrap e validação;
 - modelos de skills Codex;
-- exemplos para Exemplo SaaS A e Exemplo SaaS B.
+- exemplos para Prescreve Mais e Koomplet Office.
 
 Status:
 
@@ -93,8 +96,8 @@ Inclui:
 - `package.json` com binário `wsd-method`;
 - `bin/wsd-method.js` com `install`, `doctor`, `help`, `update` e `--list-options`;
 - `install.sh` como wrapper local;
-- instalação vendorizada em `.wsd/`;
-- `.wsd/bin/wsd` com `start`, `check`, `finish`, `doctor` e `update`;
+- instalação vendorizada em `+wsd/`;
+- `+wsd/bin/wsd` com `start`, `check`, `finish`, `doctor` e `update`;
 - renderização automática de templates por perfil e overrides `--set`;
 - instalação local de skills Codex em `.codex/skills`;
 - teste de instalação em repositório temporário.
@@ -105,7 +108,7 @@ Ainda pendente:
 - JSON Schema formal;
 - validação YAML formal;
 - Claude Code;
-- teste no `exemplo-saas-b`.
+- teste no `koomplet-office`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -123,9 +126,9 @@ Inclui:
 
 Ainda pendente:
 
-- JSON Schema formal para `.context.json`;
+- JSON Schema formal para `+context.json`;
 - validação YAML formal para specs;
-- piloto no `exemplo-saas-b`.
+- piloto no `koomplet-office`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -136,18 +139,18 @@ Suporte operacional ao Claude Code.
 Inclui:
 
 - `templates/claude-commands/commands/wsd-start.md` e `wsd-finish.md` — comandos slash Claude Code com `allowed-tools`, `argument-hint` e triggers em português;
-- `templates/claude-commands/hooks/pre-tool.sh` — hook `PreToolUse` que lê `forbidden_paths` do `.context.json` e bloqueia com exit 2;
+- `templates/claude-commands/hooks/pre-tool.sh` — hook `PreToolUse` que lê `forbidden_paths` do `+context.json` e bloqueia com exit 2;
 - `templates/claude-commands/settings.json` — configuração de hooks `PreToolUse`, `PreCompact`, `SessionStart` e `Stop`;
-- `installClaudeCommands()` no `bin/wsd-method.js` — gera `.claude/commands/`, `.wsd/hooks/pre-tool.sh` e `.claude/settings.json`;
+- `installClaudeCommands()` no `bin/wsd-method.js` — gera `.claude/commands/`, `+wsd/hooks/pre-tool.sh` e `.claude/settings.json`;
 - `--tools claude-code` e `--tools both` operacionais no instalador;
 - `test:install-claude` em `package.json` para validar instalação Claude Code;
 - `AGENTS.md.template` atualizado com referências a `/wsd-start` e `/wsd-finish`.
 
 Ainda pendente:
 
-- JSON Schema formal para `.context.json`;
+- JSON Schema formal para `+context.json`;
 - validação YAML formal para specs;
-- piloto no `exemplo-saas-b`.
+- piloto no `koomplet-office`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -214,7 +217,7 @@ Camada de qualidade de desenvolvimento — integração da metodologia TLC Spec-
 
 ### Pendente
 
-- JSON Schema formal para `.context.json` (planejado para v0.1.5-alpha);
+- JSON Schema formal para `+context.json` (planejado para v0.1.5-alpha);
 - validação YAML formal para specs L1/L2 antigos (a maioria já migrou para spec.md MD-based).
 
 ### Validação Operacional
@@ -226,21 +229,21 @@ Camada de qualidade de desenvolvimento — integração da metodologia TLC Spec-
 
 ## 7. 0.1.5-alpha — 07/05/2026
 
-JSON Schema validation para o contrato `.context.json`. Fecha o último pendente da Fase 1 do roadmap.
+JSON Schema validation para o contrato `+context.json`. Fecha o último pendente da Fase 1 do roadmap.
 
 ### Adicionado
 
 - `schemas/context.schema.json` — JSON Schema 2020-12 canônico (`$id: wsd/context/v1`) cobrindo `project`, `environment`, `repository`, `permissions`, `workflow`, `wsd`, `ci`. Required, types, enums fortes (`secrets_policy`, `production_mutation_policy`, `repo_type`).
 - `templates/local-wsd/bin/wsd-validate-context.js` — validador pure-JS zero-deps. Suporta `type`/`required`/`properties`/`additionalProperties`/`items`/`enum`/`const`/`pattern`/`minLength`/`maxLength`/`minimum`/`maximum`/`oneOf`. Erros com path JSON-pointer.
-- Vendorização: `wsd-method install` copia `schemas/` → `.wsd/schemas/` e validator → `.wsd/bin/wsd-validate-context.js` (chmod 755).
+- Vendorização: `wsd-method install` copia `schemas/` → `+wsd/schemas/` e validator → `+wsd/bin/wsd-validate-context.js` (chmod 755).
 - Self-tests inline em `scripts/wsd_self_check.sh`: sample válido + 3 samples inválidos (missing required, wrong type, bad enum).
 - `+specs/features/json-schema-context/` (spec WHEN/THEN/SHALL aprovada + design.md + tasks.md).
 
 ### Mudado
 
 - `templates/repo/scripts/wsd_check.sh` chama validator após JSON syntax check (hard-fail). Fallback `warn:` quando Node ausente.
-- `templates/local-wsd/bin/wsd doctor` reporta `.wsd/schemas/context.schema.json`, `.wsd/bin/wsd-validate-context.js` e presença de `node`.
-- `npm test` (`test:install`, `test:install-claude`, `test:install-brownfield`) assertam vendor + validação do `.context.json` renderizado.
+- `templates/local-wsd/bin/wsd doctor` reporta `+wsd/schemas/context.schema.json`, `+wsd/bin/wsd-validate-context.js` e presença de `node`.
+- `npm test` (`test:install`, `test:install-claude`, `test:install-brownfield`) assertam vendor + validação do `+context.json` renderizado.
 - `scripts/wsd_docs_check.sh` exige documentação do schema em `docs/05` e `docs/10`.
 
 ### Documentação
@@ -251,7 +254,7 @@ JSON Schema validation para o contrato `.context.json`. Fecha o último pendente
 ### Validação
 
 - ✅ `npm test`: 3/3 gates passam com schema validation acoplada.
-- ✅ Todos os 4 profiles (`generic_node_frontend`, `generic_python_api`, `exemplo_saas_b`, `exemplo_saas_a`) renderizam `.context.json` que valida.
+- ✅ Todos os 4 profiles (`generic_node_frontend`, `generic_python_api`, `koomplet_office`, `prescreve_mais`) renderizam `+context.json` que valida.
 - ✅ `bash scripts/wsd_self_check.sh` PASS com self-tests do validator.
 - ✅ `bash scripts/wsd_docs_check.sh` PASS.
 
@@ -277,7 +280,7 @@ Ghost spec detector e git hooks no bootstrap. Fecha a Fase 3 do roadmap.
 - Destino versioned: `scripts/git-hooks/` (auditável, versionado junto ao projeto).
 - Destino ativo: `.git/hooks/` (executado pelo git).
 
-**Subcomando `wsd hooks`** no CLI local (`.wsd/bin/wsd`):
+**Subcomando `wsd hooks`** no CLI local (`+wsd/bin/wsd`):
 
 - Reinstala hooks após `git clone` (copia `scripts/git-hooks/*` → `.git/hooks/`).
 
@@ -351,7 +354,7 @@ Instalação interativa rica, `wsd update` real e WHEN+THEN+SHALL completo obrig
 
 **Instalação interativa rica** (em `bin/wsd-method.js`):
 
-- Pergunta linguagem principal do projeto (preenche `PRIMARY_LANGUAGE` no `.context.json`).
+- Pergunta linguagem principal do projeto (preenche `PRIMARY_LANGUAGE` no `+context.json`).
 - Pergunta path canônico do projeto (preenche `CANONICAL_PATH`).
 - Pergunta comandos de test, build e lint — padrão vem do perfil; Enter mantém o padrão.
 - Pergunta forbidden_paths em CSV — padrão vem do perfil.
@@ -359,9 +362,9 @@ Instalação interativa rica, `wsd update` real e WHEN+THEN+SHALL completo obrig
 
 **`wsd update` real** (em `templates/local-wsd/bin/wsd` e `bin/wsd-method.js`):
 
-- `wsd-method install` grava `wsd_source: WSD_ROOT` em `.wsd/config.json`.
+- `wsd-method install` grava `wsd_source: WSD_ROOT` em `+wsd/config.json`.
 - `wsd update` lê `wsd_source` com `python3 -c "import json..."` e chama `node $src/bin/wsd-method.js update --directory .`.
-- `update()` no CLI principal: atualiza `.wsd/bin/`, `.wsd/hooks/`, `.wsd/schemas/` sem tocar em arquivos do projeto; atualiza `config.json` mantendo campos existentes.
+- `update()` no CLI principal: atualiza `+wsd/bin/`, `+wsd/hooks/`, `+wsd/schemas/` sem tocar em arquivos do projeto; atualiza `config.json` mantendo campos existentes.
 - Gracioso: se `wsd_source` ausente/inválido, exibe `warn:` com instrução manual.
 
 **WHEN+THEN+SHALL completo em ghost scan e L1/L2**:
@@ -418,9 +421,9 @@ MVP Git/GitHub Governance para tornar branch, remote, upstream, Issue e PR parte
 ### Adicionado
 
 - `--git-policy none|basic|full` no `bin/wsd-method.js`.
-- Bloco `git_governance` no `.context.json` renderizado pelo template.
+- Bloco `git_governance` no `+context.json` renderizado pelo template.
 - Secao Git/GitHub Governance no `AGENTS.md` renderizado.
-- Namespace local `./.wsd/bin/wsd git doctor|preflight|pr-check`.
+- Namespace local `./+wsd/bin/wsd git doctor|preflight|pr-check`.
 - Templates `.github/PULL_REQUEST_TEMPLATE.md` e `.github/ISSUE_TEMPLATE/{task,bug,decision}.md` no modo `full`.
 - Testes `test:install-git-none`, `test:install-git-basic` e `test:install-git-full`.
 
@@ -455,7 +458,7 @@ exposto como comando Claude Code e subcomando `wsd party`.
 
 ### Adicionado
 
-- `installPartyMode(directory, force)` em `bin/wsd-method.js` — copia `party-mode/` para `.wsd/party-mode/` no projeto instalado.
+- `installPartyMode(directory, force)` em `bin/wsd-method.js` — copia `party-mode/` para `+wsd/party-mode/` no projeto instalado.
 - `templates/claude-commands/commands/wsd-party-mode.md` — slash command `/wsd-party-mode` para Claude Code.
 - Subcomando `wsd party status|list-agents|when-to-use` em `templates/local-wsd/bin/wsd`.
 - Seção `## Party Mode` em `templates/repo/AGENTS.md.template` com comandos e contextos.
@@ -509,7 +512,76 @@ concluídos).
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 15. 🕒 Registro de Alterações por Agentes
+## 15. 0.1.2 — 11/05/2026
+
+**Ideas Workflow + ROADMAP.md + estratégia de repositório público.**
+
+### Adicionado
+
+- `templates/repo/+specs/project/ROADMAP.md.template` — instalado automaticamente em todo projeto via `renderRepoTemplates()`. Formato Obsidian com frontmatter, callouts e tabela de features por status (`planned`, `in-progress`, `done`, `cancelled`).
+- `templates/repo/+specs/project/IDEAS.md.template` — notebook de ideias brutas do projeto.
+- `templates/repo/+specs/project/IDEAS_PIPELINE.md.template` — controle de progressão de ideias (`raw` → `implementada`).
+- `templates/claude-commands/commands/wsd-idea.md` — comando slash `idea-{PROJECT_SLUG}` para Claude Code: captura estruturada, estimativa L0/L1/L2, oferta de Party Mode para L1/L2.
+- `templates/codex-skills/wsd-idea/SKILL.md` — skill equivalente para Codex.
+- `docs/15_repositorio_publico_e_quick_start.md` — estratégia `npx github:flow31-d/wsdd install`, workflow de sync privado×público e checklist de release.
+- `+specs/features/project-roadmap/` e `+specs/features/ideas-workflow/` — specs WHEN/THEN/SHALL e tasks atômicas para as duas features.
+
+### Mudado
+
+- `bin/wsd-method.js` — `normalizeSettings()` deriva `PROJECT_SLUG` (lowercase + hyphens); `installClaudeCommands()` renomeia dinamicamente `wsd-idea.md` → `idea-{PROJECT_SLUG}.md` no projeto alvo.
+- `templates/repo/AGENTS.md.template` — carga on-demand de ROADMAP e IDEAS_PIPELINE adicionada; seção "Regras de planejamento" com referência ao `{{PROJECT_SLUG}}`.
+- `package.json` — versão `0.1.0` → `0.1.2`; gates `test:install`, `test:install-claude` e `test:install-brownfield` validam novos artefatos.
+- `README.md` — quick start `npx`, callout dogfooding, novos artefatos em seção 2, comando `idea-{slug}` em seções 4.4 e 9, status atualizado para repo público.
+
+### Validação
+
+- `npm test` — 7/7 gates PASS.
+
+### Nota
+
+Não há mudanças de API que quebrem instalações existentes da `v0.1.0`. Os novos artefatos são adicionais — projetos instalados antes simplesmente não os têm.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 16. 0.1.3 — 11/05/2026
+
+### fix
+
+- `templates/local-wsd/bin/wsd-validate-context.js` → `wsd-validate-context.cjs` — renomeado para extensão `.cjs` para compatibilidade com projetos Node.js que têm `"type": "module"` em `package.json`. Sem essa renomeação, `require()` falhava com `ReferenceError: require is not defined in ES module scope`.
+- `templates/local-wsd/bin/wsd-snapshot.js` → `wsd-snapshot.cjs` — mesma correção aplicada ao gerador de snapshot.
+
+### Mudado
+
+- `bin/wsd-method.js` — cópia de `wsd-validate-context` e `wsd-snapshot` atualizada para extensão `.cjs` (instalador e `wsd update`).
+- `scripts/wsd_self_check.sh` — referências ao arquivo de validação atualizadas para `.cjs`.
+- `scripts/wsd_docs_check.sh` — verificação de existência atualizada para `.cjs`.
+- `templates/repo/scripts/wsd_check.sh` — template do checker instalado em projetos atualizado para `.cjs`.
+- `templates/local-wsd/bin/wsd` — comandos `doctor` e `snapshot` atualizados para `.cjs`.
+- `package.json` — scripts de teste (`test:install`, `test:install-claude`, `test:install-brownfield`) atualizados para verificar `.cjs`.
+
+### Adicionado
+
+- `RELEASING.md` — checklist obrigatório pré-release (testes, specs, artefatos, git/tag). Previne gaps de governança como os da sessão 11/05 onde ROADMAP.md e docs/05 ficaram desatualizados.
+- `+specs/features/project-snapshot/spec.md` e `tasks.md` — spec retroativa do `wsd snapshot` com 6 ACs WHEN/THEN/SHALL e tasks marcadas como `implemented`.
+- `docs/05_contrato_artefatos.md` — novas seções: `+specs/project/` (ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md com regras de manutenção) e `+wsd/` vendor tree (estrutura, arquivos ignorados, `wsd update`).
+
+### Governance
+
+- `+specs/features/project-roadmap/` — spec e tasks atualizadas para `status: implemented`; tasks de T1–T8 marcadas `[x]`.
+- `+specs/features/ideas-workflow/` — spec e tasks atualizadas para `status: implemented`; tasks de T1–T9 marcadas `[x]`.
+- `ROADMAP.md` — v0.1.3 marcada `[x]` na Fase 5; v0.1.4 adicionada como próxima frente.
+
+### Validação
+
+- `npm test` — 7/7 gates PASS após renomeação CJS.
+
+### Nota
+
+Sem mudança de API. Instalações existentes da v0.1.2 não quebram — os arquivos `.js` não existem mais nos templates, mas projetos já instalados continuam funcionando com seus próprios `+wsd/bin/`. Para corrigir projetos existentes, renomear manualmente `+wsd/bin/wsd-validate-context.js` → `.cjs` e `+wsd/bin/wsd-snapshot.js` → `.cjs`, e atualizar referências no `scripts/wsd_check.sh` do projeto.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 17. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -519,7 +591,7 @@ concluídos).
 | 05/05/2026 14:13:39 -03 | Codex | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.2-alpha` com matriz de sincronização documental, checker dedicado e correção do teste de instalação. |
 | 06/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.3-alpha` com suporte operacional ao Claude Code. |
 | 06/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.4-alpha` — integração TLC Spec-Driven: `+specs/` expandido, 4 fases, auto-sizing, STATE.md/HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, Knowledge Chain (Regra 11), Scope Guardrail (Regra 12), Conventional Commits 1.0.0, flag `--brownfield` e novos comandos `/wsd-specify`, `/wsd-design`, `/wsd-tasks`. |
-| 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.5-alpha` — JSON Schema 2020-12 canônico para `.context.json` em `schemas/context.schema.json` + validador zero-deps `wsd-validate-context.js`. |
+| 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.5-alpha` — JSON Schema 2020-12 canônico para `+context.json` em `schemas/context.schema.json` + validador zero-deps `wsd-validate-context.js`. |
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.6-alpha` — ghost spec detector em `wsd_check.sh` + git hooks no bootstrap. Seção 8 adicionada, Registro renumerado para seção 9. |
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.7-alpha` — `wsd finish` automatizado (HANDOFF.md + prompts STATE.md). Seção 9 adicionada, Registro renumerado para seção 10. |
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.8-alpha` — instalação interativa rica, `wsd update` real, WHEN+THEN+SHALL completo. Seção 10 adicionada, Registro renumerado para seção 11. |
@@ -527,5 +599,7 @@ concluídos).
 | 07/05/2026 — | Codex | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.10-alpha` — MVP Git/GitHub Governance. Seção 12 adicionada, Registro renumerado para seção 13. |
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da versão `0.1.11-alpha` — Party Mode Integration. Seção 13 adicionada, Registro renumerado para seção 14. |
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da release **`0.1.0`** estável — drop do sufixo `-alpha`, Fase 4 fechada, modo manutenção. Seção 14 adicionada, Registro renumerado para seção 15. |
+| 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.2`** — ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md, skill idea-{slug}, PROJECT_SLUG, docs/15. Seção 15 adicionada, Registro renumerado para seção 16. |
+| 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.3`** — CJS/ESM fix (.cjs), RELEASING.md, project-snapshot spec, docs/05 expandido, governance gaps fechados. Seção 16 adicionada, Registro renumerado para seção 17. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
