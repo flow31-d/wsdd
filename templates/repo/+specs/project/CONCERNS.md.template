@@ -1,0 +1,37 @@
+# Concerns — {{PROJECT_NAME}}
+
+Componentes frágeis, dívidas técnicas, áreas L2 e riscos conhecidos.
+Consultar antes de tocar áreas sinalizadas. Atualizar conforme o projeto evolui.
+
+---
+
+## Componentes Frágeis
+
+> Áreas que quebram facilmente ou têm alto acoplamento. Tocar com cuidado extra.
+
+| Componente | Por que frágil | Mitigação | Adicionado em |
+|---|---|---|---|
+
+## Dívidas Técnicas
+
+| Item | Origem | Impacto | Plano |
+|---|---|---|---|
+
+## Áreas L2 (exigem aprovação humana)
+
+> Mudanças nestas áreas exigem confirmação humana explícita antes da execução.
+
+| Área | Por que L2 | Pessoa responsável |
+|---|---|---|
+
+## Riscos Conhecidos
+
+| Risco | Probabilidade | Mitigação |
+|---|---|---|
+
+## Itens que Exigem Spec Antes de Tocar
+
+> Lista de áreas/features que não podem ser modificadas sem spec WHEN/THEN/SHALL aprovada.
+
+| Área/Feature | Razão | Spec necessária |
+|---|---|---|

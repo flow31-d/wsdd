@@ -60,8 +60,8 @@
     "context_documents": [
       "+specs/project/PROJECT.md",
       "+specs/project/STATE.md",
-      "+specs/codebase/ARCHITECTURE.md",
-      "+specs/codebase/CONCERNS.md"
+      "+specs/project/CONCERNS.md",
+      "+specs/codebase/ARCHITECTURE.md"
     ],
     "local_checker": "scripts/wsd_check.sh",
     "active_candidate_specs": []

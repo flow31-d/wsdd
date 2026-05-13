@@ -1,7 +1,7 @@
 ---
 title: "Roadmap WSD"
 created: 05/05/2026
-modified: 12/05/2026
+modified: 13/05/2026
 tags:
   - x
   - wsd
@@ -61,6 +61,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Planejamento de `v0.1.2` — Ideas Workflow: spec aprovada (10 ACs WHEN/THEN/SHALL) e tasks definidas (T1–T9) em `+specs/features/ideas-workflow/`. Três componentes: IDEAS.md, IDEAS_PIPELINE.md, skill `/idea-{project_slug}`.
 - 11/05/2026 — Claude: Consolidação da entrega `v0.1.3` — CJS/ESM fix (`wsd-validate-context.cjs`, `wsd-snapshot.cjs`), governance gaps fechados (specs marcadas `implemented`, `docs/05` atualizado com seções ROADMAP/IDEAS/+wsd/), spec retroativa `project-snapshot`, `RELEASING.md` criado. 7/7 gates PASS.
 - 12/05/2026 — Claude (Opus 4.7): Consolidação da entrega `v0.1.4` (hotfix) — fix WSD-001 (3 templates faltantes no `wsdd`) + sync `wsdd` dos 6 commits pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (linha 217 do README + tag retroativa v0.1.3). Refs: Issue #10, `REVIEW_PRE_V1.md`. Próximo marco "estável adotável": `v0.2.0` (WSD-002/003/004 L0+L1/009/010).
+- 13/05/2026 — Claude (Opus 4.7): Consolidação da entrega `v0.2.0` (minor "estável adotável"). 8 features + UX polish: WSD-010 (CONCERNS padrão), WSD-002 (render condicional), WSD-009 (release script), WSD-007 (install opt-out D-001), WSD-004 L0+L1 (check robusto), WSD-003 (CI no wsdd), WSD-006 (Obsidian D-002), WSD-013 (fix raiz ENOENT). Decisões D-001 (Opção B+) e D-002 (Opção A) resolvidas. 9/9 npm test + 27/27 cenários e2e + piloto operacional no `flow31-d/worc`. Próximas frentes mapeadas para `v0.2.1`/`v0.3.0`: WSD-004 L2, WSD-005, WSD-008, WSD-012.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -145,7 +146,8 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.1.2` — **Ideas Workflow**: `IDEAS.md` + `IDEAS_PIPELINE.md` + skill `/idea-{PROJECT_SLUG}` com rename dinâmico por projeto + `PROJECT_SLUG` como variável de template derivada de `PROJECT_NAME` + opção Party Mode para L1/L2 em `wsd-idea.md`. Formato Obsidian. 8/8 gates PASS.
 - [x] `v0.1.3` — **CJS/ESM fix + Governance + Snapshot spec + RELEASING.md**: `wsd-validate-context.js` e `wsd-snapshot.js` renomeados para `.cjs` (compatibilidade com projetos `"type": "module"`); specs de `project-roadmap` e `ideas-workflow` marcadas como `implemented`; `docs/05` atualizado com seções ROADMAP/IDEAS/`+wsd/`; spec retroativa de `project-snapshot` criada; `RELEASING.md` com checklist obrigatório de release. 7/7 gates PASS.
 - [x] `v0.1.4` — **WSD-001 hotfix + governance cleanup**: três templates faltantes no `wsdd` público (`ROADMAP.md.template`, `IDEAS.md.template`, `IDEAS_PIPELINE.md.template`) sincronizados; 6 commits pendentes pós-v0.1.3 também sincronizados; README linha 217 corrigida de `v0.1.2` para `v0.1.4`; tag retroativa `v0.1.3` criada no commit `9525e90`. Refs: Issue #10, `REVIEW_PRE_V1.md` (WSD-001). 7/7 gates PASS.
-- [ ] `v0.2.0` — **Próximo marco "estável adotável"** (ver `REVIEW_PRE_V1.md` para detalhes): WSD-010 (CONCERNS.md padrão), WSD-002 (renderização condicional AGENTS.md), WSD-003 (CI no `wsdd`), WSD-009 (script de release `scripts/wsd_release.sh`), WSD-004 níveis L0+L1 (check robusto). Pede projeto piloto real antes do bump.
+- [x] `v0.2.0` — **Marco "estável adotável"**: 8 features funcionais + UX polish. WSD-010 (CONCERNS.md padrão #13), WSD-002 (renderização condicional `{{#if}}` no AGENTS.md #20), WSD-003 (CI no `wsdd`), WSD-009 (`scripts/wsd_release.sh` #22), WSD-007 (install com opt-out interativo D-001 #24), WSD-004 L0+L1 (`wsd check` robusto #26), WSD-006 (Obsidian declarado D-002 #15), WSD-013 (fix raiz ENOENT #18), UX polish (#27). Decisões D-001 (Opção B+) e D-002 (Opção A) resolvidas em 12-13/05/2026. 9/9 npm test PASS + 27/27 cenários e2e + piloto operacional no `flow31-d/worc`.
+- [ ] `v0.2.1` / `v0.3.0` — **Próxima frente**: itens não bloqueantes que ficaram fora do batch v0.2.0: WSD-004 L2 (branch_naming, pre-flight git, audit ROADMAP↔status), WSD-005 (normalização cosmética de PROJECT_NAME/CANONICAL_HOST), WSD-008 (tabela "quando cada arquivo passa a ter conteúdo real"), WSD-012 (`wsd git audit`). Ver `REVIEW_PRE_V1.md` para detalhes.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -208,5 +210,6 @@ Regra de acompanhamento:
 | 07/05/2026 — | Claude | `x/wsd/ROADMAP.md` | Fechamento dos 2 itens em aberto da Fase 3: perfis para outros stacks (descartado por redundância com instalação interativa) e validação YAML formal (descartado por obsolescência — formato `.spec.yaml.template` é legado). Fase 3 fechada 100%. |
 | 07/05/2026 — | Claude | `x/wsd/ROADMAP.md` | Release **`v0.1.0`** estável: Fase 4 100% fechada — bump v0.1.0, README "Uso Oficial", tags retroativas + tag final, compatibilidade Codex/Claude Code validada. Modo manutenção estável. |
 | 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/ROADMAP.md` | Consolidação da `v0.1.4` (hotfix WSD-001 + sync wsdd + governance v0.1.3) e adição de `v0.2.0` como próximo marco estável adotável conforme `REVIEW_PRE_V1.md`. |
+| 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/ROADMAP.md` | Consolidação da `v0.2.0` (minor "estável adotável") — 8 features + UX polish entregues; D-001/D-002 resolvidas. Adição de `v0.2.1`/`v0.3.0` como próximas frentes (WSD-004 L2, WSD-005, WSD-008, WSD-012). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

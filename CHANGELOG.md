@@ -1,7 +1,7 @@
 ---
 title: "Changelog WSD"
 created: 05/05/2026
-modified: 12/05/2026
+modified: 13/05/2026
 tags:
   - x
   - wsd
@@ -41,7 +41,8 @@ otimizado_para_obsidian: true
 15. [[#15. 0.1.2 — 11/05/2026]]
 16. [[#16. 0.1.3 — 11/05/2026]]
 17. [[#17. 0.1.4 — 12/05/2026]]
-18. [[#18. 🕒 Registro de Alterações por Agentes]]
+18. [[#18. 0.2.0 — 13/05/2026]]
+19. [[#19. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -63,6 +64,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Inclusão da release **`0.1.0`** estável — drop do sufixo `-alpha`, Fase 4 fechada (documentação oficial, tags retroativas, validação Codex/Claude Code), 2 itens descartados com rationale (perfis stacks, YAML schema). Seção 14 adicionada, Registro renumerado para seção 15.
 - 11/05/2026 — Claude: Inclusão da versão **`0.1.3`** — CJS/ESM fix, governance gaps, project-snapshot spec, RELEASING.md. Seção 16 adicionada, Registro renumerado para seção 17.
 - 12/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd público) + sincronização completa dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18.
+- 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.0`** (estável adotável) — minor release com 8 features funcionais + UX polish: CONCERNS.md como nota padrão (WSD-010), renderização condicional `{{#if}}` em templates (WSD-002), `scripts/wsd_release.sh` para automação de release (WSD-009), install com opt-out interativo de módulos opcionais (WSD-007 / D-001), `wsd check` L0+L1 robusto (WSD-004), CI no wsdd (WSD-003), Obsidian declarado como pré-requisito (WSD-006 / D-002), fix raiz de ENOENT em loops de cópia (WSD-013), e UX polish do install interativo (brownfield prompt + Enter=default header) baseado em feedback do piloto worc 13/05. Seção 18 adicionada, Registro renumerado para seção 19.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -627,7 +629,97 @@ Sem mudança de API. Instalações `v0.1.3` continuam funcionando. Projetos pode
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 18. 🕒 Registro de Alterações por Agentes
+## 18. 0.2.0 — 13/05/2026
+
+**Minor release "estável adotável".** Consolida 8 features funcionais + UX polish que vinham acumulando desde a `v0.1.4` (hotfix). Todos os itens foram especificados no `REVIEW_PRE_V1.md` durante a revisão pré-v1, com decisões de design (D-001 e D-002) registradas pelo usuário em 12/05/2026.
+
+### Adicionado
+
+- **WSD-002 — Renderização condicional do `AGENTS.md`** ([#20](https://github.com/flow31-d/WSD/pull/20))
+  - `render()` de `bin/wsd-method.js` suporta `{{#if FLAG}}...{{/if}}` e `{{#unless FLAG}}...{{/unless}}` (sintaxe mustache-like, lazy match, não-aninhada).
+  - `templates/repo/AGENTS.md.template` envolve refs a `+specs/codebase/*` em `{{#if BROWNFIELD}}` — em greenfield essas linhas somem; em brownfield aparecem.
+  - Antes: greenfield AGENTS.md tinha 8+ refs a arquivos inexistentes; agente batia em `ENOENT` ao tentar carregar.
+  - Depois: greenfield 0 refs codebase/, brownfield 7 refs codebase/ (validado por gates).
+
+- **WSD-003 — CI no `wsdd`** (commit `3d57c20` direto em `flow31-d/wsdd`)
+  - `.github/workflows/install-gates.yml` no `wsdd` público. Triggers: push e PR para `main`. Roda os 9 gates de `npm test` + `wsd_docs_check.sh` + `wsd_self_check.sh` em Node.js 20.
+  - Primeira validação independente do produto distribuído. Antes era "honor system" — WSD-001 e WSD-013 ficaram silenciosos por mais de uma semana.
+
+- **WSD-004 L0+L1 — `wsd check` robusto** ([#26](https://github.com/flow31-d/WSD/pull/26))
+  - L0: valida presença das 6 notas obrigatórias de `+specs/project/` (PROJECT, STATE, ROADMAP, IDEAS, IDEAS_PIPELINE, CONCERNS).
+  - L1: coerência ROADMAP ↔ specs — cada `+specs/features/<slug>/spec.md` referenciado no ROADMAP exige arquivo existente.
+  - L2 (branch_naming, pre-flight git, audit completo) fica para `v0.2.x`/`v0.3.0`.
+
+- **WSD-006 — Obsidian declarado como pré-requisito** ([#15](https://github.com/flow31-d/WSD/pull/15), resolve **D-002 Opção A**)
+  - Callout `> [!tip] Pré-requisitos Recomendados` no início da seção `## 9. Instalação` do README listando Obsidian e a sintaxe usada (frontmatter, callouts, wikilinks).
+  - Nova linha "Obsidian (recomendado)" na tabela de pré-requisitos em `docs/15`.
+
+- **WSD-007 — Install com opt-out interativo de módulos** ([#24](https://github.com/flow31-d/WSD/pull/24), resolve **D-001 Opção B+**)
+  - Settings `INSTALL_DOCS`, `INSTALL_PARTY_MODE`, `INSTALL_EXAMPLES` (default true).
+  - Prompts interativos no install: "Instalar metodologia em `+wsd/docs/`?", equivalentes para party-mode e examples.
+  - Flags equivalentes para automação: `--no-docs`, `--no-party-mode`, `--no-examples`.
+  - `+wsd/config.json` grava `modules` para que `wsd update` respeite as escolhas.
+  - Runtime essencial (`bin/`, `templates/`, `profiles/`, `scripts/`, `schemas/`) continua mandatório.
+
+- **WSD-009 — `scripts/wsd_release.sh`** ([#22](https://github.com/flow31-d/WSD/pull/22))
+  - Automação completa de release WSD privado + sync wsdd público.
+  - Fluxo: pré-flight, calculo de versão, verifica CHANGELOG/README/ROADMAP, bump, gates locais, branch + commit + push + PR, merge, tag + push tag, sync wsdd via whitelist, gates lá, commit + push + tag + GitHub Release.
+  - Flags: `--dry-run`, `--skip-wsdd`, `--auto-merge`, `--yes`, `--skip-tag`, `--skip-gh-release`.
+  - Shortcuts em `package.json`: `release:patch`, `release:minor`, `release:major`, `release:dry`.
+  - `RELEASING.md` ganha seção "Automatizada" como caminho recomendado.
+
+- **WSD-010 — `CONCERNS.md` como nota padrão de `+specs/project/`** ([#13](https://github.com/flow31-d/WSD/pull/13))
+  - Template movido de `templates/repo/+specs/codebase/CONCERNS.md.template` (só brownfield) para `templates/repo/+specs/project/CONCERNS.md.template` (sempre).
+  - Conteúdo reescrito para começar genuinamente vazio (5 seções com tabelas só com header).
+  - `AGENTS.md.template`, `+context.json.template`, `docs/05_contrato_artefatos.md`, `docs/04` atualizados.
+
+- **WSD-013 — Fix raiz de `ENOENT` em loops de cópia** ([#18](https://github.com/flow31-d/WSD/pull/18))
+  - `bin/wsd-method.js` ganha `fs.existsSync(srcPath)` guard nos 2 loops (`installVendorTree` e `update`).
+  - Antes: install morria com `ENOENT: scandir 'examples'` quando algum diretório opcional ausente. Resolvido pontualmente em `v0.1.4` (restaurando `examples/README.md` no wsdd); agora resolvido na causa.
+  - Novo gate `test:install-missing-optional` simula cenário "wsdd-like" sem `examples/`/`docs/`.
+
+- **UX polish do install interativo** ([#27](https://github.com/flow31-d/WSD/pull/27) + round 2 baseado em feedback piloto)
+  - Header `== Install WSD ==` explica explicitamente que `[valor entre colchetes]` é o default e Enter aceita. Resolve ambiguidade reportada no piloto worc.
+  - Brownfield vira prompt interativo (não só flag): "Projeto brownfield? [N]". Default `N`; pode ser pré-respondido via `--brownfield`.
+  - **Round 2** (feedback do operador após uso real):
+    - Removidos prompts redundantes: `PROJECT_TYPE`, `PRIMARY_LANGUAGE` e os 3 prompts de `TEST/BUILD/LINT` commands. Derivam automaticamente do profile. Operador edita `+context.json` se precisar customizar.
+    - Mensagem do prompt `Repositorio GitHub` limpa: removida nota "(vazio = skip)" que conflitava com o default sugerido a partir do remote detectado.
+    - Defaults mais ergonômicos: `GITHUB_MODE` `skip` → `auto`; `GIT_POLICY` `none` → `full`; `INSTALL_EXAMPLES` `true` → `false` (flag agora é `--examples` para opt-in, não mais `--no-examples` para opt-out).
+    - Novo prompt no final: "Rodar agora ./+wsd/bin/wsd (doctor, check, both ou nada)? [both]" — auto-executa diagnóstico/check após install. Default `both`. "Next steps" suprime as linhas dos comandos já executados.
+
+### Mudado
+
+- `package.json` `version` — `0.1.4` → `0.2.0`.
+- `npm test` — passa de 7 para **9 gates** (adicionados `test:install-missing-optional` e `test:install-modules-opt-out`).
+- `scripts/wsd_self_check.sh` — 8 novos gates de regressão (cobrem WSD-002, WSD-004, WSD-007, WSD-009, WSD-013).
+
+### Decisões de Design Registradas
+
+Durante a revisão pré-v1 (`REVIEW_PRE_V1.md`), o usuário decidiu em 12/05/2026:
+
+- **D-001 → Opção B+**: full default + prompts interativos para opt-out de módulos durante install. Justificativa: usuário novo greenfield que não sabe `--full` perderia acesso a metodologia em modo minimal. Implementado em WSD-007.
+- **D-002 → Opção A**: Obsidian-first declarado no README + docs/15. Justificativa: refactor portable consumiria 8-12h para ganho incremental baixo dado público-alvo. Implementado em WSD-006.
+
+### Validação
+
+- `npm test` — **9/9 gates PASS**.
+- `bash scripts/wsd_docs_check.sh` — PASS.
+- `bash scripts/wsd_self_check.sh` — PASS (8 novos gates de regressão).
+- **Validação end-to-end em matriz**: 27 cenários cobrindo brownfield+claude+git-full, both tools, opt-out de módulos, `wsd update`, `wsd check L1` com spec válida e com spec ausente → 27/27 PASS.
+- **Piloto operacional**: install interativo executado em projeto real (`flow31-d/worc`, monorepo TS Node 22 + Fastify + Next.js) em 13/05/2026. Todos os ~19 prompts funcionaram; `wsd doctor` e `wsd check L0` passaram limpo no projeto piloto.
+
+### Nota de Compatibilidade
+
+Sem mudança quebra-compat de API. **Mudanças de default no install** (ver Round 2) afetam apenas novos installs interativos que aceitam defaults sem flags — automação via `--yes` continua segura desde que as flags relevantes sejam passadas explicitamente (todos os gates `npm test` já fazem isso).
+
+- Instalações `v0.1.4` continuam funcionando inalteradas.
+- Projetos pré-`v0.2.0` rodando `./+wsd/bin/wsd update` ganham automaticamente: render condicional no `AGENTS.md` (próxima sessão), gates novos no `wsd check`, e (se reinstalarem) a possibilidade de opt-out de módulos.
+- O `+wsd/config.json` antigo (sem `modules`) continua funcionando — `update()` aplica default `true` para todos os módulos quando o campo está ausente.
+- **Mudança de flag**: `--no-examples` continua aceita (no-op explícito); novo `--examples` para opt-in. Defaults invertidos: examples agora é opt-in, não opt-out.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 19. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -648,5 +740,6 @@ Sem mudança de API. Instalações `v0.1.3` continuam funcionando. Projetos pode
 | 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.2`** — ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md, skill idea-{slug}, PROJECT_SLUG, docs/15. Seção 15 adicionada, Registro renumerado para seção 16. |
 | 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.3`** — CJS/ESM fix (.cjs), RELEASING.md, project-snapshot spec, docs/05 expandido, governance gaps fechados. Seção 16 adicionada, Registro renumerado para seção 17. |
 | 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd) + sync wsdd dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18. |
+| 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.0`** (minor "estável adotável") — 8 features funcionais (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013) + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto worc validados. Seção 18 adicionada, Registro renumerado para seção 19. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

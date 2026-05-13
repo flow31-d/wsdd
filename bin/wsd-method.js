@@ -41,7 +41,46 @@ const PROFILE_PRESETS = {
     test_build: 'ruff check app tests && pytest && docker compose config',
     l2_areas: ['migracao de banco', 'auth/autorizacao', 'secrets', 'producao', 'dados sensiveis']
   },
-
+  koomplet_office: {
+    project_name: 'Koomplet Office',
+    repo_name: 'flow31-d/koomplet-office',
+    github_remote: 'https://github.com/flow31-d/koomplet-office.git',
+    canonical_host: 'DLP',
+    canonical_path: '/srv/CLI/x/dev_cli/koomplet-office',
+    default_branch: 'master',
+    project_type: 'node_frontend_multiplayer_workspace',
+    primary_language: 'TypeScript',
+    environment_policy_summary: 'DLP e o desenvolvimento canonico. GitHub e o historico compartilhado. Oct e publicacao/proxy/frontend servido, nao ambiente de desenvolvimento.',
+    clone_topology_markdown: '- DLP: desenvolvimento canonico.\\n- GitHub: historico compartilhado.\\n- Oct: publicacao/proxy/frontend servido.',
+    lint: [],
+    test: ['npm test'],
+    build: ['npm run build'],
+    smoke: ['validar asset publico servido em https://work.koomplet.com/office/'],
+    test_quick: 'npm test -- --findRelatedTests',
+    test_full: 'npm test',
+    test_build: 'npm test && npm run build',
+    l2_areas: ['deploy publico', 'rsync para Oct', 'proxy/SSL', 'base path /office/', 'assets publicados']
+  },
+  prescreve_mais: {
+    project_name: 'Prescreve Mais',
+    repo_name: 'GitKoomplet/prescreve_mais',
+    github_remote: 'https://github.com/GitKoomplet/prescreve_mais.git',
+    canonical_host: 'Oct',
+    canonical_path: '/srv/oct/prescreve_mais',
+    default_branch: 'main',
+    project_type: 'python_api_and_frontend',
+    primary_language: 'Python/TypeScript',
+    environment_policy_summary: 'GitHub e o historico compartilhado. Oct e o plano operacional. DLP e auditoria/laboratorio.',
+    clone_topology_markdown: '- GitHub: historico compartilhado.\\n- Oct: plano operacional.\\n- DLP: auditoria/laboratorio.',
+    lint: ['poetry run ruff check app tests', 'cd frontend && npm run lint'],
+    test: ['bash scripts/run_epic1_pr_gate.sh', 'cd frontend && npm run test:run'],
+    build: ['cd frontend && npm run build', 'docker compose config'],
+    smoke: [],
+    test_quick: 'cd frontend && npm run test:run',
+    test_full: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run test:run',
+    test_build: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run build && docker compose config',
+    l2_areas: ['Vidaas/IntegraICP', 'dados sensiveis', 'auth', 'banco', 'producao']
+  }
 };
 
 main().catch((error) => {
@@ -126,31 +165,50 @@ async function install(args) {
   const settings = buildSettings(profile, detected, args, directory);
 
   if (interactive) {
+    console.log('');
+    console.log('== Install WSD ==');
+    console.log('Em todas as perguntas, [valor entre colchetes] é o default. Pressione Enter para aceitar.');
+    console.log('');
     // Identidade do projeto
+    // PROJECT_TYPE, PRIMARY_LANGUAGE e os comandos de validacao (test/build/lint)
+    // NAO sao mais prompts — derivam automaticamente do profile. Operador edita
+    // depois no +context.json se precisar customizar.
     settings.PROJECT_NAME = await ask(prompt, 'Nome do projeto', settings.PROJECT_NAME);
-    settings.PROJECT_TYPE = await ask(prompt, 'Tipo do projeto', settings.PROJECT_TYPE);
-    settings.PRIMARY_LANGUAGE = await ask(prompt, 'Linguagem principal', settings.PRIMARY_LANGUAGE);
     settings.CANONICAL_HOST = await ask(prompt, 'Host canonico', settings.CANONICAL_HOST);
     settings.CANONICAL_PATH = await ask(prompt, 'Path canonico', settings.CANONICAL_PATH);
     settings.DEFAULT_BRANCH = await ask(prompt, 'Branch principal', settings.DEFAULT_BRANCH);
-    settings.REPO_NAME = await ask(prompt, 'Repositorio GitHub owner/name (vazio = skip)', settings.REPO_NAME);
+    settings.REPO_NAME = await ask(prompt, 'Repositorio GitHub owner/name', settings.REPO_NAME);
     settings.GITHUB_MODE = await ask(prompt, 'GitHub: existing, auto, assisted ou skip', settings.GITHUB_MODE);
     settings.GIT_POLICY = normalizeGitPolicy(await ask(prompt, 'Git Governance: none, basic ou full', settings.GIT_POLICY));
     settings.TOOLS = splitCsv(await ask(prompt, 'Ferramentas: codex, claude-code, both ou none', settings.TOOLS.join(',')));
 
-    // Comandos de validacao
-    console.log('');
-    console.log('Comandos de validacao (Enter = manter padrao do perfil):');
-    const testIn = await ask(prompt, '  Teste (ex: npm test, pytest, go test ./...)', settings.TEST_COMMANDS.join(', '));
-    if (testIn && testIn !== settings.TEST_COMMANDS.join(', ')) settings.TEST_COMMANDS = splitCsv(testIn);
-    const buildIn = await ask(prompt, '  Build (ex: npm run build, go build ./...)', settings.BUILD_COMMANDS.join(', '));
-    if (buildIn && buildIn !== settings.BUILD_COMMANDS.join(', ')) settings.BUILD_COMMANDS = splitCsv(buildIn);
-    const lintIn = await ask(prompt, '  Lint (ex: npm run lint, ruff check .)', settings.LINT_COMMANDS.join(', '));
-    if (lintIn && lintIn !== settings.LINT_COMMANDS.join(', ')) settings.LINT_COMMANDS = splitCsv(lintIn);
-
     // Seguranca
     const forbidIn = await ask(prompt, 'Paths proibidos csv (ex: ./secrets,./prod)', settings.FORBIDDEN_PATHS.join(','));
     if (forbidIn && forbidIn !== settings.FORBIDDEN_PATHS.join(',')) settings.FORBIDDEN_PATHS = splitCsv(forbidIn);
+
+    // Modo (brownfield = projeto com código existente)
+    const askYesNo = async (msg, def) => {
+      const ans = (await ask(prompt, msg, def ? 'S' : 'n')).trim().toLowerCase();
+      if (ans === '') return def;
+      return !/^n/.test(ans);
+    };
+    settings.BROWNFIELD = await askYesNo(
+      'Projeto brownfield (gera +specs/codebase/ com STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, TESTING)?',
+      settings.BROWNFIELD
+    );
+
+    // Modulos opcionais (D-001 Opcao B+: full default, opt-out via prompt).
+    settings.INSTALL_DOCS = await askYesNo('Instalar metodologia em +wsd/docs/ (~18 arquivos)?', settings.INSTALL_DOCS);
+    settings.INSTALL_PARTY_MODE = await askYesNo('Instalar party-mode em +wsd/party-mode/ (~30 arquivos)?', settings.INSTALL_PARTY_MODE);
+    settings.INSTALL_EXAMPLES = await askYesNo('Instalar exemplos em +wsd/examples/?', settings.INSTALL_EXAMPLES);
+
+    // Auto-run pos-install (doctor/check/both/nada)
+    const autoIn = (await ask(prompt, 'Rodar agora ./+wsd/bin/wsd (doctor, check, both ou nada)?', 'both')).trim().toLowerCase();
+    if (['doctor', 'check', 'both'].includes(autoIn)) {
+      settings._AUTO_RUN_POST_INSTALL = autoIn;
+    } else {
+      settings._AUTO_RUN_POST_INSTALL = 'nada';
+    }
   }
   if (prompt) prompt.close();
 
@@ -163,7 +221,7 @@ async function install(args) {
   installClaudeCommands(directory, settings, Boolean(args.force));
   installGitHooks(directory, Boolean(args.force), Boolean(args['no-git-hooks']));
   installGitGovernanceModule(directory, settings, Boolean(args.force));
-  installPartyMode(directory, Boolean(args.force));
+  installPartyMode(directory, Boolean(args.force), settings.INSTALL_PARTY_MODE !== false);
   writeProjectConfig(directory, settings);
   appendSnapshotGitignore(directory);
 
@@ -171,11 +229,29 @@ async function install(args) {
 
   console.log('');
   console.log(`WSD installed in ${directory}`);
+
+  // Auto-run pos-install (escolhido no prompt interativo do bloco anterior).
+  const autoRun = settings._AUTO_RUN_POST_INSTALL || 'nada';
+  const wsdBin = path.join(directory, '+wsd', 'bin', 'wsd');
+  const ranDoctor = (autoRun === 'doctor' || autoRun === 'both');
+  const ranCheck = (autoRun === 'check' || autoRun === 'both');
+  if (ranDoctor) {
+    console.log('');
+    console.log('== ./+wsd/bin/wsd doctor ==');
+    cp.spawnSync(wsdBin, ['doctor'], { stdio: 'inherit', cwd: directory });
+  }
+  if (ranCheck) {
+    console.log('');
+    console.log('== ./+wsd/bin/wsd check ==');
+    cp.spawnSync(wsdBin, ['check'], { stdio: 'inherit', cwd: directory });
+  }
+
+  console.log('');
   console.log('Next steps:');
   console.log('  1. Review generated files.');
-  console.log('  2. Run: ./+wsd/bin/wsd doctor');
-  console.log('  3. Run: ./+wsd/bin/wsd check');
-  console.log('  4. Commit generated WSD files on a dedicated branch.');
+  if (!ranDoctor) console.log('  2. Run: ./+wsd/bin/wsd doctor');
+  if (!ranCheck) console.log(`  ${ranDoctor ? '2' : '3'}. Run: ./+wsd/bin/wsd check`);
+  console.log(`  ${ranDoctor && ranCheck ? '2' : (ranDoctor || ranCheck ? '3' : '4')}. Commit generated WSD files on a dedicated branch.`);
 }
 
 async function update(args) {
@@ -189,9 +265,31 @@ async function update(args) {
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const prevVersion = config.version || 'unknown';
   const vendor = path.join(directory, '+wsd');
+  const modules = config.modules || { docs: true, party_mode: true, examples: true };
 
-  for (const name of ['docs', 'templates', 'profiles', 'scripts', 'examples', 'schemas']) {
-    copyDir(path.join(WSD_ROOT, name), path.join(vendor, name));
+  const dirs = ['templates', 'profiles', 'scripts', 'schemas'];
+  if (modules.docs !== false) dirs.push('docs');
+  else console.log('info: skipping docs/ (modules.docs=false in +wsd/config.json)');
+  if (modules.examples !== false) dirs.push('examples');
+  else console.log('info: skipping examples/ (modules.examples=false in +wsd/config.json)');
+
+  for (const name of dirs) {
+    const srcPath = path.join(WSD_ROOT, name);
+    if (!fs.existsSync(srcPath)) {
+      console.log(`info: skipping ${name}/ (not present in source)`);
+      continue;
+    }
+    copyDir(srcPath, path.join(vendor, name));
+  }
+
+  // party-mode/ é tratado separadamente (não no loop principal)
+  if (modules.party_mode !== false) {
+    const partyMode = path.join(WSD_ROOT, 'party-mode');
+    if (fs.existsSync(partyMode)) {
+      copyDir(partyMode, path.join(vendor, 'party-mode'));
+    }
+  } else {
+    console.log('info: skipping party-mode/ (modules.party_mode=false in +wsd/config.json)');
   }
 
   ensureDir(path.join(vendor, 'bin'));
@@ -241,8 +339,8 @@ function buildSettings(profile, detected, args, directory) {
     AUDIT_LAB_CLONE: String(args['audit-lab-clone'] || profile.audit_lab_clone || ''),
     DEPLOY_CLONE: String(args['deploy-clone'] || profile.deploy_clone || ''),
     PROMOTION_FLOW: String(args['promotion-flow'] || 'branch_push_pr_merge'),
-    GITHUB_MODE: String(args.github || 'skip'),
-    GIT_POLICY: normalizeGitPolicy(args['git-policy'] || 'none'),
+    GITHUB_MODE: String(args.github || 'auto'),
+    GIT_POLICY: normalizeGitPolicy(args['git-policy'] || 'full'),
     REMOTE_PROTOCOL: String(args['remote-protocol'] || 'https'),
     GITHUB_CLI_REQUIRED: String(args['github-cli-required'] || 'false'),
     LEGACY_BRANCH_ALLOWED: String(args['legacy-branch-allowed'] || 'false'),
@@ -265,6 +363,9 @@ function buildSettings(profile, detected, args, directory) {
     TEST_FULL_COMMAND: String(args['test-full'] || profile.test_full || [...(profile.lint || []), ...(profile.test || [])].join(' && ') || 'echo "no full gate configured"'),
     TEST_BUILD_COMMAND: String(args['test-build'] || profile.test_build || [...(profile.lint || []), ...(profile.test || []), ...(profile.build || [])].join(' && ') || 'echo "no build gate configured"'),
     BROWNFIELD: Boolean(args.brownfield),
+    INSTALL_DOCS: !args['no-docs'],
+    INSTALL_PARTY_MODE: !args['no-party-mode'],
+    INSTALL_EXAMPLES: Boolean(args.examples) && !args['no-examples'],
     ENVIRONMENT_POLICY_SUMMARY: profile.environment_policy_summary || 'GitHub e o historico compartilhado. O host canonico declarado neste arquivo e a fonte operacional do projeto.',
     ENVIRONMENT_POLICY_DETAILS: profile.environment_policy_details || 'Trabalhar sempre a partir do host canonico, em branch dedicada, com validacao proporcional ao risco.',
     CLONE_TOPOLOGY_MARKDOWN: profile.clone_topology_markdown || '- GitHub: historico compartilhado.\\n- Host canonico: desenvolvimento e validacao local.',
@@ -348,8 +449,20 @@ function keyToPlaceholder(key) {
 function installVendorTree(directory, settings) {
   const vendor = path.join(directory, '+wsd');
   ensureDir(vendor);
-  for (const name of ['docs', 'templates', 'profiles', 'scripts', 'examples', 'schemas']) {
-    copyDir(path.join(WSD_ROOT, name), path.join(vendor, name), { skipGit: true });
+  // templates/, profiles/, scripts/, schemas/ sao runtime obrigatorios.
+  // docs/ e examples/ sao opt-out via settings (D-001 Opcao B+).
+  const dirs = ['templates', 'profiles', 'scripts', 'schemas'];
+  if (settings.INSTALL_DOCS !== false) dirs.push('docs');
+  else console.log('info: skipping docs/ (--no-docs)');
+  if (settings.INSTALL_EXAMPLES !== false) dirs.push('examples');
+  else console.log('info: skipping examples/ (--no-examples)');
+  for (const name of dirs) {
+    const srcPath = path.join(WSD_ROOT, name);
+    if (!fs.existsSync(srcPath)) {
+      console.log(`info: skipping ${name}/ (not present in source)`);
+      continue;
+    }
+    copyDir(srcPath, path.join(vendor, name), { skipGit: true });
   }
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
@@ -426,7 +539,11 @@ function installGitHooks(directory, force, skip) {
   }
 }
 
-function installPartyMode(directory, force) {
+function installPartyMode(directory, force, enabled = true) {
+  if (!enabled) {
+    console.log('info: skipping party-mode/ (--no-party-mode)');
+    return;
+  }
   const sourceRoot = path.join(WSD_ROOT, 'party-mode');
   if (!fs.existsSync(sourceRoot)) return;
   const targetRoot = path.join(directory, '+wsd', 'party-mode');
@@ -521,6 +638,12 @@ function writeProjectConfig(directory, settings) {
     github_mode: settings.GITHUB_MODE,
     git_policy: settings.GIT_POLICY
   };
+  // Modulos opcionais (D-001 Opcao B+) — escolhidos no install, respeitados por update.
+  config.modules = {
+    docs: settings.INSTALL_DOCS !== false,
+    party_mode: settings.INSTALL_PARTY_MODE !== false,
+    examples: settings.INSTALL_EXAMPLES !== false
+  };
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
 }
 
@@ -566,6 +689,16 @@ function hasRemote(directory) {
 }
 
 function render(text, settings) {
+  // Conditional blocks (não-aninhados, lazy match para suportar múltiplos blocos):
+  //   {{#if FLAG}}...{{/if}}        — incluído se settings[FLAG] truthy
+  //   {{#unless FLAG}}...{{/unless}} — incluído se settings[FLAG] falsy
+  text = text.replace(/\{\{#if ([A-Z0-9_]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_m, flag, content) => {
+    return settings[flag] ? content : '';
+  });
+  text = text.replace(/\{\{#unless ([A-Z0-9_]+)\}\}([\s\S]*?)\{\{\/unless\}\}/g, (_m, flag, content) => {
+    return !settings[flag] ? content : '';
+  });
+  // Placeholders simples {{KEY}}.
   return text.replace(/\{\{([A-Z0-9_]+)\}\}/g, (_match, key) => {
     if (Object.prototype.hasOwnProperty.call(settings, key)) return String(settings[key]);
     return '';
@@ -720,12 +853,15 @@ function help() {
   console.log('  wsd-method help');
   console.log('');
   console.log('Flags (install):');
-  console.log('  --brownfield     Generate +specs/codebase/ (STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, CONCERNS, TESTING)');
-  console.log('  --git-policy     Git/GitHub Governance mode: none, basic or full (default: none)');
-  console.log('  --no-git-hooks   Skip installing pre-commit, commit-msg and pre-push git hooks');
-  console.log('  --test-quick STR Override quick gate command (default from profile)');
-  console.log('  --test-full STR  Override full gate command');
-  console.log('  --test-build STR Override build gate command');
+  console.log('  --brownfield        Generate +specs/codebase/ (STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, TESTING)');
+  console.log('  --git-policy        Git/GitHub Governance mode: none, basic or full (default: none)');
+  console.log('  --no-git-hooks      Skip installing pre-commit, commit-msg and pre-push git hooks');
+  console.log('  --no-docs           Skip installing +wsd/docs/ (methodology reference)');
+  console.log('  --no-party-mode     Skip installing +wsd/party-mode/ (multi-agent system)');
+  console.log('  --examples          Install +wsd/examples/ (reference material; default: skipped)');
+  console.log('  --test-quick STR    Override quick gate command (default from profile)');
+  console.log('  --test-full STR     Override full gate command');
+  console.log('  --test-build STR    Override build gate command');
   console.log('');
   console.log('update: refreshes +wsd/ vendor tree (docs, templates, schemas, bin) from WSD source.');
   console.log('  Preserves: +context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');

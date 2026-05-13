@@ -77,7 +77,7 @@ tlc_required=(
   "templates/repo/+specs/codebase/CONVENTIONS.md.template"
   "templates/repo/+specs/codebase/STRUCTURE.md.template"
   "templates/repo/+specs/codebase/INTEGRATIONS.md.template"
-  "templates/repo/+specs/codebase/CONCERNS.md.template"
+  "templates/repo/+specs/project/CONCERNS.md.template"
   "templates/repo/+specs/codebase/TESTING.md.template"
   "templates/specs/feature-spec.md.template"
   "templates/specs/feature-tasks.md.template"

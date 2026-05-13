@@ -1,7 +1,7 @@
 ---
 title: "04 — Playbook de Implantação WSD"
 created: 05/05/2026
-modified: 05/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -167,9 +167,10 @@ Com `--brownfield`, também são gerados (preencher após install):
 +specs/codebase/CONVENTIONS.md
 +specs/codebase/STRUCTURE.md
 +specs/codebase/INTEGRATIONS.md
-+specs/codebase/CONCERNS.md
 +specs/codebase/TESTING.md
 ```
+
+> Nota: `CONCERNS.md` deixou de ser exclusivo do brownfield desde `v0.2.0` — agora é gerado em `+specs/project/CONCERNS.md` para todo install (greenfield e brownfield).
 
 Cópia manual de `templates/repo/` só deve ser usada como fallback, quando o instalador não puder rodar.
 

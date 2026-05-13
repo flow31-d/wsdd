@@ -1,7 +1,7 @@
 ---
 title: "05 — Contrato de Artefatos WSD"
 created: 05/05/2026
-modified: 05/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -47,6 +47,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Planejamento do bloco `git_governance` no `+context.json` para o MVP Git/GitHub Governance (`v0.1.10-alpha`).
 - 07/05/2026 — Codex: Marcação do bloco `git_governance` como implementado na `v0.1.10-alpha` e validado pelo schema canônico.
 - 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
+- 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -200,7 +201,10 @@ Notebook de captura fiel de ideias brutas. Cada ideia recebe um ID sequencial pe
 ### `+specs/project/IDEAS_PIPELINE.md` (v0.1.2)
 Índice de controle de progressão das ideias: `raw → detalhada → spec-criada → em-roadmap → implementada → descartada`. Atualizado sempre que uma ideia avança de etapa.
 
-**Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia.
+### `+specs/project/CONCERNS.md` (v0.2.0)
+Componentes frágeis, dívidas técnicas, áreas L2 (que exigem aprovação humana) e riscos conhecidos do projeto. Sempre gerado pelo installer (greenfield e brownfield) — começa vazio e é populado conforme o projeto evolui. Antes do `v0.2.0`, esta nota era condicional a `--brownfield` e ficava em `+specs/codebase/CONCERNS.md`; o argumento para o move é que todo projeto eventualmente terá concerns, e fazer a nota parte do contrato padrão evita perda de memória de fragilidades.
+
+**Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia. Quando identificar concerns durante o trabalho (componente frágil tocado, dívida técnica descoberta, área que precisa de aprovação humana), atualizar `CONCERNS.md` na sessão em que a descoberta ocorreu.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

@@ -1,7 +1,7 @@
 ---
 title: "15 — Repositório Público e Quick Start"
 created: 11/05/2026
-modified: 11/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -45,6 +45,7 @@ otimizado_para_obsidian: true
 Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
 
 - 11/05/2026 — Claude: Criação do documento. Quick start via GitHub, estratégia privado × público, workflow de sync, regras de compatibilidade e checklist de release pública.
+- 12/05/2026 — Claude (Opus 4.7): Adicionada linha de pré-requisito "Obsidian (recomendado)" em 3.1, com explicação da renderização visual de frontmatter/callouts/wikilinks. Refs WSD-006 + decisão D-002 Opção A.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -67,7 +68,7 @@ O documento [[wsd/docs/09_publicacao_github_privado|09 — Publicação]] cobre 
 Usuários com Node.js ≥ 20 podem instalar o WSD diretamente do repositório público, sem npm publish e sem criar conta em registry:
 
 ```bash
-npx github:flow31-d/wsdd install
+npx github:flow31-d/WSD install
 ```
 
 O `npx` baixa o repositório e executa o `bin/wsd-method.js` (entrada definida em `package.json#bin`). A estrutura de diretórios é preservada no download temporário, então `WSD_ROOT = path.resolve(__dirname, '..')` resolve corretamente e encontra `templates/`, `schemas/`, `party-mode/`.
@@ -76,13 +77,13 @@ Variações:
 
 ```bash
 # Com opções explícitas (greenfield)
-npx github:flow31-d/wsdd install --tools claude-code --git-policy basic --yes
+npx github:flow31-d/WSD install --tools claude-code --git-policy basic --yes
 
 # Brownfield
-npx github:flow31-d/wsdd install --tools both --git-policy full --brownfield --yes
+npx github:flow31-d/WSD install --tools both --git-policy full --brownfield --yes
 
 # Versão específica via tag Git
-npx github:flow31-d/wsdd#v0.1.0 install
+npx github:flow31-d/WSD#v0.1.0 install
 ```
 
 ### 3.1 Pré-requisitos do usuário
@@ -92,6 +93,7 @@ npx github:flow31-d/wsdd#v0.1.0 install
 | Node.js ≥ 20 | Sim | Executa o installer |
 | Git | Recomendado | `--init-git` no projeto-alvo |
 | `gh` CLI | Opcional | `--git-policy full` com templates GitHub |
+| [Obsidian](https://obsidian.md) | Recomendado | Leitura ótima das notas geradas — frontmatter, callouts (`> [!info]`, `> [!abstract]`) e wikilinks (`[[outra-nota]]`) renderizam visualmente. Sem Obsidian, o conteúdo é legível mas aparece como texto cru |
 
 ### 3.2 Limitações do quick start via GitHub
 
@@ -118,7 +120,7 @@ Público (github.com/flow31-d/WSD)
   ├── Core do método (CLI, templates, schemas, party-mode)
   ├── Perfis genéricos (generic_node_frontend, generic_python_api)
   ├── Documentação pública (README, CHANGELOG, ROADMAP, docs/)
-  └── Quick start: npx github:flow31-d/wsdd install
+  └── Quick start: npx github:flow31-d/WSD install
 ```
 
 **Regra de ouro:** o público é sempre um snapshot testado do privado. Nunca alterar o público sem antes validar localmente. Nunca adicionar ao público o que é específico de projeto interno.
@@ -267,7 +269,7 @@ Vantagens sobre GitHub: `@latest` e `@next` automáticos, versionamento semânti
 
 Desvantagem: mais um registry externo para manter; o quick start via GitHub já cobre o caso de uso solo e times pequenos sem overhead adicional.
 
-**Decisão atual (11/05/2026):** manter `"private": true` e usar `npx github:flow31-d/wsdd` como quick start padrão. npm registry fica como opção futura se houver adoção externa real.
+**Decisão atual (11/05/2026):** manter `"private": true` e usar `npx github:flow31-d/WSD` como quick start padrão. npm registry fica como opção futura se houver adoção externa real.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

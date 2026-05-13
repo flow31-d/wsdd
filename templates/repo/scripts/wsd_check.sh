@@ -65,13 +65,18 @@ else
   echo "warn: node missing or +wsd/bin/wsd-validate-context.cjs absent — schema validation skipped"
 fi
 
-[[ -f "+specs/project/STATE.md" ]] || fail "+specs/project/STATE.md missing"
-pass_step "STATE.md present"
-
 [[ -f "AGENTS.md" ]] || fail "AGENTS.md missing"
 [[ -d "+specs" ]] || fail "+specs directory missing"
 [[ -d "+specs/project" ]] || fail "+specs/project directory missing"
 pass_step "WSD directories present"
+
+# L0: presença das 6 notas obrigatórias de +specs/project/ (WSD-004)
+# Antes só STATE.md era checada; WSD-001 escapou porque o gate não validava as outras.
+_project_notes=(PROJECT.md STATE.md ROADMAP.md IDEAS.md IDEAS_PIPELINE.md CONCERNS.md)
+for _note in "${_project_notes[@]}"; do
+  [[ -f "+specs/project/$_note" ]] || fail "+specs/project/$_note missing (L0 required)"
+done
+pass_step "6 notas obrigatórias de +specs/project/ presentes (L0)"
 
 if grep -R "{{[A-Z0-9_][A-Z0-9_]*}}" AGENTS.md +context.json +specs +logs scripts 2>/dev/null; then
   fail "unrendered placeholders found"
@@ -101,6 +106,25 @@ if [[ -d "+specs/features" ]]; then
   elif find +specs/features -maxdepth 2 -name 'spec.md' 2>/dev/null | grep -q .; then
     pass_step "feature specs have WHEN/THEN/SHALL"
   fi
+fi
+
+# L1: coerência ROADMAP ↔ spec — todas as referências `+specs/features/<slug>/spec.md`
+# no ROADMAP.md devem apontar para arquivos existentes (WSD-004)
+if [[ "$risk" == "L1" || "$risk" == "L2" ]] && [[ -f "+specs/project/ROADMAP.md" ]]; then
+  _missing_specs=()
+  while IFS= read -r _spec_ref; do
+    # Normaliza: remove backticks, espaços, links markdown
+    _spec_path=$(echo "$_spec_ref" | sed -E 's/.*(\+specs\/features\/[a-zA-Z0-9_-]+\/spec\.md).*/\1/')
+    if [[ -n "$_spec_path" ]] && [[ ! -f "$_spec_path" ]]; then
+      _missing_specs+=("$_spec_path")
+    fi
+  done < <(grep -oE '\+specs/features/[a-zA-Z0-9_-]+/spec\.md' "+specs/project/ROADMAP.md" 2>/dev/null | sort -u)
+  if [[ ${#_missing_specs[@]} -gt 0 ]]; then
+    echo "FAIL: ROADMAP.md referencia specs ausentes:" >&2
+    for _s in "${_missing_specs[@]}"; do echo "  - $_s" >&2; done
+    fail "spec coherence broken — adicione spec.md ou remova entry do ROADMAP"
+  fi
+  pass_step "ROADMAP referencia specs válidas (L1)"
 fi
 
 if [[ "$risk" == "L1" || "$risk" == "L2" ]]; then

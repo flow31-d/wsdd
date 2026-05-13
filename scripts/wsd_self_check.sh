@@ -168,6 +168,37 @@ grep -q 'ghost spec' templates/repo/scripts/wsd_check.sh || fail "templates/repo
 grep -q '_spec_has_wts' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing _spec_has_wts (WHEN+THEN+SHALL triple check)"
 ok "wsd_check.sh template has complete WHEN/THEN/SHALL gate"
 
+# WSD-009 regression: release script presente e executável
+[ -f scripts/wsd_release.sh ] || fail "scripts/wsd_release.sh missing (WSD-009)"
+[ -x scripts/wsd_release.sh ] || fail "scripts/wsd_release.sh not executable (WSD-009)"
+bash -n scripts/wsd_release.sh || fail "scripts/wsd_release.sh has syntax error"
+ok "wsd_release.sh present, executable, syntax-valid (WSD-009)"
+
+# WSD-002 regression: render() suporta conditionals
+grep -q '{{#if' bin/wsd-method.js || fail "bin/wsd-method.js render() missing {{#if}} conditional support (WSD-002)"
+grep -q '{{#unless' bin/wsd-method.js || fail "bin/wsd-method.js render() missing {{#unless}} conditional support (WSD-002)"
+ok "render() supports {{#if}}/{{#unless}} conditionals (WSD-002)"
+
+# WSD-013 regression: fs.existsSync guards nos loops de cópia
+existsync_count=$(grep -c 'fs.existsSync(srcPath)' bin/wsd-method.js || true)
+if [[ "$existsync_count" -lt 2 ]]; then
+  fail "bin/wsd-method.js missing fs.existsSync guards in copy loops (WSD-013): found $existsync_count, need 2"
+fi
+ok "bin/wsd-method.js has fs.existsSync guards in copy loops (WSD-013)"
+
+# WSD-007 regression: módulos opcionais (D-001) — settings, prompts, config.modules
+grep -q 'INSTALL_DOCS' bin/wsd-method.js || fail "bin/wsd-method.js missing INSTALL_DOCS setting (WSD-007)"
+grep -q 'INSTALL_PARTY_MODE' bin/wsd-method.js || fail "bin/wsd-method.js missing INSTALL_PARTY_MODE setting (WSD-007)"
+grep -q 'INSTALL_EXAMPLES' bin/wsd-method.js || fail "bin/wsd-method.js missing INSTALL_EXAMPLES setting (WSD-007)"
+grep -q 'config.modules' bin/wsd-method.js || fail "bin/wsd-method.js missing config.modules (WSD-007)"
+ok "WSD-007 install opt-out wired (settings + config.modules)"
+
+# WSD-004 regression: wsd_check.sh template valida 6 notas project/ (L0) + ROADMAP coherence (L1)
+grep -q '_project_notes' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing _project_notes L0 check (WSD-004)"
+grep -q 'CONCERNS.md' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing CONCERNS.md in L0 manifest (WSD-004)"
+grep -q 'ROADMAP referencia specs válidas' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing L1 ROADMAP coherence check (WSD-004)"
+ok "WSD-004 L0+L1 gates present in wsd_check.sh template"
+
 # HANDOFF.md generation in finish case
 grep -q 'HANDOFF.md' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing HANDOFF.md generation in finish"
 ok "wsd CLI finish generates HANDOFF.md"
