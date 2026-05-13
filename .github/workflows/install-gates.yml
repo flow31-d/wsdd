@@ -1,0 +1,32 @@
+name: Install Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  install-gates:
+    name: 7 install gates (npm test)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install jq (used by test:install-claude)
+        run: sudo apt-get install -y jq
+
+      - name: Run all 7 install gates
+        run: npm test
+
+      - name: Run docs check
+        run: bash scripts/wsd_docs_check.sh
+
+      - name: Run self check
+        run: bash scripts/wsd_self_check.sh
