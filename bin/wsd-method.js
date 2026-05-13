@@ -305,9 +305,14 @@ async function update(args) {
   config.wsd_source = WSD_ROOT;
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
 
+  // Lista dinâmica reflete o que foi efetivamente copiado (respeita config.modules).
+  const refreshed = ['bin', 'templates', 'profiles', 'scripts', 'schemas'];
+  if (modules.docs !== false) refreshed.push('docs');
+  if (modules.examples !== false) refreshed.push('examples');
+  if (modules.party_mode !== false) refreshed.push('party-mode');
   console.log('');
   console.log(`WSD updated: ${prevVersion} -> ${VERSION}`);
-  console.log('Refreshed: +wsd/{docs,templates,profiles,schemas,scripts,examples,bin}');
+  console.log(`Refreshed: +wsd/{${refreshed.sort().join(',')}}`);
   console.log('Preserved: +context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
   console.log('');
   console.log('Run: ./+wsd/bin/wsd doctor');

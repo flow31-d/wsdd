@@ -89,7 +89,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.1.0`** (release estável).
+Versão atual do pacote: **`v0.2.1`** (patch cosmético sobre `v0.2.0`, marco "estável adotável").
 
 O WSD já possui:
 
@@ -118,8 +118,11 @@ O WSD já possui:
 - MVP Git/GitHub Governance implementado: `--git-policy none|basic|full`, bloco `git_governance` no `+context.json`, seção Git/GitHub no `AGENTS.md`, templates `.github/` no modo `full` e testes de instalação para `none`, `basic` e `full` (v0.1.10).
 - Party Mode Integration: `installPartyMode` copia 26 agentes para `+wsd/party-mode/`, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção `## Party Mode` no `AGENTS.md` gerado e `test:install-party-mode` no pipeline `npm test` (7/7 gates PASS) (v0.1.11).
 - Release **`v0.1.0`** estável (07/05/2026): API estável após validação brownfield + fechamento de todas as fases. Modo manutenção. Documentação oficial expandida no README.
+- Releases patch **`v0.1.1` → `v0.1.4`** (08–12/05/2026): bug fixes, sync `wsdd` público, CJS/ESM fix, governance gaps, snapshot spec, hotfix WSD-001 (templates faltantes no `wsdd`).
+- Release **`v0.2.0`** (13/05/2026): primeiro minor pós-`v0.1.0`, marco "estável adotável". 8 features funcionais + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto operacional `flow31-d/worc`.
+- Release **`v0.2.1`** (13/05/2026): patch cosmético — mensagem "Refreshed" do `wsd update` agora dinâmica via `config.modules`. Detectado no piloto worc logo após v0.2.0.
 
-Foco atual: **`v0.1.0` estável entregue** (07/05/2026). Todas as fases do roadmap (1–4 + 3.5) concluídas. Modo de manutenção: bug fixes em `v0.1.x`, novas features grandes em `v0.2.0` após validação em piloto.
+Foco atual: **`v0.2.1` publicada** (13/05/2026). Modo de manutenção pós-marco "estável adotável": próximas frentes no `v0.2.x`/`v0.3.0` (WSD-004 L2, WSD-005, WSD-008, WSD-012) — ver `REVIEW_PRE_V1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

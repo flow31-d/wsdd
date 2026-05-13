@@ -42,7 +42,8 @@ otimizado_para_obsidian: true
 16. [[#16. 0.1.3 — 11/05/2026]]
 17. [[#17. 0.1.4 — 12/05/2026]]
 18. [[#18. 0.2.0 — 13/05/2026]]
-19. [[#19. 🕒 Registro de Alterações por Agentes]]
+19. [[#19. 0.2.1 — 13/05/2026]]
+20. [[#20. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -65,6 +66,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Inclusão da versão **`0.1.3`** — CJS/ESM fix, governance gaps, project-snapshot spec, RELEASING.md. Seção 16 adicionada, Registro renumerado para seção 17.
 - 12/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd público) + sincronização completa dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18.
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.0`** (estável adotável) — minor release com 8 features funcionais + UX polish: CONCERNS.md como nota padrão (WSD-010), renderização condicional `{{#if}}` em templates (WSD-002), `scripts/wsd_release.sh` para automação de release (WSD-009), install com opt-out interativo de módulos opcionais (WSD-007 / D-001), `wsd check` L0+L1 robusto (WSD-004), CI no wsdd (WSD-003), Obsidian declarado como pré-requisito (WSD-006 / D-002), fix raiz de ENOENT em loops de cópia (WSD-013), e UX polish do install interativo (brownfield prompt + Enter=default header) baseado em feedback do piloto worc 13/05. Seção 18 adicionada, Registro renumerado para seção 19.
+- 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.1`** (patch cosmético) — primeiro patch pós-v0.2.0, detectado durante validação do piloto worc com `./+wsd/bin/wsd update`. Lista "Refreshed: +wsd/{...}" do `update` agora reflete dinamicamente os módulos efetivamente copiados (respeita `config.modules`). Antes era string hardcoded `docs,templates,profiles,schemas,scripts,examples,bin` que conflitava com mensagens `info: skipping examples/ (modules.examples=false)`. Sem mudança de comportamento — apenas mensagem. Seção 19 adicionada, Registro renumerado para seção 20.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -719,7 +721,44 @@ Sem mudança quebra-compat de API. **Mudanças de default no install** (ver Roun
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 19. 🕒 Registro de Alterações por Agentes
+## 19. 0.2.1 — 13/05/2026
+
+**Patch cosmético.** Primeiro patch pós-`v0.2.0`, detectado durante validação do piloto worc em 13/05/2026 logo após a v0.2.0 ser publicada. Sem mudança de comportamento — apenas consistência de mensagem.
+
+### fix
+
+- **`bin/wsd-method.js update()`** — a linha "Refreshed: +wsd/{...}" agora é construída dinamicamente refletindo os módulos efetivamente copiados, respeitando `config.modules` gravado no install. Antes era string hardcoded `docs,templates,profiles,schemas,scripts,examples,bin` que conflitava com as mensagens `info: skipping examples/ (modules.examples=false)` impressas logo acima na mesma execução.
+
+  Exemplo (worc instalado sem examples e sem party-mode):
+
+  ```
+  Antes:
+    info: skipping examples/ (modules.examples=false in +wsd/config.json)
+    info: skipping party-mode/ (modules.party_mode=false in +wsd/config.json)
+    WSD updated: 0.2.0 -> 0.2.0
+    Refreshed: +wsd/{docs,templates,profiles,schemas,scripts,examples,bin}  ← mente!
+
+  Depois:
+    info: skipping examples/ (modules.examples=false in +wsd/config.json)
+    info: skipping party-mode/ (modules.party_mode=false in +wsd/config.json)
+    WSD updated: 0.2.0 -> 0.2.0
+    Refreshed: +wsd/{bin,docs,profiles,schemas,scripts,templates}  ← consistente
+  ```
+
+### Validação
+
+- `npm test` — 9/9 gates PASS.
+- `bash scripts/wsd_docs_check.sh` — PASS.
+- `bash scripts/wsd_self_check.sh` — PASS.
+- Manual: `wsd update` em projeto com `modules.examples=false` agora mostra mensagem consistente.
+
+### Nota de Compatibilidade
+
+Sem mudança de API ou comportamento — apenas string de log. Instalações `v0.2.0` continuam funcionando inalteradas; rodar `./+wsd/bin/wsd update` traz o fix da mensagem.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 20. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -741,5 +780,6 @@ Sem mudança quebra-compat de API. **Mudanças de default no install** (ver Roun
 | 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.3`** — CJS/ESM fix (.cjs), RELEASING.md, project-snapshot spec, docs/05 expandido, governance gaps fechados. Seção 16 adicionada, Registro renumerado para seção 17. |
 | 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd) + sync wsdd dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.0`** (minor "estável adotável") — 8 features funcionais (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013) + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto worc validados. Seção 18 adicionada, Registro renumerado para seção 19. |
+| 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.1`** (patch cosmético) — mensagem "Refreshed" do `wsd update` agora reflete dinamicamente os módulos copiados (respeita `config.modules`). Bug detectado durante `./+wsd/bin/wsd update` no piloto worc logo após v0.2.0. Seção 19 adicionada, Registro renumerado para seção 20. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

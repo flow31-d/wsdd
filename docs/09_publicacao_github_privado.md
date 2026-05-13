@@ -111,6 +111,9 @@ Tags alpha já usadas:
 Release estável:
 
 - **`v0.1.0`** (07/05/2026): primeira release estável. Consolida toda a série alpha em API estável após validação operacional brownfield e fechamento de todas as fases (1, 2, 3, 3.5, 4). Sem mudanças de API vs `v0.1.11-alpha`. Documentação oficial em README seção "Uso Oficial". Modo de manutenção: `v0.1.x` para bug fixes, `v0.2.0` para novas features grandes após piloto.
+- **`v0.1.1` → `v0.1.4`** (08–12/05/2026): patches pós-`v0.1.0` — bug fixes, sync `wsdd` público, CJS/ESM fix (`.cjs`), `RELEASING.md`, spec retroativa `project-snapshot`, hotfix WSD-001 (templates faltantes no `wsdd` público).
+- **`v0.2.0`** (13/05/2026): primeiro minor pós-`v0.1.0`, marco "estável adotável". 8 features funcionais + UX polish do install interativo (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013). Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto operacional `flow31-d/worc`.
+- **`v0.2.1`** (13/05/2026): patch cosmético — `wsd update` agora monta a lista "Refreshed: +wsd/{...}" dinamicamente a partir de `config.modules`, refletindo módulos efetivamente copiados. Sem mudança de comportamento. Detectado durante validação do piloto worc logo após v0.2.0.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

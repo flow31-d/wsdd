@@ -214,7 +214,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.2.0`** (primeiro minor pós-`v0.1.0`, marco "estável adotável"). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1 (revisão `REVIEW_PRE_V1.md`).
+Este diretório está publicado como repositório GitHub público em versão **`v0.2.1`** (patch cosmético sobre `v0.2.0`, primeiro minor pós-`v0.1.0`, marco "estável adotável"). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1 (revisão `REVIEW_PRE_V1.md`); `v0.2.1` corrige inconsistência cosmética na mensagem do `wsd update`.
 
 Histórico de entregas (alpha + estável):
 
@@ -235,6 +235,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.1.3`**: renomeação de `wsd-validate-context.js` e `wsd-snapshot.js` para `.cjs` (compatibilidade com projetos `"type": "module"`). Adição de `RELEASING.md` (checklist obrigatório pré-release), spec retroativa `project-snapshot`, `docs/05` expandido com seções `+specs/project/` e vendor tree `+wsd/`. Sync `wsdd` público atualizado para v0.1.3.
 - **`v0.1.4`** (hotfix): fix do WSD-001 — três templates (`ROADMAP.md.template`, `IDEAS.md.template`, `IDEAS_PIPELINE.md.template`) que existiam apenas no WSD privado agora estão também no `wsdd` público. Inclui sync completo dos 6 commits pendentes pós-v0.1.3 e fechamento de gaps de governance do release v0.1.3 (linha de status do README + tag git retroativa). Refs: Issue #10.
 - **`v0.2.0`** (minor "estável adotável"): primeiro minor pós-`v0.1.0`. Agrupa 8 features do batch pré-v1 + UX polish: `CONCERNS.md` como nota padrão (WSD-010); renderização condicional `{{#if}}` em templates (WSD-002); `scripts/wsd_release.sh` automatizando release end-to-end (WSD-009); install com opt-out interativo de módulos opcionais `docs/`/`party-mode/`/`examples/` resolvendo D-001 Opção B+ (WSD-007); `wsd check` L0+L1 robusto valida 6 notas de project/ e coerência ROADMAP↔spec (WSD-004); CI no `wsdd` rodando 9 gates em cada push (WSD-003); Obsidian declarado como pré-requisito recomendado resolvendo D-002 Opção A (WSD-006); fix raiz de `ENOENT` em loops de cópia (WSD-013); UX polish do install interativo (header Enter=default + brownfield como prompt). 9/9 npm test + 27/27 cenários e2e + piloto operacional no `flow31-d/worc`.
+- **`v0.2.1`** (patch cosmético): mensagem "Refreshed" do `wsd update` agora construída dinamicamente a partir de `config.modules`, refletindo módulos efetivamente copiados. Antes a string era hardcoded e conflitava com mensagens `info: skipping ...` impressas na mesma execução. Detectado durante validação do piloto worc logo após v0.2.0. Sem mudança de comportamento.
 
 Não contém segredos.
 
@@ -253,7 +254,7 @@ A camada de qualidade da v0.1.4 está detalhada em [[wsd/docs/14_qualidade_desen
 
 ## 8. Foco Atual
 
-WSD está em desenvolvimento ativo pós-v0.1.0. `v0.2.0` entregue como primeiro marco "estável adotável" (8 features + UX polish). Próximas frentes mapeadas no `ROADMAP.md` (`v0.2.1`/`v0.3.0`) e no `REVIEW_PRE_V1.md` (WSD-004 L2, WSD-005, WSD-008, WSD-012); candidatas imediatas:
+WSD está em desenvolvimento ativo pós-v0.1.0. `v0.2.0` entregue como primeiro marco "estável adotável" (8 features + UX polish); `v0.2.1` corrige inconsistência cosmética detectada no piloto. Próximas frentes mapeadas no `ROADMAP.md` (`v0.2.x`/`v0.3.0`) e no `REVIEW_PRE_V1.md` (WSD-004 L2, WSD-005, WSD-008, WSD-012); candidatas imediatas:
 
 - `project-snapshot` (L1): JSON auto-gerado com visão geral do projeto (roadmap, ideias, git, saúde) para consumo por dashboards externos como o `wdb`.
 - Server-side hook como módulo opcional (enforcement inquebrável).
@@ -373,5 +374,6 @@ Regra prática:
 | 11/05/2026 — | Claude | `+Apps/WSD/README.md` | Atualização para `v0.1.2`: status atualizado para repo público, novos artefatos (ROADMAP/IDEAS/IDEAS_PIPELINE) na ideia central, comando `idea-{slug}` nas seções 4.4 e 9, callout dogfooding na seção 3, quick start `npx` na seção 9, seção 8 com candidatas pós-v0.1.2. |
 | 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.1.4` (hotfix): linha 217 corrigida `v0.1.2` → `v0.1.4` (gap do release v0.1.3), nova entrada `v0.1.4` no histórico, Foco Atual menciona `REVIEW_PRE_V1.md` e caminho para `v0.2.0`. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.2.0` (minor "estável adotável"): linha 217 atualizada `v0.1.4` → `v0.2.0`, nova entrada `v0.2.0` no histórico listando as 8 features e UX polish, Foco Atual atualizado para próximas frentes pós-v0.2.0 (WSD-004 L2, WSD-005, WSD-008, WSD-012). |
+| 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.2.1` (patch cosmético): linha 217 `v0.2.0` → `v0.2.1`, nova entrada `v0.2.1` no histórico explicando o fix da mensagem "Refreshed". |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
