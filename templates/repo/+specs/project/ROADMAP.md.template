@@ -1,0 +1,79 @@
+---
+title: "ROADMAP — {{PROJECT_NAME}}"
+created: {{DATE}}
+modified: {{DATE}}
+tags:
+  - wsd
+  - roadmap
+  - planejamento
+status: ativo
+tipo: projeto
+wsd_artifact: project-roadmap
+---
+
+# ROADMAP — {{PROJECT_NAME}}
+
+> [!abstract] Visão Geral
+> Visão consolidada de todas as features do projeto: planejadas, especificadas, em andamento,
+> entregues e descartadas. Atualizar sempre que uma feature muda de status.
+> Link obrigatório para a spec `+specs/features/<slug>/spec.md` de cada feature.
+
+> [!tip] Como adicionar uma feature
+> 1. Capture a ideia em `+specs/project/IDEAS.md` via `/idea-{{PROJECT_SLUG}}`
+> 2. Avance para spec via `/wsd-specify` quando decidir implementar
+> 3. Adicione a linha nesta tabela com status `specified`
+
+---
+
+## Legenda de Status
+
+| Status | Significado |
+|---|---|
+| `planned` | Feature identificada, sem spec ainda |
+| `specified` | Spec criada com WHEN/THEN/SHALL em `+specs/features/<slug>/spec.md` |
+| `in-progress` | Em desenvolvimento ativo na sessão atual |
+| `done` | Todos os ACs atendidos e entregues |
+| `blocked` | Bloqueada — razão registrada em `+specs/project/STATE.md` |
+| `discarded` | Descartada com rationale registrado na seção Descartadas |
+
+---
+
+## Features Ativas
+
+| Feature | Status | Prioridade | Spec | Notas |
+|---|---|---|---|---|
+| _(adicionar features aqui)_ | — | — | — | — |
+
+---
+
+## Backlog
+
+| Feature | Prioridade | Notas |
+|---|---|---|
+| _(ideias e próximas features — ver também `+specs/project/IDEAS.md`)_ | — | — |
+
+---
+
+## Concluídas
+
+| Feature | Entregue em | Spec |
+|---|---|---|
+| _(features com todos os ACs atendidos)_ | — | — |
+
+---
+
+## Descartadas
+
+| Feature | Descartada em | Rationale |
+|---|---|---|
+| _(features removidas do escopo)_ | — | — |
+
+---
+
+> [!warning] Instruções para Agentes
+> - **Nova spec criada** (`/wsd-specify`): adicionar linha em **Features Ativas** com status `specified` e link para `+specs/features/<slug>/spec.md`.
+> - **Início de desenvolvimento**: mudar status de `specified` para `in-progress`.
+> - **Feature entregue** (todos os ACs do WHEN/THEN/SHALL atendidos): mover linha para **Concluídas** com a data.
+> - **Feature bloqueada**: mudar status para `blocked` e registrar razão em `+specs/project/STATE.md`.
+> - **Feature descartada**: mover para **Descartadas** com rationale explícito.
+> - **Regra de consistência**: o campo `status:` no frontmatter da spec e o status nesta tabela devem sempre coincidir.

@@ -1,7 +1,7 @@
 ---
 title: "Roadmap WSD"
 created: 05/05/2026
-modified: 07/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -60,6 +60,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Adição da Fase 5 (Evolução Pós-v0.1.0). Planejamento de `v0.1.1` — Project ROADMAP: spec aprovada (6 ACs WHEN/THEN/SHALL) e tasks definidas (T1–T8) em `+specs/features/project-roadmap/`.
 - 11/05/2026 — Claude: Planejamento de `v0.1.2` — Ideas Workflow: spec aprovada (10 ACs WHEN/THEN/SHALL) e tasks definidas (T1–T9) em `+specs/features/ideas-workflow/`. Três componentes: IDEAS.md, IDEAS_PIPELINE.md, skill `/idea-{project_slug}`.
 - 11/05/2026 — Claude: Consolidação da entrega `v0.1.3` — CJS/ESM fix (`wsd-validate-context.cjs`, `wsd-snapshot.cjs`), governance gaps fechados (specs marcadas `implemented`, `docs/05` atualizado com seções ROADMAP/IDEAS/+wsd/), spec retroativa `project-snapshot`, `RELEASING.md` criado. 7/7 gates PASS.
+- 12/05/2026 — Claude (Opus 4.7): Consolidação da entrega `v0.1.4` (hotfix) — fix WSD-001 (3 templates faltantes no `wsdd`) + sync `wsdd` dos 6 commits pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (linha 217 do README + tag retroativa v0.1.3). Refs: Issue #10, `REVIEW_PRE_V1.md`. Próximo marco "estável adotável": `v0.2.0` (WSD-002/003/004 L0+L1/009/010).
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -143,7 +144,8 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.1.1` — **Project ROADMAP**: `+specs/project/ROADMAP.md` adicionado como artefato padrão do installer via `templates/repo/+specs/project/ROADMAP.md.template`. Formato Obsidian com frontmatter, callouts e instruções para agentes. Gates de install atualizados.
 - [x] `v0.1.2` — **Ideas Workflow**: `IDEAS.md` + `IDEAS_PIPELINE.md` + skill `/idea-{PROJECT_SLUG}` com rename dinâmico por projeto + `PROJECT_SLUG` como variável de template derivada de `PROJECT_NAME` + opção Party Mode para L1/L2 em `wsd-idea.md`. Formato Obsidian. 8/8 gates PASS.
 - [x] `v0.1.3` — **CJS/ESM fix + Governance + Snapshot spec + RELEASING.md**: `wsd-validate-context.js` e `wsd-snapshot.js` renomeados para `.cjs` (compatibilidade com projetos `"type": "module"`); specs de `project-roadmap` e `ideas-workflow` marcadas como `implemented`; `docs/05` atualizado com seções ROADMAP/IDEAS/`+wsd/`; spec retroativa de `project-snapshot` criada; `RELEASING.md` com checklist obrigatório de release. 7/7 gates PASS.
-- [ ] `v0.1.4` — a definir conforme demanda real.
+- [x] `v0.1.4` — **WSD-001 hotfix + governance cleanup**: três templates faltantes no `wsdd` público (`ROADMAP.md.template`, `IDEAS.md.template`, `IDEAS_PIPELINE.md.template`) sincronizados; 6 commits pendentes pós-v0.1.3 também sincronizados; README linha 217 corrigida de `v0.1.2` para `v0.1.4`; tag retroativa `v0.1.3` criada no commit `9525e90`. Refs: Issue #10, `REVIEW_PRE_V1.md` (WSD-001). 7/7 gates PASS.
+- [ ] `v0.2.0` — **Próximo marco "estável adotável"** (ver `REVIEW_PRE_V1.md` para detalhes): WSD-010 (CONCERNS.md padrão), WSD-002 (renderização condicional AGENTS.md), WSD-003 (CI no `wsdd`), WSD-009 (script de release `scripts/wsd_release.sh`), WSD-004 níveis L0+L1 (check robusto). Pede projeto piloto real antes do bump.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -205,5 +207,6 @@ Regra de acompanhamento:
 | 07/05/2026 — | Claude | `x/wsd/ROADMAP.md` | Marcação da v0.1.11-alpha como concluída — Party Mode Integration entregue (T1–T6). Fase 3.5 fechada; Fase 4 (estabilização `v0.1.0`) é a próxima frente. 7/7 testes PASS. |
 | 07/05/2026 — | Claude | `x/wsd/ROADMAP.md` | Fechamento dos 2 itens em aberto da Fase 3: perfis para outros stacks (descartado por redundância com instalação interativa) e validação YAML formal (descartado por obsolescência — formato `.spec.yaml.template` é legado). Fase 3 fechada 100%. |
 | 07/05/2026 — | Claude | `x/wsd/ROADMAP.md` | Release **`v0.1.0`** estável: Fase 4 100% fechada — bump v0.1.0, README "Uso Oficial", tags retroativas + tag final, compatibilidade Codex/Claude Code validada. Modo manutenção estável. |
+| 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/ROADMAP.md` | Consolidação da `v0.1.4` (hotfix WSD-001 + sync wsdd + governance v0.1.3) e adição de `v0.2.0` como próximo marco estável adotável conforme `REVIEW_PRE_V1.md`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -1,0 +1,64 @@
+---
+title: "IDEAS PIPELINE — {{PROJECT_NAME}}"
+created: {{DATE}}
+modified: {{DATE}}
+tags:
+  - wsd
+  - ideas
+  - pipeline
+  - planejamento
+status: ativo
+tipo: projeto
+wsd_artifact: ideas-pipeline
+---
+
+# IDEAS PIPELINE — {{PROJECT_NAME}}
+
+> [!abstract] O que é este arquivo
+> Índice de controle das ideias registradas em `+specs/project/IDEAS.md`.
+> Mostra o status de progressão de cada ideia no fluxo WSD e orienta como implementá-la.
+> Atualizar sempre que uma ideia avança de etapa — é a fonte de verdade do estado do pipeline.
+
+---
+
+## Status possíveis
+
+| Status | Significado |
+|---|---|
+| `raw` | Ideia registrada em IDEAS.md, sem análise ainda |
+| `detalhada` | Analisada e descrita com contexto completo em IDEAS.md |
+| `spec-criada` | Spec WHEN/THEN/SHALL criada em `+specs/features/<slug>/spec.md` |
+| `em-roadmap` | Entrada adicionada em `+specs/project/ROADMAP.md` |
+| `implementada` | Entregue — todos os ACs da spec atendidos |
+| `descartada` | Descartada — rationale registrado no campo Status de IDEAS.md |
+
+---
+
+## Sugestão de etapa por complexidade
+
+| Complexidade estimada | Etapa sugerida |
+|---|---|
+| **L0** — mudança trivial, escopo claro, risco baixo | Criar task card direto — sem spec formal |
+| **L1** — feature nova, escopo moderado | `/wsd-specify` → spec com WHEN/THEN/SHALL → `ROADMAP.md` |
+| **L2** — mudança estrutural, múltiplos subsistemas ou risco alto | `/wsd-specify` + `/wsd-design` → spec + design doc → `ROADMAP.md` |
+
+> [!note] A sugestão é orientativa. O operador decide a etapa final.
+
+---
+
+## Pipeline
+
+| ID | Título | Status | Etapa sugerida | WSD artefato | Notas |
+|---|---|---|---|---|---|
+| — | — | — | — | — | — |
+
+---
+
+> [!warning] Instruções para Agentes
+> - **Nova ideia** (via `/idea-{{PROJECT_SLUG}}`): adicionar linha com status `raw`, etapa estimada e campo "WSD artefato" vazio.
+> - **Ideia detalhada**: mudar para `detalhada`. Nenhum artefato WSD criado ainda.
+> - **Spec criada** (via `/wsd-specify`): mudar para `spec-criada`, preencher artefato com `+specs/features/<slug>/spec.md`.
+> - **No ROADMAP**: mudar para `em-roadmap`, atualizar artefato com `+specs/project/ROADMAP.md#<feature>`.
+> - **Entregue**: mudar para `implementada`.
+> - **Descartada**: mudar para `descartada`, registrar motivo em IDEAS.md.
+> - **Regra de consistência**: o campo `Status` em IDEAS.md e o status nesta tabela devem sempre coincidir.

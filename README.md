@@ -1,7 +1,7 @@
 ---
 title: "WSD — Wolff Spec Driven"
 created: 05/05/2026
-modified: 11/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -64,7 +64,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Atualização para `v0.1.10-alpha` — MVP Git/GitHub Governance implementado com `--git-policy none|basic|full`, `wsd git doctor|preflight|pr-check`, templates PR/Issue e bloco `git_governance`.
 - 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration: `/wsd-party-mode`, `wsd party`, `installPartyMode`, seção AGENTS.md, 7/7 testes PASS.
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Drop do sufixo `-alpha`: API estável após 11 iterações alpha + piloto operacional brownfield + 2 itens descartados com rationale (perfis stacks, YAML schema). Adicionada seção "Uso Oficial" como entry point recomendado.
-- 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/wsdd install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
+- 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/WSD install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -214,7 +214,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.1.2`**. A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` e `v0.1.2` são patches pós-release com novas features.
+Este diretório está publicado como repositório GitHub público em versão **`v0.1.4`**. A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release.
 
 Histórico de entregas (alpha + estável):
 
@@ -233,6 +233,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.1.0`** (release estável): consolida toda a série alpha em API estável. Fase 4 fechada: documentação oficial (seção "Uso Oficial"), tags retroativas v0.1.10/v0.1.11, validação completa Codex e Claude Code (7/7 testes PASS), 2 itens descartados com rationale (perfis stacks, YAML schema). Sem mudanças de API; mantém compatibilidade com instalações alpha tardias.
 - **`v0.1.2`**: ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md instalados automaticamente em todo projeto via `renderRepoTemplates()`. Skill `/idea-{PROJECT_SLUG}` (Claude Code e Codex) com captura estruturada L0/L1/L2 e oferta de Party Mode. Variável `PROJECT_SLUG` derivada no install + rename dinâmico do comando idea. Repositório público `wsdd` criado.
 - **`v0.1.3`**: renomeação de `wsd-validate-context.js` e `wsd-snapshot.js` para `.cjs` (compatibilidade com projetos `"type": "module"`). Adição de `RELEASING.md` (checklist obrigatório pré-release), spec retroativa `project-snapshot`, `docs/05` expandido com seções `+specs/project/` e vendor tree `+wsd/`. Sync `wsdd` público atualizado para v0.1.3.
+- **`v0.1.4`** (hotfix): fix do WSD-001 — três templates (`ROADMAP.md.template`, `IDEAS.md.template`, `IDEAS_PIPELINE.md.template`) que existiam apenas no WSD privado agora estão também no `wsdd` público. Inclui sync completo dos 6 commits pendentes pós-v0.1.3 e fechamento de gaps de governance do release v0.1.3 (linha de status do README + tag git retroativa). Refs: Issue #10.
 
 Não contém segredos.
 
@@ -251,7 +252,7 @@ A camada de qualidade da v0.1.4 está detalhada em [[wsd/docs/14_qualidade_desen
 
 ## 8. Foco Atual
 
-WSD está em desenvolvimento ativo pós-v0.1.0. `v0.1.3` entregue. Próximas frentes mapeadas no `ROADMAP.md`; candidatas imediatas:
+WSD está em desenvolvimento ativo pós-v0.1.0. `v0.1.4` entregue (hotfix WSD-001 + governance cleanup). Próximas frentes mapeadas no `ROADMAP.md` e no `REVIEW_PRE_V1.md` (caminho para `v0.2.0`); candidatas imediatas:
 
 - `project-snapshot` (L1): JSON auto-gerado com visão geral do projeto (roadmap, ideias, git, saúde) para consumo por dashboards externos como o `wdb`.
 - Server-side hook como módulo opcional (enforcement inquebrável).
@@ -266,7 +267,7 @@ Issues e bugs descobertos em uso real geram patches `v0.1.x`; novas features seg
 ### 9.1 Quick Start (sem clone)
 
 ```bash
-npx github:flow31-d/wsdd install \
+npx github:flow31-d/WSD install \
   --directory /path/to/project \
   --tools claude-code \
   --git-policy basic \
@@ -356,5 +357,6 @@ Regra prática:
 | 07/05/2026 — | Claude | `x/wsd/README.md` | Atualização para `v0.1.11-alpha`: Party Mode Integration entregue (Fase 3.5). |
 | 07/05/2026 — | Claude | `x/wsd/README.md` | Release **`v0.1.0`** estável: drop do sufixo `-alpha`, seção "Uso Oficial" expandida (greenfield/brownfield/ciclo de sessão/comandos/política Git/validação contínua), Fase 4 marcada concluída, foco em manutenção estável. |
 | 11/05/2026 — | Claude | `+Apps/WSD/README.md` | Atualização para `v0.1.2`: status atualizado para repo público, novos artefatos (ROADMAP/IDEAS/IDEAS_PIPELINE) na ideia central, comando `idea-{slug}` nas seções 4.4 e 9, callout dogfooding na seção 3, quick start `npx` na seção 9, seção 8 com candidatas pós-v0.1.2. |
+| 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.1.4` (hotfix): linha 217 corrigida `v0.1.2` → `v0.1.4` (gap do release v0.1.3), nova entrada `v0.1.4` no histórico, Foco Atual menciona `REVIEW_PRE_V1.md` e caminho para `v0.2.0`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

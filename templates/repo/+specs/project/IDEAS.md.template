@@ -1,0 +1,46 @@
+---
+title: "IDEAS — {{PROJECT_NAME}}"
+created: {{DATE}}
+modified: {{DATE}}
+tags:
+  - wsd
+  - ideas
+  - captura
+status: ativo
+tipo: projeto
+wsd_artifact: ideas-notebook
+---
+
+# IDEAS — {{PROJECT_NAME}}
+
+> [!abstract] O que é este arquivo
+> Notebook de captura de ideias do projeto. Cada ideia recebe um ID sequencial permanente.
+> Este documento é matéria-prima — fiel à voz do operador, sem refinamento prematuro.
+> Ideias nunca são editadas após registradas; apenas o campo `Status` muda.
+
+> [!tip] Como registrar uma ideia
+> Invoque `/idea-{{PROJECT_SLUG}}` e descreva sua ideia. O agente captura, estrutura e salva
+> aqui, além de atualizar o pipeline em `+specs/project/IDEAS_PIPELINE.md`.
+> Ou descreva verbalmente — o agente registra fielmente o que você disse.
+
+> [!note] Regra de fidelidade
+> O agente **não edita, não melhora, não resume** sua ideia — apenas estrutura.
+> Para refinar uma ideia, crie uma nova referenciando a anterior (ex: "evolução da IDEA-003").
+
+---
+
+## Formato de cada ideia
+
+```
+## IDEA-{N} — {título em uma linha}
+
+**Data:** DD/MM/AAAA
+**Motivação:** por que isso importa para o projeto
+**Descrição:** o que você quer — fiel à sua voz original
+**Impacto esperado:** o que muda para o usuário ou sistema
+**Status:** raw | detalhada | spec-criada | em-roadmap | implementada | descartada
+```
+
+---
+
+<!-- O agente adiciona ideias abaixo em ordem cronológica. ID incrementa automaticamente. -->

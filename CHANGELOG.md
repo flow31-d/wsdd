@@ -1,7 +1,7 @@
 ---
 title: "Changelog WSD"
 created: 05/05/2026
-modified: 07/05/2026
+modified: 12/05/2026
 tags:
   - x
   - wsd
@@ -40,7 +40,8 @@ otimizado_para_obsidian: true
 14. [[#14. 0.1.0 — 07/05/2026]]
 15. [[#15. 0.1.2 — 11/05/2026]]
 16. [[#16. 0.1.3 — 11/05/2026]]
-17. [[#17. 🕒 Registro de Alterações por Agentes]]
+17. [[#17. 0.1.4 — 12/05/2026]]
+18. [[#18. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -61,6 +62,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Inclusão da versão `0.1.11-alpha` — Party Mode Integration: `installPartyMode`, `/wsd-party-mode`, `wsd party status|list-agents|when-to-use`, seção Party Mode no AGENTS.md, `test:install-party-mode`. Seção 13 adicionada, Registro renumerado para seção 14.
 - 07/05/2026 — Claude: Inclusão da release **`0.1.0`** estável — drop do sufixo `-alpha`, Fase 4 fechada (documentação oficial, tags retroativas, validação Codex/Claude Code), 2 itens descartados com rationale (perfis stacks, YAML schema). Seção 14 adicionada, Registro renumerado para seção 15.
 - 11/05/2026 — Claude: Inclusão da versão **`0.1.3`** — CJS/ESM fix, governance gaps, project-snapshot spec, RELEASING.md. Seção 16 adicionada, Registro renumerado para seção 17.
+- 12/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd público) + sincronização completa dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -523,7 +525,7 @@ concluídos).
 - `templates/repo/+specs/project/IDEAS_PIPELINE.md.template` — controle de progressão de ideias (`raw` → `implementada`).
 - `templates/claude-commands/commands/wsd-idea.md` — comando slash `idea-{PROJECT_SLUG}` para Claude Code: captura estruturada, estimativa L0/L1/L2, oferta de Party Mode para L1/L2.
 - `templates/codex-skills/wsd-idea/SKILL.md` — skill equivalente para Codex.
-- `docs/15_repositorio_publico_e_quick_start.md` — estratégia `npx github:flow31-d/wsdd install`, workflow de sync privado×público e checklist de release.
+- `docs/15_repositorio_publico_e_quick_start.md` — estratégia `npx github:flow31-d/WSD install`, workflow de sync privado×público e checklist de release.
 - `+specs/features/project-roadmap/` e `+specs/features/ideas-workflow/` — specs WHEN/THEN/SHALL e tasks atômicas para as duas features.
 
 ### Mudado
@@ -581,7 +583,51 @@ Sem mudança de API. Instalações existentes da v0.1.2 não quebram — os arqu
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 17. 🕒 Registro de Alterações por Agentes
+## 17. 0.1.4 — 12/05/2026
+
+**Hotfix.** Resolve o WSD-001 (templates faltantes no `wsdd` público) e fecha gaps de governance do release `v0.1.3` (README dessincronizado e tag git ausente). Inclui sincronização completa dos 6 commits pendentes pós-`v0.1.3` do WSD privado para o `wsdd` (Opção B do `REVIEW_PRE_V1.md`).
+
+### fix
+
+- **`templates/repo/+specs/project/{ROADMAP,IDEAS,IDEAS_PIPELINE}.md.template`** — 3 templates que existiam apenas no WSD privado agora estão também no `wsdd` público. Sem eles, `npx github:flow31-d/wsdd install` gerava `+specs/project/` sem as 3 notas que o `AGENTS.md` prescreve, deixando o fluxo de ideias e o ROADMAP incompletos. Refs: WSD-001 (REVIEW_PRE_V1.md), Issue [#10](https://github.com/flow31-d/WSD/issues/10).
+- **README.md linha 217** — referência atualizada de `v0.1.2` (estado pré-`v0.1.3`) para `v0.1.4`. O release `v0.1.3` saiu sem atualizar esta linha — sintoma do WSD-009 (release process sem automação).
+
+### Adicionado
+
+- Entrada `v0.1.4` no `ROADMAP.md` (Fase 5 — Manutenção Estável) descrevendo o hotfix.
+- Tag git retroativa `v0.1.3` criada no commit `9525e90` (`chore(release): v0.1.3` de 11/05/2026), que havia ficado sem tag.
+
+### Mudado
+
+- `package.json` `version` — `0.1.3` → `0.1.4`.
+- README.md histórico de entregas — adicionado item `v0.1.4`.
+- `+specs/project/STATE.md` — registrada decisão da release `v0.1.4` em Decisões.
+
+### Sincronização wsdd
+
+A release `v0.1.4` sincroniza para o `wsdd` público, além dos 3 templates do fix WSD-001, os 6 commits pendentes pós-`v0.1.3` do WSD privado:
+
+- `934492e` docs(readme): adicionar v0.1.3 no histórico e atualizar Foco Atual
+- `2948a91` feat(snapshot): adicionar +context.json e +specs/project/ROADMAP.md
+- `498b1b8` docs: adiciona doc 17 — explicação detalhada dos campos do snapshot
+- `6341eb2` fix: corrige paths obsoletos x/wsd e remove exemplos de projetos privados
+- `91bc107` fix(docs/06): remove wikilink para exemplo privado no frontmatter
+- `e7a36b3` fix(installer): não vendorizar meta-docs do toolkit em +wsd/ do projeto
+- `456ba05` docs: decidir idioma português, clarificar branch por modo e limpar docs/11
+
+### Validação
+
+- `npm test` — 7/7 gates PASS no WSD privado e no clone fresh do `wsdd`.
+- `bash scripts/wsd_docs_check.sh` — PASS.
+- `bash scripts/wsd_self_check.sh` — PASS.
+
+### Nota de Compatibilidade
+
+Sem mudança de API. Instalações `v0.1.3` continuam funcionando. Projetos podem rodar `./+wsd/bin/wsd update` para puxar os 3 templates faltantes em `+wsd/templates/repo/+specs/project/` (não-destrutivo — não toca em arquivos do projeto-alvo).
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 18. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -601,5 +647,6 @@ Sem mudança de API. Instalações existentes da v0.1.2 não quebram — os arqu
 | 07/05/2026 — | Claude | `x/wsd/CHANGELOG.md` | Inclusão da release **`0.1.0`** estável — drop do sufixo `-alpha`, Fase 4 fechada, modo manutenção. Seção 14 adicionada, Registro renumerado para seção 15. |
 | 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.2`** — ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md, skill idea-{slug}, PROJECT_SLUG, docs/15. Seção 15 adicionada, Registro renumerado para seção 16. |
 | 11/05/2026 — | Claude | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.3`** — CJS/ESM fix (.cjs), RELEASING.md, project-snapshot spec, docs/05 expandido, governance gaps fechados. Seção 16 adicionada, Registro renumerado para seção 17. |
+| 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd) + sync wsdd dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
