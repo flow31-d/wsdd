@@ -57,7 +57,7 @@ O WSD possui repositório GitHub público em:
 https://github.com/flow31-d/WSD
 ```
 
-O desenvolvimento acontece localmente em `/srv/CLI/+Apps/WSD` (contexto privado). O repositório público é o canal de distribuição — qualquer usuário com Node.js ≥ 20 pode instalar o WSD a partir dele sem nenhuma conta ou registro.
+O desenvolvimento acontece localmente em `/srv/CLI/+Apps/wsd` (contexto privado). O repositório público é o canal de distribuição — qualquer usuário com Node.js ≥ 20 pode instalar o WSD a partir dele sem nenhuma conta ou registro.
 
 O documento [[wsd/docs/09_publicacao_github_privado|09 — Publicação]] cobre o histórico de publicação e o processo de criação de tags. Este documento (15) cobre a estratégia de manutenção contínua: o que vai para o público, como sincronizar e como garantir que os dois contextos permaneçam compatíveis.
 
@@ -106,7 +106,7 @@ npx github:flow31-d/WSD#v0.1.0 install
 ## 4. Estratégia Privado × Público
 
 ```
-Privado (local /srv/CLI/+Apps/WSD)
+Privado (local /srv/CLI/+Apps/wsd)
   │
   ├── Desenvolvimento e experimentos
   ├── Perfis de projetos internos (koomplet_office, prescreve_mais, ...)

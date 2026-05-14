@@ -43,7 +43,8 @@ otimizado_para_obsidian: true
 17. [[#17. 0.1.4 — 12/05/2026]]
 18. [[#18. 0.2.0 — 13/05/2026]]
 19. [[#19. 0.2.1 — 13/05/2026]]
-20. [[#20. 🕒 Registro de Alterações por Agentes]]
+20. [[#20. 0.3.0 — 13/05/2026]]
+21. [[#21. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -67,6 +68,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 12/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd público) + sincronização completa dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18.
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.0`** (estável adotável) — minor release com 8 features funcionais + UX polish: CONCERNS.md como nota padrão (WSD-010), renderização condicional `{{#if}}` em templates (WSD-002), `scripts/wsd_release.sh` para automação de release (WSD-009), install com opt-out interativo de módulos opcionais (WSD-007 / D-001), `wsd check` L0+L1 robusto (WSD-004), CI no wsdd (WSD-003), Obsidian declarado como pré-requisito (WSD-006 / D-002), fix raiz de ENOENT em loops de cópia (WSD-013), e UX polish do install interativo (brownfield prompt + Enter=default header) baseado em feedback do piloto worc 13/05. Seção 18 adicionada, Registro renumerado para seção 19.
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.1`** (patch cosmético) — primeiro patch pós-v0.2.0, detectado durante validação do piloto worc com `./+wsd/bin/wsd update`. Lista "Refreshed: +wsd/{...}" do `update` agora reflete dinamicamente os módulos efetivamente copiados (respeita `config.modules`). Antes era string hardcoded `docs,templates,profiles,schemas,scripts,examples,bin` que conflitava com mensagens `info: skipping examples/ (modules.examples=false)`. Sem mudança de comportamento — apenas mensagem. Seção 19 adicionada, Registro renumerado para seção 20.
+- 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.3.0`** (minor — reforço do contrato operacional) — `scripts/wsd_check.sh` reescrito (185 linhas) valida as 6 notas obrigatórias de `+specs/project/` (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) como L0-required, suporta `--risk` e `--spec` e tem fallback degradado quando Node ausente. `+context.json` ganha blocos formais `environment`, `repository`, `permissions`, `workflow` e `clone_policy` (canonical_history/operational_clone/audit_lab_clone/deploy_clone/promotion_flow). Artefatos `+specs/project/` (PROJECT, ROADMAP, IDEAS, IDEAS_PIPELINE, CONCERNS) preenchidos com conteúdo real do projeto. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga os novos campos. `docs/05_contrato_artefatos.md` e `docs/17_snapshot_campos_explicados.md` atualizados. Inclui `REVIEW_PRE_V1.md` (tracker formal) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). Seção 20 adicionada, Registro renumerado para seção 21.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -758,7 +760,51 @@ Sem mudança de API ou comportamento — apenas string de log. Instalações `v0
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 20. 🕒 Registro de Alterações por Agentes
+## 20. 0.3.0 — 13/05/2026
+
+**Minor — Reforço do contrato operacional WSD.** Primeira release pós-v0.2.x do batch "estável adotável". Foca em endurecer o contrato runtime do método: checker mais rigoroso, `+context.json` com schema expandido, artefatos `+specs/project/` preenchidos com conteúdo real (não mais placeholders), tracker formal de revisão pré-v1 e manual leigo dos comandos `wsdd`.
+
+### Adicionado
+
+- **`scripts/wsd_check.sh` reescrito (185 linhas)** — checker do método refeito para validar as 6 notas obrigatórias de `+specs/project/` como L0-required (PROJECT.md, STATE.md, ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md, CONCERNS.md). Antes só STATE.md era checada — WSD-001 escapou justamente porque o gate não validava as outras 5. Suporte completo a `--risk L0|L1|L2` e `--spec path`. Validação de schema `+context.json` via `wsd-validate-context.cjs` (com fallback degradado se Node ausente). Propagado para `templates/repo/scripts/wsd_check.sh` (+45 linhas) para que projetos instalados recebam o mesmo gate.
+- **`+context.json` com blocos formais** (+100 linhas) — schema expandido com:
+  - `$schema: "wsd/context/v1"` (alinhado com JSON Schema)
+  - `environment` (canonical_host, canonical_path, environment, network_mode)
+  - `repository` (name, default_branch, remote, repo_type, **`clone_policy`** com `canonical_history`/`operational_clone`/`audit_lab_clone`/`deploy_clone`/`promotion_flow`)
+  - `permissions` (write_paths, forbidden_paths expandido, tool_allowlist, secrets_policy, max_runtime_seconds, max_tokens_per_request)
+  - `workflow` (approval_mode, branch_policy, incident_mode, issue_policy, production_mutation_policy)
+- **Artefatos `+specs/project/` preenchidos com conteúdo real do WSD** — antes eram templates vazios:
+  - `PROJECT.md` (+61 linhas) — visão consolidada do projeto
+  - `ROADMAP.md` (+9 linhas) — projeto roadmap operacional
+  - `IDEAS.md` (+34 linhas) — backlog de ideias com triagem L0/L1/L2
+  - `IDEAS_PIPELINE.md` (+21 linhas) — pipeline raw→implementada
+  - `CONCERNS.md` (+39 linhas) — preocupações operacionais e mitigações
+- **`templates/local-wsd/bin/wsd-snapshot.cjs` (+81 linhas)** — snapshot CJS expandido para coletar todos os novos campos do `+context.json` (environment, repository.clone_policy, permissions, workflow).
+- **`scripts/wsd_self_check.sh` (+5 linhas)** — gates do self-check ajustados para a nova superfície do contrato.
+- **`docs/05_contrato_artefatos.md`** atualizado — contrato de artefatos refletindo o `+context.json` expandido e a obrigação das 6 notas `+specs/project/`.
+- **`docs/17_snapshot_campos_explicados.md` (+25 linhas)** — campos novos do snapshot explicados em português.
+- **`REVIEW_PRE_V1.md` (1131 linhas)** — tracker formal de revisão pré-v1: catalogação dos WSD-001…WSD-013 (BLOQUEADOR/ALTO/MÉDIO/BAIXO), decisões D-001/D-002, status de cada item e mapa de quando cada arquivo do `+specs/project/` passa a ter conteúdo real (parcialmente endereça WSD-008).
+- **`docs/18_manual_leigo_comandos_wsdd.md` (568 linhas)** — manual leigo dos comandos do `wsdd` orientado a operadores não-técnicos: `npx`, instalação, sessões `wsd start/finish`, comandos `/wsd-*`, triagem L0/L1/L2.
+
+### Mudado
+
+- **`+specs/features/tlc-integration/tasks.md`** — pequenos ajustes pós-implementação.
+- **`docs/path-rename-WSD-to-wsd`** (PR #33 mergeado em 13/05) — paths legados `+Apps/WSD` → `+Apps/wsd` corrigidos em 6 arquivos (CONTRIBUTING, docs/04, docs/09, docs/15, docs/16, wsd_philo).
+
+### Validação
+
+- `npm test` — 9/9 gates PASS.
+- `bash scripts/wsd_docs_check.sh` — PASS.
+- `bash scripts/wsd_self_check.sh` — PASS.
+- `wsd_check.sh` valida instalação fresca com as 6 notas presentes e bloqueia se alguma ausente.
+
+### Nota de Compatibilidade
+
+Mudança de chave `schema` → `$schema` no `+context.json` é **compatível** com validador atual (ambos aceitos no path lookup). Instalações pré-v0.3.0 continuam funcionando; rodar `./+wsd/bin/wsd update` traz o checker e snapshot novos. Para projetos brownfield que ainda não tenham as 6 notas em `+specs/project/`, o `wsd_check.sh` agora bloqueia em L0 — rodar `wsd-method install` para preencher os templates.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 21. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|

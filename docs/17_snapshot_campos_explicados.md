@@ -46,6 +46,7 @@ otimizado_para_obsidian: true
 ## 1. 🔄 Atualizações
 
 - 12/05/2026 — Claude: Criação do documento. Explicação completa de todos os campos em linguagem acessível, com cenários práticos de leitura.
+- 13/05/2026 — Codex: Documentação dos campos de sujeira Git separados entre fonte e artefatos gerados.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -144,6 +145,12 @@ A categoria do projeto: que tipo de sistema é esse? Exemplos: `node_frontend`, 
     "branch": "feat/nova-feature",
     "is_dirty": true,
     "ahead_count": 3,
+    "dirty_count": 5,
+    "source_dirty_count": 2,
+    "generated_dirty_count": 3,
+    "has_source_changes": true,
+    "source_dirty_files": ["src/app.ts", "README.md"],
+    "generated_dirty_files": ["+wsd/snapshot.json"],
     "last_commit_message": "feat: adiciona tela de login"
   }
 }
@@ -178,6 +185,24 @@ Quantos commits existem localmente que ainda não foram enviados para o GitHub (
 **Por que existe:** um commit no Git é como um "salvo" no histórico local. Mas esse histórico só existe na máquina onde o projeto está. Enquanto não é enviado ao GitHub (`git push`), o trabalho existe em apenas um lugar. Se `ahead_count` for 5, significa que há 5 "salvos" que ainda vivem só nesta VPS.
 
 **Cenário prático:** `ahead_count: 0` — tudo sincronizado, seguro. `ahead_count: 3` — há 3 commits locais não publicados; se esta máquina falhar, esses commits se perdem. `ahead_count: 15` — alguém está trabalhando offline há muito tempo sem sincronizar.
+
+### `dirty_count`, `source_dirty_count`, `generated_dirty_count`
+
+`dirty_count` é o total de arquivos reportados por `git status`. `source_dirty_count` conta apenas mudanças que parecem código, docs, specs ou configuração de projeto. `generated_dirty_count` conta artefatos locais gerados, como `+wsd/snapshot.json`, `.last-check.json`, caches, builds e logs.
+
+**Por que existe:** dashboards precisam distinguir trabalho humano não fechado de ruído operacional. Um repo com `source_dirty_count: 0` e `generated_dirty_count: 2` normalmente só precisa de ignore/limpeza. Um repo com `source_dirty_count: 8` precisa de revisão, commit ou descarte consciente.
+
+### `has_source_changes`
+
+Atalho booleano para `source_dirty_count > 0`.
+
+**Na prática:** consumidores como o WDB podem usar este campo para pintar o projeto em amarelo sem tratar snapshots gerados como falha real.
+
+### `source_dirty_files` e `generated_dirty_files`
+
+Listas curtas, limitadas, dos arquivos sujos classificados em cada grupo.
+
+**Limitação:** são listas para diagnóstico rápido, não inventário completo. Para decisão de commit, ainda rode `git status --short`.
 
 ### `last_commit_message`
 

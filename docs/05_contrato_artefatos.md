@@ -48,6 +48,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Marcação do bloco `git_governance` como implementado na `v0.1.10-alpha` e validado pelo schema canônico.
 - 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
+- 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -238,17 +239,21 @@ Não registrar logs longos ou secrets.
 
 ## 8. `scripts/wsd_check.sh`
 
-Função: checker local mínimo.
+Função: checker local mínimo e gate de compatibilidade com dashboards/zeladores.
 
 Deve validar:
 
 - repo Git;
-- `+context.json`;
-- `+logs/error_vault.json`;
+- `+context.json` como JSON válido e, quando possível, contra `+wsd/schemas/context.schema.json`;
+- presença das 6 notas obrigatórias de `+specs/project/`: `PROJECT.md`, `STATE.md`, `ROADMAP.md`, `IDEAS.md`, `IDEAS_PIPELINE.md`, `CONCERNS.md`;
+- estrutura mínima de `ROADMAP.md` (`Features Ativas`, `Backlog`) e `STATE.md` (`Bloqueadores Ativos`);
+- geração e JSON válido de `+wsd/snapshot.json`;
 - spec exigida para L1/L2;
 - status da spec;
-- forbidden paths básicos;
+- coerência ROADMAP → spec para L1/L2;
 - placeholders não substituídos.
+
+O snapshot é parte do contrato porque WDB/Zelador e outros consumidores operacionais não devem depender de leitura manual de várias notas. `scripts/wsd_check.sh` deve gerar o snapshot ao final do check e falhar se ele não puder ser criado.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

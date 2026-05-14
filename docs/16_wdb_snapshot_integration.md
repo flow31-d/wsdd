@@ -76,7 +76,7 @@ Exemplos reais na VPS:
 
 ```
 /srv/CLI/+Apps/wdb/+wsd/snapshot.json
-/srv/CLI/+Apps/WSD/+wsd/snapshot.json
+/srv/CLI/+Apps/wsd/+wsd/snapshot.json
 /srv/projetos/meu-app/+wsd/snapshot.json
 ```
 
@@ -85,7 +85,7 @@ Exemplos reais na VPS:
 > ```json
 > {
 >   "snapshot_paths": [
->     "/srv/CLI/+Apps/WSD/+wsd/snapshot.json",
+>     "/srv/CLI/+Apps/wsd/+wsd/snapshot.json",
 >     "/srv/projetos/meu-app/+wsd/snapshot.json"
 >   ]
 > }

@@ -1,7 +1,7 @@
 ---
 title: "WSD — Wolff Spec Driven"
 created: 05/05/2026
-modified: 06/05/2026
+modified: 13/05/2026
 tags:
   - x
   - wsd
@@ -11,7 +11,7 @@ tags:
 status: ativo
 tipo: hub
 parent: "[[x]]"
-links: "[[x]], [[wsd/README]], [[wsd/ROADMAP]], [[wsd/CHANGELOG]], [[wsd/AGENTS]], [[wsd/docs/00_planejamento_instalacao_wsd]], [[wsd/docs/01_constituicao]], [[wsd/docs/02_matriz_risco]], [[wsd/docs/03_ciclo_operacional]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/06_personalizacao_por_projeto]], [[wsd/docs/07_git_governance]], [[wsd/docs/08_rotinas_sessao]], [[wsd/docs/09_publicacao_github_privado]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]], [[wsd/docs/12_avaliacao_critica]], [[wsd/docs/13_compatibilidade_claude_code]], [[wsd/docs/14_qualidade_desenvolvimento]], [[wsd/docs/15_repositorio_publico_e_quick_start]], [[wsd/docs/16_wdb_snapshot_integration]], [[wsd/docs/17_snapshot_campos_explicados]]"
+links: "[[x]], [[wsd/README]], [[wsd/ROADMAP]], [[wsd/CHANGELOG]], [[wsd/AGENTS]], [[wsd/docs/00_planejamento_instalacao_wsd]], [[wsd/docs/01_constituicao]], [[wsd/docs/02_matriz_risco]], [[wsd/docs/03_ciclo_operacional]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/05_contrato_artefatos]], [[wsd/docs/06_personalizacao_por_projeto]], [[wsd/docs/07_git_governance]], [[wsd/docs/08_rotinas_sessao]], [[wsd/docs/09_publicacao_github_privado]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]], [[wsd/docs/12_avaliacao_critica]], [[wsd/docs/13_compatibilidade_claude_code]], [[wsd/docs/14_qualidade_desenvolvimento]], [[wsd/docs/15_repositorio_publico_e_quick_start]], [[wsd/docs/16_wdb_snapshot_integration]], [[wsd/docs/17_snapshot_campos_explicados]], [[wsd/docs/18_manual_leigo_comandos_wsdd]]"
 otimizado_para_obsidian: true
 ---
 # WSD — Wolff Spec Driven
@@ -59,6 +59,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Atualização para `v0.1.10-alpha` — MVP Git/GitHub Governance implementado em installer, contexto, templates, CLI local, templates GitHub e testes.
 - 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration: `installPartyMode` no CLI, comando Claude Code `/wsd-party-mode`, subcomando `wsd party status|list-agents|when-to-use`, seção Party Mode no `AGENTS.md` e `test:install-party-mode` no pipeline. Fase 3.5 fechada; Fase 4 (estabilização `v0.1.0`) é o próximo foco.
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Drop do sufixo `-alpha`, README com seção "Uso Oficial" expandida, ROADMAP Fase 4 fechada, modo manutenção estável.
+- 13/05/2026 — Codex: Inclusão da nota `18 — Manual Leigo dos Comandos WSDD` no mapa do método como entrada prática para uso diário da release pública `v0.2.1`.
+- 13/05/2026 — Claude (Opus 4.7): Atualização para `v0.3.0` (minor — reforço do contrato operacional): versão atual e Foco Atual atualizados; novas entradas em Estado Atual descrevendo `wsd_check.sh` reescrito validando 6 notas obrigatórias, `+context.json` com blocos formais `environment`/`repository`/`permissions`/`workflow` + `clone_policy`, artefatos `+specs/project/` preenchidos, `REVIEW_PRE_V1.md` tracker e `docs/18` manual leigo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -84,12 +86,13 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 | [[wsd/docs/15_repositorio_publico_e_quick_start|15 Repositório Público e Quick Start]] | ao sincronizar WSD privado → wsdd público ou usar `npx github:flow31-d/wsdd install` | estratégia privado × público, checklist de sync, regras de compatibilidade |
 | [[wsd/docs/16_wdb_snapshot_integration|16 WDB Snapshot Integration]] | ao integrar snapshot com dashboard externo | schema v1, localização de arquivos, polling |
 | [[wsd/docs/17_snapshot_campos_explicados|17 O que contém o Snapshot]] | ao entender o que cada campo do snapshot significa | explicação detalhada de todos os blocos em linguagem acessível |
+| [[wsd/docs/18_manual_leigo_comandos_wsdd|18 Manual Leigo dos Comandos WSDD]] | ao instalar ou usar WSDD sem conhecer o método | comandos principais da `v0.3.0` explicados em linguagem simples |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.2.1`** (patch cosmético sobre `v0.2.0`, marco "estável adotável").
+Versão atual do pacote: **`v0.3.0`** (minor — reforço do contrato operacional WSD).
 
 O WSD já possui:
 
@@ -121,8 +124,9 @@ O WSD já possui:
 - Releases patch **`v0.1.1` → `v0.1.4`** (08–12/05/2026): bug fixes, sync `wsdd` público, CJS/ESM fix, governance gaps, snapshot spec, hotfix WSD-001 (templates faltantes no `wsdd`).
 - Release **`v0.2.0`** (13/05/2026): primeiro minor pós-`v0.1.0`, marco "estável adotável". 8 features funcionais + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto operacional `flow31-d/worc`.
 - Release **`v0.2.1`** (13/05/2026): patch cosmético — mensagem "Refreshed" do `wsd update` agora dinâmica via `config.modules`. Detectado no piloto worc logo após v0.2.0.
+- Release **`v0.3.0`** (13/05/2026): minor — reforço do contrato operacional WSD. `scripts/wsd_check.sh` reescrito (185 linhas) validando as 6 notas obrigatórias de `+specs/project/` como L0-required (antes só STATE.md era checada — WSD-001 escapou). `+context.json` ganha blocos formais `environment`, `repository` (+ `clone_policy` canônico), `permissions` e `workflow`. Artefatos `+specs/project/` preenchidos com conteúdo real. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga novos campos. Inclui `REVIEW_PRE_V1.md` (tracker pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). 9/9 npm test PASS.
 
-Foco atual: **`v0.2.1` publicada** (13/05/2026). Modo de manutenção pós-marco "estável adotável": próximas frentes no `v0.2.x`/`v0.3.0` (WSD-004 L2, WSD-005, WSD-008, WSD-012) — ver `REVIEW_PRE_V1.md`.
+Foco atual: **`v0.3.0` publicada** (13/05/2026). Modo de manutenção pós-marco "estável adotável": próximas frentes em `v0.3.x`/`v0.4.0` (WSD-004 L2, WSD-005, WSD-012 — WSD-008 parcialmente endereçado pelo `REVIEW_PRE_V1.md`).
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -187,5 +191,6 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 07/05/2026 — | Codex | `x/wsd/wsd.md` | Atualização para `v0.1.10-alpha`: MVP Git/GitHub Governance implementado e Fase 4 reposicionada como próxima frente. |
 | 07/05/2026 — | Claude | `x/wsd/wsd.md` | Atualização para `v0.1.11-alpha`: Party Mode Integration entregue (CLI, slash command, subcomando, AGENTS.md, gate de teste). Fase 3.5 fechada; Fase 4 é o próximo foco. |
 | 07/05/2026 — | Claude | `x/wsd/wsd.md` | Release **`v0.1.0`** estável: Fase 4 concluída, drop do sufixo `-alpha`, modo manutenção estável. Todas as fases do roadmap fechadas. |
+| 13/05/2026 — | Codex | `x/wsd/wsd.md` | Inclusão da nota `18 — Manual Leigo dos Comandos WSDD` no mapa e nos links do hub. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

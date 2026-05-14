@@ -1,0 +1,563 @@
+---
+title: "18 — Manual Leigo dos Comandos WSDD"
+created: 13/05/2026
+modified: 13/05/2026
+tags:
+  - x
+  - wsd
+  - wsdd
+  - comandos
+  - manual
+status: ativo
+tipo: guia
+parent: "[[wsd/wsd]]"
+links: "[[wsd/wsd]], [[wsd/README]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/08_rotinas_sessao]], [[wsd/docs/15_repositorio_publico_e_quick_start]], [[wsd/docs/17_snapshot_campos_explicados]]"
+otimizado_para_obsidian: true
+---
+# 18 — Manual Leigo dos Comandos WSDD
+
+[[wsd/wsd|← WSD]]
+
+---
+
+> [!abstract] Objetivo
+> Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
+
+> [!info] Versão coberta
+> Última release pública confirmada: **`v0.2.1`**, publicada em 13/05/2026 no repositório público `flow31-d/wsdd`.
+
+## 📑 Índice
+
+1. [[#1. 🔄 Atualizações]]
+2. [[#2. Antes de Começar]]
+3. [[#3. O Que é WSDD em Uma Frase]]
+4. [[#4. Instalar em Um Projeto]]
+5. [[#5. Comandos Que Você Vai Usar Sempre]]
+6. [[#6. Comandos de Git]]
+7. [[#7. Comandos de Party Mode]]
+8. [[#8. Comandos de Agente]]
+9. [[#9. Comandos de Manutenção]]
+10. [[#10. Fluxos Prontos]]
+11. [[#11. Problemas Comuns]]
+12. [[#12. Cola Rápida]]
+13. [[#13. 🕒 Registro de Alterações por Agentes]]
+
+## 1. 🔄 Atualizações
+
+- 13/05/2026 — Codex: Criação do manual leigo com os comandos principais da release pública `wsdd v0.2.1`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 2. Antes de Começar
+
+Você precisa ter:
+
+| Ferramenta | Precisa? | Para quê |
+|---|---:|---|
+| Node.js 20 ou maior | Sim | Rodar o instalador do WSDD |
+| Git | Sim, na prática | Versionar o projeto |
+| GitHub CLI (`gh`) | Opcional | Criar/ver PRs pelo terminal |
+| Obsidian | Opcional, recomendado | Ler as notas geradas com visual melhor |
+
+Para conferir se tem Node:
+
+```bash
+node --version
+```
+
+Para conferir se tem Git:
+
+```bash
+git --version
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 3. O Que é WSDD em Uma Frase
+
+WSDD instala uma "pasta de regras" no projeto para que você e os agentes saibam:
+
+- onde estão;
+- o que pode ou não pode ser mexido;
+- qual tarefa está ativa;
+- como validar antes de commitar;
+- como fechar a sessão deixando rastro.
+
+Depois da instalação, o comando principal passa a ser:
+
+```bash
+./+wsd/bin/wsd
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 4. Instalar em Um Projeto
+
+### 4.1 Instalação mais simples
+
+Entre na pasta do projeto e rode:
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install --init-git
+```
+
+Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
+
+### 4.2 Projeto novo, sem perguntas
+
+Use quando você quer instalar rápido com escolhas padrão:
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install \
+  --directory . \
+  --init-git \
+  --tools both \
+  --git-policy basic \
+  --github skip \
+  --yes
+```
+
+O que isso faz:
+
+| Opção | Significado simples |
+|---|---|
+| `--directory .` | Instala na pasta atual |
+| `--init-git` | Cria Git se ainda não existir |
+| `--tools both` | Instala suporte para Codex e Claude Code |
+| `--git-policy basic` | Ativa regras básicas de Git e commits |
+| `--github skip` | Não tenta criar repo no GitHub |
+| `--yes` | Não pergunta nada; usa padrões |
+
+### 4.3 Projeto que já existe
+
+Use `--brownfield` quando o projeto já tem código:
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install \
+  --directory . \
+  --tools both \
+  --git-policy full \
+  --github existing \
+  --brownfield \
+  --yes
+```
+
+`--brownfield` cria notas extras em `+specs/codebase/` para documentar stack, arquitetura, convenções, estrutura, integrações e testes.
+
+### 4.4 Instalação mais leve
+
+Se você quiser menos arquivos dentro de `+wsd/`:
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install \
+  --directory . \
+  --init-git \
+  --tools both \
+  --git-policy basic \
+  --github skip \
+  --no-docs \
+  --no-party-mode \
+  --no-examples \
+  --yes
+```
+
+Use essa forma se você quer só o essencial operacional.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 5. Comandos Que Você Vai Usar Sempre
+
+Rode estes comandos dentro da pasta do projeto.
+
+### 5.1 Ver se a instalação está boa
+
+```bash
+./+wsd/bin/wsd doctor
+```
+
+Use quando:
+
+- acabou de instalar;
+- clonou o projeto em outra máquina;
+- algo parece quebrado.
+
+### 5.2 Começar uma sessão de trabalho
+
+```bash
+./+wsd/bin/wsd start
+```
+
+Ele mostra estado do Git, branch, remote, checks básicos e últimos arquivos de contexto.
+
+Use antes de pedir trabalho para um agente.
+
+### 5.3 Validar o projeto
+
+```bash
+./+wsd/bin/wsd check
+```
+
+Esse é o comando de segurança. Ele verifica se o contrato WSD mínimo está de pé.
+
+Você também pode informar risco:
+
+```bash
+./+wsd/bin/wsd check --risk L0
+./+wsd/bin/wsd check --risk L1
+./+wsd/bin/wsd check --risk L2
+```
+
+Regra simples:
+
+| Risco | Quando usar                                                |
+| ----- | ---------------------------------------------------------- |
+| `L0`  | Ajuste pequeno, doc, texto, configuração simples           |
+| `L1`  | Feature normal, endpoint, integração, refatoração moderada |
+| `L2`  | Mudança estrutural, segurança, dados sensíveis, produção   |
+
+### 5.4 Fechar uma sessão
+
+```bash
+./+wsd/bin/wsd finish
+```
+
+Ele:
+
+- mostra estado final;
+- roda validação básica;
+- gera `+specs/HANDOFF.md`;
+- pode perguntar lições, decisões e bloqueadores;
+- atualiza `+wsd/snapshot.json` quando possível.
+
+Use antes de parar o trabalho ou trocar de agente.
+
+### 5.5 Gerar snapshot para dashboard
+
+```bash
+./+wsd/bin/wsd snapshot
+```
+
+Isso gera:
+
+```text
++wsd/snapshot.json
+```
+
+Esse arquivo é lido por ferramentas como o WDB.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 6. Comandos de Git
+
+### 6.1 Diagnóstico Git
+
+```bash
+./+wsd/bin/wsd git doctor
+```
+
+Mostra:
+
+- modo de governança Git;
+- branch atual;
+- upstream;
+- remote;
+- branch principal;
+- se `gh` está disponível.
+
+### 6.2 Checar antes de começar operação Git
+
+```bash
+./+wsd/bin/wsd git preflight
+```
+
+Use antes de mexer em branch, sincronizar ou preparar commit.
+
+Ele falha se a worktree estiver suja. Isso é bom: evita misturar mudanças sem perceber.
+
+### 6.3 Checar antes de abrir PR
+
+```bash
+./+wsd/bin/wsd git pr-check
+```
+
+Use antes de abrir Pull Request.
+
+Ele verifica se:
+
+- você está em branch dedicada;
+- há commits à frente da branch principal;
+- a worktree está limpa;
+- a configuração Git faz sentido.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 7. Comandos de Party Mode
+
+Party Mode é o modo multi-agente. Ele ajuda quando a tarefa pede debate, arquitetura, risco ou revisão.
+
+### 7.1 Ver se está instalado
+
+```bash
+./+wsd/bin/wsd party status
+```
+
+### 7.2 Listar agentes disponíveis
+
+```bash
+./+wsd/bin/wsd party list-agents
+```
+
+### 7.3 Saber quando usar
+
+```bash
+./+wsd/bin/wsd party when-to-use
+```
+
+Regra simples:
+
+- tarefa pequena: não precisa;
+- feature moderada: pode ajudar;
+- arquitetura, risco alto ou revisão importante: use.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 8. Comandos de Agente
+
+Se você estiver usando Claude Code, os comandos aparecem como slash commands:
+
+```text
+/wsd-start
+/wsd-specify
+/wsd-design
+/wsd-tasks
+/wsd-finish
+/wsd-party-mode
+/idea-NOME_DO_PROJETO
+```
+
+Se você estiver usando Codex, peça em linguagem natural:
+
+```text
+Use wsd-start neste projeto.
+Crie uma spec WSD para esta feature.
+Rode wsd-design para esta mudança.
+Quebre isso em tasks WSD.
+Finalize a sessão com wsd-finish.
+```
+
+O fluxo normal é:
+
+```text
+start → specify → design → tasks → implementar → check → finish
+```
+
+Para tarefa pequena, pode ser:
+
+```text
+start → implementar → check → finish
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 9. Comandos de Manutenção
+
+### 9.1 Reinstalar hooks Git
+
+```bash
+./+wsd/bin/wsd hooks
+```
+
+Use quando:
+
+- clonou o repo de novo;
+- `.git/hooks/` sumiu;
+- `doctor` avisou que hooks estão faltando.
+
+### 9.2 Atualizar a pasta `+wsd/`
+
+```bash
+./+wsd/bin/wsd update
+```
+
+Esse comando atualiza a parte vendorizada do WSD no projeto. Ele preserva:
+
+- `+context.json`;
+- `AGENTS.md`;
+- `+specs/`;
+- `scripts/wsd_check.sh`;
+- `scripts/git-hooks/`.
+
+Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install \
+  --directory . \
+  --force
+```
+
+### 9.3 Ver opções do instalador
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 install --list-options
+```
+
+### 9.4 Ver ajuda do instalador
+
+```bash
+npx github:flow31-d/wsdd#v0.2.1 help
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 10. Fluxos Prontos
+
+### 10.1 Comecei o dia
+
+```bash
+./+wsd/bin/wsd doctor
+./+wsd/bin/wsd start
+```
+
+Depois leia o que aparecer e só então peça trabalho ao agente.
+
+### 10.2 Vou fazer uma mudança pequena
+
+```bash
+./+wsd/bin/wsd start
+# fazer a mudança
+./+wsd/bin/wsd check --risk L0
+./+wsd/bin/wsd finish
+```
+
+### 10.3 Vou fazer uma feature
+
+```bash
+./+wsd/bin/wsd start
+# pedir ao agente: wsd-specify
+# pedir ao agente: wsd-design, se a feature for complexa
+# pedir ao agente: wsd-tasks
+# implementar
+./+wsd/bin/wsd check --risk L1
+./+wsd/bin/wsd git preflight
+./+wsd/bin/wsd finish
+```
+
+### 10.4 Vou abrir PR
+
+```bash
+./+wsd/bin/wsd check --risk L1
+./+wsd/bin/wsd git pr-check
+```
+
+Se os dois passarem, o projeto está em melhor estado para PR.
+
+### 10.5 Vou parar agora e continuar depois
+
+```bash
+./+wsd/bin/wsd finish
+```
+
+Na próxima sessão:
+
+```bash
+./+wsd/bin/wsd start
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 11. Problemas Comuns
+
+### "target is not a Git repository"
+
+O projeto ainda não tem Git. Use:
+
+```bash
+git init -b main
+```
+
+Ou rode o install com:
+
+```bash
+--init-git
+```
+
+### "worktree is dirty"
+
+Há arquivos modificados sem commit. Veja:
+
+```bash
+git status --short --branch
+```
+
+Decida se vai commitar, descartar ou separar a mudança. Não ignore esse aviso.
+
+### "missing: .git/hooks/..."
+
+Reinstale hooks:
+
+```bash
+./+wsd/bin/wsd hooks
+```
+
+### "node missing"
+
+Instale Node.js 20 ou maior. Sem Node, parte dos validadores do WSD não roda.
+
+### "gh not authenticated"
+
+Só importa se você usa GitHub pelo terminal. Confira:
+
+```bash
+gh auth status
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 12. Cola Rápida
+
+```bash
+# Instalar WSDD v0.2.1 na pasta atual
+npx github:flow31-d/wsdd#v0.2.1 install --init-git
+
+# Ver se está tudo certo
+./+wsd/bin/wsd doctor
+
+# Começar trabalho
+./+wsd/bin/wsd start
+
+# Validar
+./+wsd/bin/wsd check
+
+# Validar por risco
+./+wsd/bin/wsd check --risk L0
+./+wsd/bin/wsd check --risk L1
+./+wsd/bin/wsd check --risk L2
+
+# Fechar sessão
+./+wsd/bin/wsd finish
+
+# Git
+./+wsd/bin/wsd git doctor
+./+wsd/bin/wsd git preflight
+./+wsd/bin/wsd git pr-check
+
+# Party mode
+./+wsd/bin/wsd party status
+./+wsd/bin/wsd party list-agents
+./+wsd/bin/wsd party when-to-use
+
+# Manutenção
+./+wsd/bin/wsd hooks
+./+wsd/bin/wsd update
+./+wsd/bin/wsd snapshot
+```
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 13. 🕒 Registro de Alterações por Agentes
+
+| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
+|---|---|---|---|
+| 13/05/2026 — | Codex | `x/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Criação do manual leigo para instalação e uso diário do WSDD `v0.2.1`, incluindo comandos de install, sessão, check, Git, Party Mode, manutenção e troubleshooting. |
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]

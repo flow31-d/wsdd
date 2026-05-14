@@ -113,7 +113,7 @@ Se nenhum perfil servir, criar um novo.
 Fluxo preferencial da alpha:
 
 ```bash
-bash /srv/CLI/+Apps/WSD/install.sh \
+bash /srv/CLI/+Apps/wsd/install.sh \
   --directory /path/to/project \
   --profile generic_node_frontend \
   --tools codex \

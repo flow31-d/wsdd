@@ -60,6 +60,7 @@ required_files=(
   "bin/wsd-method.js"
   "scripts/wsd_bootstrap_repo.sh"
   "scripts/wsd_docs_check.sh"
+  "scripts/wsd_check.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -198,6 +199,10 @@ grep -q '_project_notes' templates/repo/scripts/wsd_check.sh || fail "templates/
 grep -q 'CONCERNS.md' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing CONCERNS.md in L0 manifest (WSD-004)"
 grep -q 'ROADMAP referencia specs válidas' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing L1 ROADMAP coherence check (WSD-004)"
 ok "WSD-004 L0+L1 gates present in wsd_check.sh template"
+
+grep -q 'snapshot.json generated and valid' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing snapshot generation gate"
+grep -q 'ROADMAP/STATE estruturados' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing ROADMAP/STATE structure gate"
+ok "WSD snapshot operational contract present"
 
 # HANDOFF.md generation in finish case
 grep -q 'HANDOFF.md' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing HANDOFF.md generation in finish"

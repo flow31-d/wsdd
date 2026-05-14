@@ -15,6 +15,57 @@ function git(cmd) {
   catch { return ''; }
 }
 
+function gitStatusEntries() {
+  const out = git('git status --porcelain=v1 -z');
+  if (!out) return [];
+
+  const parts = out.split('\0').filter(Boolean);
+  const entries = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    const row = parts[i];
+    const status = row.slice(0, 2).trim() || row.slice(0, 2);
+    let file = row.slice(3);
+
+    // Rename/copy records include the secondary path as the next NUL field.
+    if ((row[0] === 'R' || row[0] === 'C') && i + 1 < parts.length) {
+      i += 1;
+    }
+
+    if (file) entries.push({ status, path: file });
+  }
+
+  return entries;
+}
+
+const GENERATED_DIRTY_EXACT = new Set([
+  '+wsd/snapshot.json',
+  '+wsd/.last-check.json',
+]);
+
+const GENERATED_DIRTY_PREFIXES = [
+  '.mypy_cache/',
+  '.pytest_cache/',
+  '.ruff_cache/',
+  '.next/',
+  'coverage/',
+  'dist/',
+  'build/',
+];
+
+const GENERATED_DIRTY_SUFFIXES = [
+  '.log',
+  '.pyc',
+  '.tmp',
+  '.tsbuildinfo',
+];
+
+function isGeneratedDirtyPath(filePath) {
+  return GENERATED_DIRTY_EXACT.has(filePath) ||
+    GENERATED_DIRTY_PREFIXES.some(prefix => filePath.startsWith(prefix)) ||
+    GENERATED_DIRTY_SUFFIXES.some(suffix => filePath.endsWith(suffix));
+}
+
 function slugify(str) {
   return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 40);
 }
@@ -37,6 +88,14 @@ function extractSection(content, heading) {
   return m ? m[1] : '';
 }
 
+function extractFirstSection(content, headings) {
+  for (const heading of headings) {
+    const section = extractSection(content, heading);
+    if (section) return section;
+  }
+  return '';
+}
+
 // ── Project ───────────────────────────────────────────────────────────────────
 let project = { name: 'unknown', slug: 'unknown', type: 'unknown' };
 const ctxRaw = readFile('+context.json');
@@ -54,7 +113,10 @@ if (ctxRaw) {
 
 // ── Git ───────────────────────────────────────────────────────────────────────
 const branch = git('git rev-parse --abbrev-ref HEAD') || 'unknown';
-const is_dirty = git('git status --porcelain').length > 0;
+const dirty_entries = gitStatusEntries();
+const generated_dirty_files = dirty_entries.filter(entry => isGeneratedDirtyPath(entry.path)).map(entry => entry.path);
+const source_dirty_files = dirty_entries.filter(entry => !isGeneratedDirtyPath(entry.path)).map(entry => entry.path);
+const is_dirty = dirty_entries.length > 0;
 let ahead_count = 0;
 try { ahead_count = parseInt(git('git rev-list --count @{u}..HEAD'), 10) || 0; } catch {}
 const last_commit_message = git('git log -1 --format=%s').slice(0, 72);
@@ -143,8 +205,8 @@ function parseState() {
   const content = readFile('+specs/project/STATE.md');
   if (!content) return { active_blockers: 0, total_decisions: 0 };
 
-  const decisoesSection = extractSection(content, 'Decisões');
-  const blocksSection   = extractSection(content, 'Bloqueadores Ativos');
+  const decisoesSection = extractFirstSection(content, ['Decisões', 'Decisions']);
+  const blocksSection   = extractFirstSection(content, ['Bloqueadores Ativos', 'Blockers']);
 
   function countDataRows(sectionContent) {
     return sectionContent
@@ -193,7 +255,18 @@ const snapshot = {
   schema: 'wsd/project-snapshot/v1',
   generated_at: new Date().toISOString(),
   project,
-  git: { branch, is_dirty, ahead_count, last_commit_message },
+  git: {
+    branch,
+    is_dirty,
+    ahead_count,
+    dirty_count: dirty_entries.length,
+    source_dirty_count: source_dirty_files.length,
+    generated_dirty_count: generated_dirty_files.length,
+    has_source_changes: source_dirty_files.length > 0,
+    source_dirty_files: source_dirty_files.slice(0, 20),
+    generated_dirty_files: generated_dirty_files.slice(0, 20),
+    last_commit_message,
+  },
   session: { handoff_exists, open_specs },
   roadmap,
   ideas,

@@ -96,7 +96,7 @@ Escopo opcional entre parênteses: `fix(installer): ...`, `feat(party-mode): ...
 
 ## 5. Validação obrigatória antes do PR
 
-Rode os 3 gates no diretório `+Apps/WSD/` antes de pedir merge:
+Rode os 3 gates no diretório `+Apps/wsd/` antes de pedir merge:
 
 ```bash
 npm test                              # 7 gates de instalação (Codex, Claude, brownfield, git, party-mode)
