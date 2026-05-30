@@ -64,7 +64,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Atualização para `v0.1.10-alpha` — MVP Git/GitHub Governance implementado com `--git-policy none|basic|full`, `wsd git doctor|preflight|pr-check`, templates PR/Issue e bloco `git_governance`.
 - 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration: `/wsd-party-mode`, `wsd party`, `installPartyMode`, seção AGENTS.md, 7/7 testes PASS.
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Drop do sufixo `-alpha`: API estável após 11 iterações alpha + piloto operacional brownfield + 2 itens descartados com rationale (perfis stacks, YAML schema). Adicionada seção "Uso Oficial" como entry point recomendado.
-- 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/WSD install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
+- 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/wsdd install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1` com subcomando `./+wsd/bin/wsd version`, inventário multi-repo e documentação de rastreamento da versão WSD instalada por projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -286,7 +286,7 @@ Issues e bugs descobertos em uso real geram patches `v0.1.x`; novas features seg
 ### 9.1 Quick Start (sem clone)
 
 ```bash
-npx github:flow31-d/WSD install \
+npx github:flow31-d/wsdd install \
   --directory /path/to/project \
   --tools claude-code \
   --git-policy basic \

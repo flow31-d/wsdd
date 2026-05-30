@@ -29,6 +29,7 @@
 #   7. Auto-merge ou espera merge manual (com --auto-merge)
 #   8. Após merge: fetch + tag vX.Y.Z + push tag
 #   9. Sync wsdd: clone fresh, aplica whitelist, roda gates, commita, push, tag, GitHub Release
+#      O sync público sanitiza presets internos antes de commitar no wsdd.
 
 set -euo pipefail
 
@@ -74,6 +75,7 @@ PROFILES_PRIVATE=(
   "koomplet_office.profile.yaml"
   "prescreve_mais.profile.yaml"
 )
+PUBLIC_PRIVATE_REF_PATTERN='koomplet|prescreve|flow31-d/koomplet|GitKoomplet/prescreve'
 
 # ----- Parse args -----
 while [[ $# -gt 0 ]]; do
@@ -114,6 +116,58 @@ run() {
   else
     eval "$@"
   fi
+}
+
+sanitize_wsdd_public_clone() {
+  local clone="$1"
+  local method_file="$clone/bin/wsd-method.js"
+  [[ -f "$method_file" ]] || err "bin/wsd-method.js não encontrado no clone público"
+
+  node - "$method_file" <<'NODE'
+const fs = require('fs');
+const file = process.argv[2];
+const privateProfiles = new Set(['koomplet_office', 'prescreve_mais']);
+const lines = fs.readFileSync(file, 'utf8').split(/\n/);
+const out = [];
+let skipping = false;
+let depth = 0;
+
+function delta(line) {
+  const opens = (line.match(/\{/g) || []).length;
+  const closes = (line.match(/\}/g) || []).length;
+  return opens - closes;
+}
+
+for (const line of lines) {
+  if (!skipping) {
+    const entry = line.match(/^  ([A-Za-z0-9_]+): \{$/);
+    if (entry && privateProfiles.has(entry[1])) {
+      skipping = true;
+      depth = delta(line);
+      continue;
+    }
+    out.push(line);
+    continue;
+  }
+
+  depth += delta(line);
+  if (depth <= 0) {
+    skipping = false;
+  }
+}
+
+let result = out.join('\n');
+result = result.replace(/\n  \},\n\};\n\nmain\(\)\.catch/, '\n  }\n};\n\nmain().catch');
+fs.writeFileSync(file, result);
+NODE
+}
+
+validate_wsdd_public_payload() {
+  local clone="$1"
+  if (cd "$clone" && rg -n "$PUBLIC_PRIVATE_REF_PATTERN" bin profiles templates); then
+    err "Payload público contém referência privada em bin/profiles/templates"
+  fi
+  info "Gate público PASS: sem referências privadas em bin/profiles/templates"
 }
 
 # ----- STEP 1: Pré-flight -----
@@ -363,6 +417,7 @@ else
 
   # profiles/: sync seletivo (excluir privados)
   info "Sync dir: profiles/ (excluindo privados)"
+  rm -rf "$WSDD_CLONE/profiles"
   mkdir -p "$WSDD_CLONE/profiles"
   for f in "$WSD_ROOT/profiles"/*.yaml; do
     base=$(basename "$f")
@@ -374,6 +429,9 @@ else
       cp "$f" "$WSDD_CLONE/profiles/$base"
     fi
   done
+
+  info "Sanitizando bin/wsd-method.js para payload público"
+  sanitize_wsdd_public_clone "$WSDD_CLONE"
 fi
 
 # Validar wsdd após sync
@@ -384,6 +442,7 @@ if [[ "$DRY_RUN" == "true" ]]; then
 else
   ( cd "$WSDD_CLONE" && npm test >/tmp/wsdd_release_npm_test.log 2>&1 ) || { tail -30 /tmp/wsdd_release_npm_test.log; err "npm test falhou no wsdd"; }
   info "npm test no wsdd PASS"
+  validate_wsdd_public_payload "$WSDD_CLONE"
 fi
 
 # Mostra diff e pede confirmação
@@ -399,7 +458,7 @@ confirm "Commit + push as mudanças no wsdd?"
 # Commit no wsdd
 if [[ "$DRY_RUN" == "false" ]]; then
   cd "$WSDD_CLONE"
-  git add -A
+  git add -- "${SYNC_DIRS[@]}" profiles "${SYNC_FILES[@]}"
   git -c "user.name=$GIT_NAME" -c "user.email=$GIT_EMAIL" commit -m "chore(release): $release_tag — sync from WSD privado
 
 Sincronização da release $release_tag a partir do flow31-d/WSD privado.

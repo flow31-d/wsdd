@@ -401,7 +401,7 @@ Estado implementado até `v0.1.10-alpha`:
 Próximos itens:
 
 - [ ] Criar validação YAML formal para specs.
-- [ ] Consolidar `v0.1.0` estável.
+- [x] Consolidar `v0.1.0` estável — concluído em 07/05/2026.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

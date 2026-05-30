@@ -47,6 +47,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Criação do documento. Quick start via GitHub, estratégia privado × público, workflow de sync, regras de compatibilidade e checklist de release pública.
 - 12/05/2026 — Claude (Opus 4.7): Adicionada linha de pré-requisito "Obsidian (recomendado)" em 3.1, com explicação da renderização visual de frontmatter/callouts/wikilinks. Refs WSD-006 + decisão D-002 Opção A.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do checklist público para `npm test` com 11 gates, incluindo o novo `test:install-version`.
+- 30/05/2026 — Codex: Correção do canal público canônico para `flow31-d/wsdd`, registro de fechamento da `v0.3.1` e ajuste do gate de perfis para validar conteúdo final de `bin/`, `profiles/` e `templates/`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -55,7 +56,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 O WSD possui repositório GitHub público em:
 
 ```
-https://github.com/flow31-d/WSD
+https://github.com/flow31-d/wsdd
 ```
 
 O desenvolvimento acontece localmente em `/srv/CLI/+Apps/wsd` (contexto privado). O repositório público é o canal de distribuição — qualquer usuário com Node.js ≥ 20 pode instalar o WSD a partir dele sem nenhuma conta ou registro.
@@ -69,7 +70,7 @@ O documento [[wsd/docs/09_publicacao_github_privado|09 — Publicação]] cobre 
 Usuários com Node.js ≥ 20 podem instalar o WSD diretamente do repositório público, sem npm publish e sem criar conta em registry:
 
 ```bash
-npx github:flow31-d/WSD install
+npx github:flow31-d/wsdd install
 ```
 
 O `npx` baixa o repositório e executa o `bin/wsd-method.js` (entrada definida em `package.json#bin`). A estrutura de diretórios é preservada no download temporário, então `WSD_ROOT = path.resolve(__dirname, '..')` resolve corretamente e encontra `templates/`, `schemas/`, `party-mode/`.
@@ -78,13 +79,13 @@ Variações:
 
 ```bash
 # Com opções explícitas (greenfield)
-npx github:flow31-d/WSD install --tools claude-code --git-policy basic --yes
+npx github:flow31-d/wsdd install --tools claude-code --git-policy basic --yes
 
 # Brownfield
-npx github:flow31-d/WSD install --tools both --git-policy full --brownfield --yes
+npx github:flow31-d/wsdd install --tools both --git-policy full --brownfield --yes
 
 # Versão específica via tag Git
-npx github:flow31-d/WSD#v0.1.0 install
+npx github:flow31-d/wsdd#v0.3.1 install
 ```
 
 ### 3.1 Pré-requisitos do usuário
@@ -116,12 +117,12 @@ Privado (local /srv/CLI/+Apps/wsd)
   └── Testes completos antes de qualquer push
         │
         ▼  [npm test passa + checklist OK]
-Público (github.com/flow31-d/WSD)
+Público (github.com/flow31-d/wsdd)
   │
   ├── Core do método (CLI, templates, schemas, party-mode)
-  ├── Perfis genéricos (generic_node_frontend, generic_python_api)
+  ├── Perfis públicos (generic_node_frontend, generic_python_api, lovable_tanstack_start)
   ├── Documentação pública (README, CHANGELOG, ROADMAP, docs/)
-  └── Quick start: npx github:flow31-d/WSD install
+  └── Quick start: npx github:flow31-d/wsdd install
 ```
 
 **Regra de ouro:** o público é sempre um snapshot testado do privado. Nunca alterar o público sem antes validar localmente. Nunca adicionar ao público o que é específico de projeto interno.
@@ -132,7 +133,7 @@ Público (github.com/flow31-d/WSD)
 
 ### 5.1 Vai para o público (GitHub)
 
-- `bin/wsd-method.js` — somente com perfis genéricos (`generic_node_frontend`, `generic_python_api`)
+- `bin/wsd-method.js` — somente com perfis públicos (`generic_node_frontend`, `generic_python_api`, `lovable_tanstack_start`)
 - `templates/` — todos os templates (genéricos por natureza)
 - `schemas/` — schema canônico do `+context.json`
 - `party-mode/` — sistema de agentes WSD-aware
@@ -153,13 +154,13 @@ Público (github.com/flow31-d/WSD)
 
 ### 5.3 Gate de perfis antes do push
 
-Os perfis internos estão hardcoded em `bin/wsd-method.js`. Verificar antes de qualquer commit público:
+Os perfis internos estão hardcoded no WSD privado. Verificar o conteúdo final do clone público antes de qualquer commit no `wsdd`:
 
 ```bash
-git diff --staged bin/wsd-method.js | grep -E 'koomplet|prescreve|flow31-d/k|flow31-d/p'
+rg -n 'koomplet|prescreve|flow31-d/koomplet|GitKoomplet/prescreve' bin profiles templates
 ```
 
-Se retornar algo, avaliar se o dado é sensível. Perfis internos devem ser removidos ou substituídos por dados fictícios antes do push.
+Se retornar algo, avaliar se o dado é sensível. Perfis internos devem ser removidos ou substituídos por dados fictícios antes do push. Não usar `git diff` como único gate, porque linhas removidas aparecem no diff e podem gerar falso positivo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -246,9 +247,19 @@ Antes de `git push` e `git tag`:
 - [ ] `ROADMAP.md` com itens fechados marcados `[x]`
 - [ ] `docs/09_publicacao_github_privado.md` com versão atual e nova tag listada
 - [ ] Esta nota atualizada se a estratégia mudou
-- [ ] Gate de perfis: `git diff --staged bin/wsd-method.js | grep -E 'koomplet|prescreve'` → vazio
+- [ ] Gate de perfis: `rg -n 'koomplet|prescreve|flow31-d/koomplet|GitKoomplet/prescreve' bin profiles templates` → vazio
 - [ ] Gate de secrets: `rg -n 'API_KEY|SECRET|TOKEN|PRIVATE KEY' .` → vazio
 - [ ] `.gitignore` está correto e `+specs/`, `+imbox/`, `wsd_philo/` não estão no staging
+
+### 8.1 Registro de Fechamento — `v0.3.1`
+
+- [x] WSD privado publicado em `flow31-d/WSD`, `main` em `158a1e3`.
+- [x] Tag privada `v0.3.1` publicada.
+- [x] `wsdd` público publicado em `flow31-d/wsdd`, `main` em `f6d92fc`.
+- [x] Tag pública `v0.3.1` publicada.
+- [x] GitHub Release pública criada: `https://github.com/flow31-d/wsdd/releases/tag/v0.3.1`.
+- [x] `npm test` passou no WSD privado e no clone público.
+- [x] Payload público revisado sem referências privadas em `bin/`, `profiles/` e `templates/`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -270,7 +281,7 @@ Vantagens sobre GitHub: `@latest` e `@next` automáticos, versionamento semânti
 
 Desvantagem: mais um registry externo para manter; o quick start via GitHub já cobre o caso de uso solo e times pequenos sem overhead adicional.
 
-**Decisão atual (11/05/2026):** manter `"private": true` e usar `npx github:flow31-d/WSD` como quick start padrão. npm registry fica como opção futura se houver adoção externa real.
+**Decisão atual (30/05/2026):** manter `"private": true` no pacote e usar `npx github:flow31-d/wsdd` como quick start padrão. npm registry fica como opção futura se houver adoção externa real.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

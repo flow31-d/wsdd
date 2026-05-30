@@ -72,6 +72,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.3.0`** (minor — reforço do contrato operacional) — `scripts/wsd_check.sh` reescrito (185 linhas) valida as 6 notas obrigatórias de `+specs/project/` (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) como L0-required, suporta `--risk` e `--spec` e tem fallback degradado quando Node ausente. `+context.json` ganha blocos formais `environment`, `repository`, `permissions`, `workflow` e `clone_policy` (canonical_history/operational_clone/audit_lab_clone/deploy_clone/promotion_flow). Artefatos `+specs/project/` (PROJECT, ROADMAP, IDEAS, IDEAS_PIPELINE, CONCERNS) preenchidos com conteúdo real do projeto. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga os novos campos. `docs/05_contrato_artefatos.md` e `docs/17_snapshot_campos_explicados.md` atualizados. Inclui `REVIEW_PRE_V1.md` (tracker formal) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). Seção 20 adicionada, Registro renumerado para seção 21.
 - 30/05/2026 21:00:00 -03 — Codex: Correção de template para alinhar o check Lovable em projetos novos: inclusão da validação `lovable_integration` no `templates/repo/scripts/wsd_check.sh` (gatilho em `+context.json` exige `package-lock.json` ausente e `bun.lock` presente).
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão da versão **`0.3.1`** (patch — inventário de versão WSD por projeto): `templates/local-wsd/bin/wsd` ganha subcomando `version`, inventário multi-repo, saída JSON e comparação com `wsd_source`; `package.json` adiciona gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22.
+- 30/05/2026 — Codex: Higiene pós-release `v0.3.1`: quick start atual padronizado para `flow31-d/wsdd`, registro de fechamento público adicionado em `docs/15` e pendências antigas de estabilização `v0.1.0` marcadas como concluídas.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -534,7 +535,7 @@ concluídos).
 - `templates/repo/+specs/project/IDEAS_PIPELINE.md.template` — controle de progressão de ideias (`raw` → `implementada`).
 - `templates/claude-commands/commands/wsd-idea.md` — comando slash `idea-{PROJECT_SLUG}` para Claude Code: captura estruturada, estimativa L0/L1/L2, oferta de Party Mode para L1/L2.
 - `templates/codex-skills/wsd-idea/SKILL.md` — skill equivalente para Codex.
-- `docs/15_repositorio_publico_e_quick_start.md` — estratégia `npx github:flow31-d/WSD install`, workflow de sync privado×público e checklist de release.
+- `docs/15_repositorio_publico_e_quick_start.md` — estratégia `npx github:flow31-d/wsdd install`, workflow de sync privado×público e checklist de release.
 - `+specs/features/project-roadmap/` e `+specs/features/ideas-workflow/` — specs WHEN/THEN/SHALL e tasks atômicas para as duas features.
 
 ### Mudado

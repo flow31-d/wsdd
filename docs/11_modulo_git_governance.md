@@ -443,9 +443,9 @@ Objetivo cumprido: tornar GitHub parte explícita do contrato operacional, reduz
 - [x] Templates do módulo em `templates/modules/git-governance/`.
 - [x] Documentação sincronizada: README, hub, ROADMAP, docs/00, docs/03, docs/07, docs/08, docs/10.
 
-### Pendente antes de promover para `v0.1.0` estável
+### Validação histórica antes da promoção para `v0.1.0` estável
 
-- [ ] Testar em projeto real em andamento.
+- [x] Testar em projeto real em andamento — concluído antes da estabilização inicial.
 
 ### Planejado para versões futuras
 
