@@ -1,7 +1,7 @@
 ---
 title: "10 — Matriz de Sincronização de Notas WSD"
 created: 05/05/2026
-modified: 06/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -54,6 +54,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Expansão da matriz para o MVP Git/GitHub Governance planejado na v0.1.10-alpha.
 - 07/05/2026 — Codex: Marcação do MVP Git/GitHub Governance como implementado e inclusão de testes/checkers como validação obrigatória do módulo.
 - 11/05/2026 — Claude: Adição de `docs/15_repositorio_publico_e_quick_start.md` como nova fonte de verdade para estratégia privado × público, quick start via GitHub e compatibilidade de release.
+- 30/05/2026 18:15:09 -03 — Codex: Atualização do gate público mínimo de `npm test` de 7 para 11 gates após inclusão de `test:install-version`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -134,7 +135,7 @@ Quando a mudança for de versão ou release, atualizar no mínimo:
 - `ROADMAP.md`;
 - `docs/09_publicacao_github_privado.md`.
 
-Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 7 gates de `npm test`, verificação de perfis privados e gate de secrets.
+Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 11 gates de `npm test`, verificação de perfis privados e gate de secrets.
 
 Quando a mudança for de instalação ou uso, atualizar no mínimo:
 
@@ -248,5 +249,6 @@ Se mover ou renomear `.md`, usar `/usr/local/bin/obsidian`; nunca `mv` ou `renam
 | 07/05/2026 — | Codex | `x/wsd/docs/10_matriz_sincronizacao_notas.md` | Expansão da matriz para o MVP Git/GitHub Governance planejado na v0.1.10-alpha. |
 | 07/05/2026 — | Codex | `x/wsd/docs/10_matriz_sincronizacao_notas.md` | Marcação do MVP Git/GitHub Governance como implementado e validado por testes/checkers. |
 | 11/05/2026 — | Claude | `x/wsd/docs/10_matriz_sincronizacao_notas.md` | Adição de `docs/15` como nova fonte de verdade (estratégia público × privado e quick start). Nova linha na Matriz Obrigatória e Grupos Mínimos. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Atualização do checklist público para `npm test` com 11 gates, incluindo `test:install-version`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

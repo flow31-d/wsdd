@@ -1,7 +1,7 @@
 ---
 title: "00 — Planejamento de Instalação WSD"
 created: 05/05/2026
-modified: 06/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -62,6 +62,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 06/05/2026 14:41:06 -03 — Codex: Padronização das listas de implementação da nota de instalação com checkboxes para acompanhar o que está concluído e o que falta.
 - 07/05/2026 — Codex: Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização.
 - 07/05/2026 — Codex: Marcação da `v0.1.10-alpha` como implementada: `--git-policy none|basic|full`, Git namespace local, `git_governance` e templates PR/Issue no modo `full`.
+- 30/05/2026 18:15:09 -03 — Codex: Inclusão do subcomando local `wsd version` e do modo de inventário para rastrear a versão WSD instalada em múltiplos projetos.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -332,8 +333,18 @@ Depois de instalado dentro do projeto:
 ./+wsd/bin/wsd check
 ./+wsd/bin/wsd finish
 ./+wsd/bin/wsd doctor
+./+wsd/bin/wsd version
 ./+wsd/bin/wsd update
 ```
+
+Inventário de versões WSD em vários projetos:
+
+```bash
+./+wsd/bin/wsd version --inventory --path /path/com/projetos --max-depth 4
+./+wsd/bin/wsd version --json --inventory --path /path/com/projetos
+```
+
+Esse comando usa `+wsd/config.json` como fonte local da versão instalada e compara com `wsd_source/package.json` quando a fonte original ainda está acessível.
 
 Com o módulo `git-governance`, o CLI local também deve suportar:
 
@@ -376,6 +387,7 @@ Estado implementado até `v0.1.10-alpha`:
 - [x] Ajustar templates Codex para instalação local.
 - [x] Publicar WSD como GitHub privado.
 - [x] Criar matriz e checker de sincronização documental.
+- [x] Adicionar `./+wsd/bin/wsd version` para rastrear versão instalada por projeto e inventariar múltiplos repos.
 - [x] Registrar plano do módulo opcional `git-governance`.
 - [x] Criar templates Claude Code.
 - [x] Testar em projeto brownfield real (`koomplet-office`) antes de escalar.
@@ -457,5 +469,6 @@ Quando esta nota mudar, revisar:
 | 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Padronização das listas de implementação com checkboxes para acompanhar o que está concluído e o que falta. |
 | 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização. |
 | 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Marcação da `v0.1.10-alpha` como implementada no instalador, CLI local, contexto e templates GitHub. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão do `wsd version` nos subcomandos locais e documentação do inventário multi-repo por `+wsd/config.json`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

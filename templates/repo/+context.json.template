@@ -71,5 +71,6 @@
     "test_commands": {{TEST_COMMANDS_JSON_ARRAY}},
     "build_commands": {{BUILD_COMMANDS_JSON_ARRAY}},
     "smoke_commands": {{SMOKE_COMMANDS_JSON_ARRAY}}
-  }
+  }{{#if LOVABLE}},
+  "lovable_integration": {{LOVABLE_INTEGRATION_JSON}}{{/if}}
 }

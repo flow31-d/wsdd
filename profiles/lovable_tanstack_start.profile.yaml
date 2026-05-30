@@ -1,0 +1,76 @@
+schema_version: "wsd/profile/v1"
+project:
+  name: "Lovable TanStack Start"
+  type: "lovable_tanstack_start"
+  primary_language: "TypeScript"
+  owner: "private"
+repository:
+  name: "{{REPO_NAME}}"
+  remote: "{{GITHUB_REMOTE}}"
+  default_branch: "main"
+environment:
+  canonical_host: "{{CANONICAL_HOST}}"
+  canonical_path: "{{CANONICAL_PATH}}"
+  environment_name: "development"
+  network_mode: "local_or_vps"
+permissions:
+  write_paths:
+    - "./src"
+    - "./tests"
+    - "./public"
+    - "./docs"
+    - "./scripts"
+    - "./+specs"
+    - "./+logs"
+    - "./AGENTS.md"
+    - "./+context.json"
+  forbidden_paths:
+    - "./.git"
+    - "./.env"
+    - "./secrets"
+    - "./keys"
+    - "./certs"
+    - "./package-lock.json"
+  tools:
+    - "bash"
+    - "git"
+    - "gh"
+    - "node"
+    - "bun"
+    - "python3"
+validation:
+  lint: []
+  test:
+    - "bun test"
+  build:
+    - "bun run build"
+  smoke: []
+risk:
+  l2_areas:
+    - "deploy Cloudflare Workers"
+    - "merge Lovable → main"
+    - "edição de keyframes CSS pela Lovable"
+    - "edição de routeTree.gen.ts"
+
+# Bloco específico Lovable — propagado para +context.json.lovable_integration
+# durante o install (apenas quando este profile é selecionado).
+lovable_integration:
+  enabled: true
+  bot: "gpt-engineer-app[bot]"
+  package_manager: "bun"
+  forbidden_files:
+    - "package-lock.json"
+  fragile_paths:
+    - "src/routes/index.tsx"
+    - "src/**/keyframes*.css"
+    - "src/**/*parallax*"
+    - "src/**/*tilt*"
+  auto_delete_branch_on_merge: false
+  collaboration_model: "owner_plus_fork_pr"
+
+# Notas operacionais
+# - Stack: TanStack Start (SSR) + TanStack Router file-based + Vite + Tailwind v4 + shadcn new-york v4 + Cloudflare Workers.
+# - Lovable é Bun-puro. NUNCA commitar package-lock.json — causa raiz do "Preview travado".
+# - Lovable só conecta a repos que ela própria criou; transferência de owner exige recriar projeto.
+# - Áreas frágeis (índex.tsx, keyframes, parallax) — manter body em componente separado e usar fluxo manual (Issue + branch + PR).
+# - Setting GitHub recomendada: "Automatically delete head branches" = OFF (aplicado por `wsd lovable bootstrap`).

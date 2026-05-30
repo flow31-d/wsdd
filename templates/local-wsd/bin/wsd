@@ -69,6 +69,297 @@ _git_base_ref() {
   printf "%s\n" "${default_branch:-main}"
 }
 
+_json_get() {
+  local file="$1"
+  local path="$2"
+  [[ -f "$file" ]] || return 1
+
+  node - "$file" "$path" <<'NODE' 2>/dev/null
+const fs = require('fs');
+
+const filePath = process.argv[2];
+const keyPath = process.argv[3];
+
+let data;
+try {
+  data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+} catch (_error) {
+  process.exit(1);
+}
+
+const keys = String(keyPath).split('.').filter(Boolean);
+let value = data;
+for (const key of keys) {
+  if (!value || typeof value !== 'object' || !Object.prototype.hasOwnProperty.call(value, key)) {
+    process.exit(1);
+  }
+  value = value[key];
+}
+
+if (value === undefined || value === null) {
+  process.exit(1);
+}
+
+if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+  process.stdout.write(String(value));
+} else {
+  process.stdout.write(JSON.stringify(value));
+}
+NODE
+}
+
+_normalize_version() {
+  local version="$1"
+  version="${version#v}"
+  printf "%s" "$version"
+}
+
+_version_cmp() {
+  local a="$1"
+  local b="$2"
+  a="$(_normalize_version "$a")"
+  b="$(_normalize_version "$b")"
+
+  [[ -n "$a" && -n "$b" ]] || { echo "unknown"; return; }
+  if [[ "$a" == "$b" ]]; then
+    echo "eq"
+    return
+  fi
+  if [[ "$(printf '%s\n%s\n' "$a" "$b" | sort -V | head -n 1)" == "$a" ]]; then
+    echo "lt"
+  else
+    echo "gt"
+  fi
+}
+
+_wsd_version_record() {
+  local root="$1"
+  local as_json="${2:-0}"
+  local norm_root="${root%/}"
+
+  local cfg_path="${norm_root}/+wsd/config.json"
+  local project_path="${norm_root}/+context.json"
+  local source_version_path
+  local source_candidate_path
+  local project_name
+  local installed_version
+  local installed_at
+  local source_path
+  local source_version="n/a"
+  local status="not-installed"
+  local source_match_raw
+  local cfg_exists=0
+  local cmp
+
+  project_name="$(_json_get "$project_path" "project.name" || true)"
+  installed_version="$(_json_get "$cfg_path" "version" || true)"
+  installed_at="$(_json_get "$cfg_path" "installed_at" || true)"
+  source_path="$(_json_get "$cfg_path" "wsd_source" || true)"
+  [[ -f "$cfg_path" ]] && cfg_exists=1
+
+  if [[ -z "$project_name" ]]; then
+    project_name="$(basename "$norm_root")"
+  fi
+  if [[ -z "$installed_version" ]]; then
+    installed_version="n/a"
+  fi
+  if [[ -z "$installed_at" ]]; then
+    installed_at="n/a"
+  fi
+  if [[ -n "$source_path" ]]; then
+    if [[ "$source_path" = /* ]]; then
+      source_version_path="$source_path/package.json"
+    else
+      source_candidate_path="${norm_root}/${source_path}/package.json"
+      if [[ -f "$source_candidate_path" ]]; then
+        source_version_path="$source_candidate_path"
+      else
+        source_version_path="${norm_root}/$source_path/package.json"
+      fi
+    fi
+    if [[ -f "$source_version_path" ]]; then
+      source_path="${source_version_path%/package.json}"
+    fi
+    source_version="$(_json_get "$source_version_path" "version" || true)"
+    [[ -n "$source_version" ]] || source_version="n/a"
+  else
+    source_path="n/a"
+  fi
+
+  if [[ "$cfg_exists" -eq 1 && "$installed_version" == "n/a" ]]; then
+    status="unreadable"
+  elif [[ -z "${installed_version// /}" ]]; then
+    status="unreadable"
+  elif [[ "$installed_version" != "n/a" && "$source_version" != "n/a" ]]; then
+    cmp="$(_version_cmp "$installed_version" "$source_version")"
+    if [[ "$cmp" == "eq" ]]; then
+      status="aligned"
+      source_match_raw="true"
+    elif [[ "$cmp" == "lt" ]]; then
+      status="behind-source"
+      source_match_raw="false"
+    elif [[ "$cmp" == "gt" ]]; then
+      status="ahead-of-source"
+      source_match_raw="n/a"
+    else
+      status="unknown"
+      source_match_raw="n/a"
+    fi
+  elif [[ -f "$cfg_path" ]]; then
+    status="source-unknown"
+  else
+    status="not-installed"
+  fi
+
+  if [[ -z "$source_match_raw" ]]; then
+    source_match_raw="n/a"
+  fi
+
+    if [[ "$as_json" == "1" ]]; then
+      node - "$norm_root" "$project_name" "$installed_version" "$installed_at" "$source_path" "$source_version" "$status" "$source_match_raw" <<'NODE'
+const [
+  ,
+  ,
+  path,
+  project,
+  installed_version,
+  installed_at,
+  source_path,
+  source_version,
+  status,
+  source_match
+] = process.argv;
+console.log(JSON.stringify({
+  path,
+  project,
+  installed_version,
+  installed_at,
+  source_path,
+  source_version,
+  status,
+  source_match,
+}));
+NODE
+  else
+      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$norm_root" "$project_name" "$installed_version" "$installed_at" "$source_path" "$source_version" "$status" "$source_match_raw"
+  fi
+}
+
+_wsd_version_report() {
+  local as_json=0
+  local inventory=0
+  local -a roots=()
+  local max_depth=4
+  local arg
+
+  while [[ "$#" -gt 0 ]]; do
+    arg="$1"
+    case "$arg" in
+      --json)
+        as_json=1
+        shift
+        ;;
+      --inventory|--scan)
+        inventory=1
+        shift
+        ;;
+      --root|--path)
+        [[ -n "${2-}" ]] || { echo "FAIL: --root precisa de valor" >&2; exit 1; }
+        roots+=("$2")
+        shift 2
+        ;;
+      --max-depth)
+        [[ -n "${2-}" ]] || { echo "FAIL: --max-depth precisa de valor" >&2; exit 1; }
+        max_depth="$2"
+        shift 2
+        ;;
+      --help|-h)
+        cat <<USAGE
+Usage: ./+wsd/bin/wsd version [options]
+  --json             saída JSON
+  --inventory        varrer diretórios buscando projetos com +wsd/config.json
+  --scan             sinônimo de --inventory
+  --path <dir>       diretório para varredura (pode repetir)
+  --max-depth <n>    profundidade máxima do find em inventory mode (padrão: 4)
+  --help, -h         ajuda
+
+Sem flags, consulta WSD apenas no diretório atual.
+Exemplos:
+  ./+wsd/bin/wsd version
+  ./+wsd/bin/wsd version --inventory --path .
+  ./+wsd/bin/wsd version --json --inventory --path ~/projects
+USAGE
+        return 0
+        ;;
+      *)
+        echo "FAIL: argumento desconhecido em version: $arg" >&2
+        echo "Hint: use ./+wsd/bin/wsd version --help" >&2
+        return 1
+        ;;
+    esac
+  done
+
+  if (( inventory == 1 )); then
+    local -a project_roots=()
+    local -A seen=()
+    local root
+
+    if [[ ${#roots[@]} -eq 0 ]]; then
+      roots+=(".")
+    fi
+
+    for root in "${roots[@]}"; do
+      if [[ -f "$root/+wsd/config.json" ]]; then
+        [[ -z "${seen[$root]-}" ]] && { seen["$root"]=1; project_roots+=("$root"); }
+        continue
+      fi
+
+      if [[ ! -d "$root" ]]; then
+        echo "WARN: diretório não encontrado em inventory mode: $root" >&2
+        continue
+      fi
+
+      while IFS= read -r -d '' cfg_path; do
+        local candidate="${cfg_path%/+wsd/config.json}"
+        [[ -z "${seen[$candidate]-}" ]] && { seen["$candidate"]=1; project_roots+=("$candidate"); }
+      done < <(find "$root" -maxdepth "$max_depth" -type f -path "*/+wsd/config.json" -print0)
+    done
+
+    if [[ ${#project_roots[@]} -eq 0 ]]; then
+      echo "FAIL: nenhum +wsd/config.json encontrado em: ${roots[*]}" >&2
+      return 1
+    fi
+
+    readarray -t project_roots < <(printf '%s\n' "${project_roots[@]}" | sort -u)
+
+    if [[ "$as_json" == "1" ]]; then
+      local root_path
+      local first_record=1
+      echo '['
+      for root_path in "${project_roots[@]}"; do
+        [[ -f "$root_path/+wsd/config.json" ]] || continue
+        if [[ $first_record -eq 0 ]]; then
+          echo ','
+        fi
+        printf '  '
+        _wsd_version_record "$root_path" 1
+        first_record=0
+      done
+      echo ']'
+    else
+      printf 'PATH\tPROJETO\tVERSION\tINSTALLED_AT\tSOURCE_PATH\tSOURCE_VERSION\tSTATUS\tSOURCE_MATCH\n'
+      local path
+      for path in "${project_roots[@]}"; do
+        [[ -f "$path/+wsd/config.json" ]] || continue
+        _wsd_version_record "$path" 0
+      done
+    fi
+  else
+    _wsd_version_record "." "$as_json"
+  fi
+}
+
 case "$command" in
   start)
     echo "== WSD Start =="
@@ -456,12 +747,87 @@ USAGE
     fi
     node +wsd/bin/wsd-snapshot.cjs
     ;;
+  lovable)
+    subcommand="${1:-help}"
+    shift || true
+    _lovable_enabled="$(_context_get lovable_integration.enabled)"
+    case "$subcommand" in
+      doctor)
+        echo "== WSD Lovable Doctor =="
+        if [[ "$_lovable_enabled" != "true" ]]; then
+          echo "FAIL: +context.json não declara lovable_integration.enabled=true" >&2
+          echo "Hint: reinstale com --profile lovable_tanstack_start, ou edite +context.json manualmente." >&2
+          exit 1
+        fi
+        pass_lovable=0
+        if [[ -f package-lock.json ]]; then
+          echo "FAIL: package-lock.json presente — causa raiz do Preview travado (Lovable é Bun-puro)" >&2
+          echo "Fix: git rm package-lock.json && git commit -m 'chore(deps): remove package-lock.json (Lovable é bun-first)'" >&2
+          pass_lovable=1
+        else
+          echo "ok: package-lock.json ausente"
+        fi
+        if [[ ! -f bun.lock ]]; then
+          echo "FAIL: bun.lock ausente — rode 'bun install' para gerar" >&2
+          pass_lovable=1
+        else
+          echo "ok: bun.lock presente"
+        fi
+        if ! command -v bun >/dev/null 2>&1; then
+          echo "warn: bun não está no PATH local — agente não conseguirá rodar 'bun install' aqui"
+        else
+          echo "ok: bun no PATH ($(bun --version 2>/dev/null))"
+        fi
+        if [[ $pass_lovable -eq 0 ]]; then
+          echo "PASS: lovable doctor"
+        else
+          exit 1
+        fi
+        ;;
+      bootstrap)
+        # Desliga "automatically delete head branches" no repo do GitHub.
+        # Sem isso, mergear PRs Lovable pode deletar branches que a Lovable depende.
+        if [[ "$_lovable_enabled" != "true" ]]; then
+          echo "FAIL: +context.json não declara lovable_integration.enabled=true" >&2
+          exit 1
+        fi
+        repo_name="$(_context_get repository.name)"
+        if [[ -z "$repo_name" ]]; then
+          echo "FAIL: +context.json não tem repository.name (esperado owner/repo)" >&2
+          exit 1
+        fi
+        if ! command -v gh >/dev/null 2>&1; then
+          echo "FAIL: gh CLI não está instalado (necessário para PATCH /repos/${repo_name})" >&2
+          exit 1
+        fi
+        echo "== WSD Lovable Bootstrap =="
+        echo "Desligando delete_branch_on_merge em ${repo_name}..."
+        if gh api -X PATCH "/repos/${repo_name}" -f delete_branch_on_merge=false >/dev/null; then
+          echo "ok: delete_branch_on_merge=false aplicado em ${repo_name}"
+        else
+          echo "FAIL: PATCH falhou — verifique autenticação gh e permissões no repo" >&2
+          exit 1
+        fi
+        ;;
+      help|*)
+        cat <<USAGE
+Usage: ./+wsd/bin/wsd lovable <subcommand>
+  doctor     — verifica invariantes Lovable (package-lock.json ausente, bun.lock presente)
+  bootstrap  — aplica configuração GitHub no repo (delete_branch_on_merge=false) via gh api
+USAGE
+        ;;
+    esac
+    ;;
+  version)
+    _wsd_version_report "$@"
+    ;;
   help|--help|-h)
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot"
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable"
+    echo "       ./+wsd/bin/wsd version [--inventory|--scan] [--json] [--path <dir>] [--max-depth <n>]"
     ;;
   *)
     echo "Unknown WSD command: $command" >&2
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot" >&2
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable" >&2
     exit 1
     ;;
 esac

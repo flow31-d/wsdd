@@ -1,7 +1,7 @@
 ---
 title: "04 — Playbook de Implantação WSD"
 created: 05/05/2026
-modified: 12/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -53,6 +53,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 06/05/2026 — Claude: Inserção do Passo 7 (Auto-sizing e fluxo de 4 fases TLC), tabela L0/L1/L2 → Quick/Specify+Execute/4 fases e ajuste dos paths para `+specs/` e `+logs/`.
 - 07/05/2026 — Codex: Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`.
 - 07/05/2026 — Codex: Atualização do playbook para tratar `--git-policy full` como disponível na `v0.1.10-alpha`.
+- 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` no fluxo de validação pós-instalação para registrar qual versão do WSD ficou aplicada no repo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -302,6 +303,7 @@ Rodar:
 
 ```bash
 ./+wsd/bin/wsd doctor
+./+wsd/bin/wsd version
 ./+wsd/bin/wsd check
 python3 -m json.tool +context.json
 bash scripts/wsd_check.sh --risk L0 .
@@ -341,6 +343,7 @@ Registrar:
 - PR;
 - merge commit;
 - status WSD;
+- versão WSD instalada (`./+wsd/bin/wsd version`);
 - comando checker;
 - specs ativas.
 
@@ -373,5 +376,6 @@ bash scripts/wsd_docs_check.sh
 | 06/05/2026 — | Claude | `x/wsd/docs/04_playbook_implantacao.md` | Inserção do Passo 7 (Auto-sizing + 4 fases TLC), tabela L0/L1/L2 → Quick/Specify+Execute/4 fases, ajuste de paths para `+specs/` e `+logs/`, link para Conventional Commits. |
 | 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`. |
 | 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Atualização do playbook para `--git-policy full` disponível no instalador. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd version` na validação e no registro pós-implantação do WSD em projetos. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

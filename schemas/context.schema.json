@@ -175,6 +175,33 @@
         "build_commands": { "type": "array", "items": { "type": "string" } },
         "smoke_commands": { "type": "array", "items": { "type": "string" } }
       }
+    },
+    "lovable_integration": {
+      "type": "object",
+      "description": "Integration metadata for repos edited by the Lovable visual AI editor (gpt-engineer-app[bot]). Optional; present only when the project was bootstrapped with --profile lovable_*.",
+      "required": ["enabled", "bot", "package_manager"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "bot": { "type": "string", "minLength": 1 },
+        "package_manager": {
+          "type": "string",
+          "enum": ["bun"]
+        },
+        "forbidden_files": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "fragile_paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "preview_url": { "type": "string" },
+        "auto_delete_branch_on_merge": { "type": "boolean" },
+        "collaboration_model": {
+          "type": "string",
+          "enum": ["owner_plus_fork_pr", "single_owner"]
+        }
+      }
     }
   }
 }

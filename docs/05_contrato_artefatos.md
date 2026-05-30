@@ -1,7 +1,7 @@
 ---
 title: "05 — Contrato de Artefatos WSD"
 created: 05/05/2026
-modified: 12/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -49,6 +49,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
+- 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -265,17 +266,19 @@ Estrutura principal:
 
 | Caminho | Função |
 |---|---|
-| `+wsd/bin/wsd` | CLI local — `wsd start`, `check`, `finish`, `doctor`, `update`, `git`, `party`, `snapshot` |
+| `+wsd/bin/wsd` | CLI local — `wsd start`, `check`, `finish`, `doctor`, `version`, `update`, `git`, `party`, `snapshot` |
 | `+wsd/bin/wsd-validate-context.cjs` | Validador zero-deps do `+context.json` contra o schema |
 | `+wsd/bin/wsd-snapshot.cjs` | Gerador do `+wsd/snapshot.json` (resumo do estado do projeto) |
 | `+wsd/schemas/context.schema.json` | JSON Schema 2020-12 canônico do `+context.json` |
-| `+wsd/config.json` | Metadados da instalação: versão, source, ferramentas, data |
+| `+wsd/config.json` | Metadados da instalação: versão, source, ferramentas, data; lido por `wsd version` |
 | `+wsd/docs/` | Documentação operacional do método (01–16) |
 | `+wsd/party-mode/` | Sistema de orquestração multi-agente (agents, steps, templates) |
 | `+wsd/templates/` | Templates de specs, comandos e repo (somente leitura) |
 | `+wsd/profiles/` | Perfis de projeto (python_api, node_frontend, etc.) |
 
 **Arquivos ignorados:** `+wsd/snapshot.json` (estado efêmero) e `+wsd/.last-check.json` (timestamp do último check).
+
+**Versão instalada:** via `wsd version` — lê `version`, `installed_at` e `wsd_source` de `+wsd/config.json`; quando possível, compara com `wsd_source/package.json`.
 
 **Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json` e atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/` sem tocar em artefatos do projeto.
 
@@ -305,5 +308,6 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 07/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Documentação do schema canônico `schemas/context.schema.json` e validador `wsd-validate-context.js` na seção `+context.json` e na regra de sincronização de artefatos (v0.1.5-alpha). |
 | 07/05/2026 — | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Marcação do bloco `git_governance` como implementado e validado pelo schema na `v0.1.10-alpha`. |
 | 11/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Adição das seções: `+specs/project/` (ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md — v0.1.1/v0.1.2) e `+wsd/` vendor tree (estrutura, arquivos ignorados, `wsd update`). Renúmeração de seções 6→11. Fix: referências `.js` → `.cjs` para wsd-validate-context e wsd-snapshot (v0.1.3). |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `wsd version` no contrato da vendor tree e explicitação do uso de `+wsd/config.json` como fonte de versão instalada. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

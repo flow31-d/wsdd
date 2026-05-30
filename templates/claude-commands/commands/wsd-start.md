@@ -35,6 +35,7 @@ git remote show origin
 **4. Se WSD presente, executar checker:**
 
 ```bash
+./+wsd/bin/wsd version 2>/dev/null || true
 bash scripts/wsd_check.sh --risk L0 .
 ```
 
@@ -56,6 +57,7 @@ gh pr list --state open --limit 20 2>/dev/null || true
 - repo e host canônico
 - branch e upstream
 - worktree limpa/suja
+- versão WSD instalada quando disponível
 - contexto presente/ausente
 - specs encontradas (id, título, status, risco)
 - paths permitidos e proibidos do `+context.json`

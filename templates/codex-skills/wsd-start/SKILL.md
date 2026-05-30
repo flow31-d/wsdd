@@ -31,6 +31,7 @@ git remote show origin
 4. If WSD exists, run:
 
 ```bash
+./+wsd/bin/wsd version 2>/dev/null || true
 bash scripts/wsd_check.sh --risk L0 .
 ```
 
@@ -53,6 +54,7 @@ gh pr list --state open --limit 20 2>/dev/null || true
 - host/path;
 - branch/upstream;
 - worktree clean/dirty;
+- WSD installed version when available;
 - context present/missing;
 - specs found;
 - initial risk classification;
@@ -61,4 +63,3 @@ gh pr list --state open --limit 20 2>/dev/null || true
 ## Boundary
 
 Do not implement changes during start routine unless the user explicitly asks after the opening report.
-

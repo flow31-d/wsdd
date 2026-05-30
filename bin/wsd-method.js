@@ -41,45 +41,34 @@ const PROFILE_PRESETS = {
     test_build: 'ruff check app tests && pytest && docker compose config',
     l2_areas: ['migracao de banco', 'auth/autorizacao', 'secrets', 'producao', 'dados sensiveis']
   },
-  koomplet_office: {
-    project_name: 'Koomplet Office',
-    repo_name: 'flow31-d/koomplet-office',
-    github_remote: 'https://github.com/flow31-d/koomplet-office.git',
-    canonical_host: 'DLP',
-    canonical_path: '/srv/CLI/x/dev_cli/koomplet-office',
-    default_branch: 'master',
-    project_type: 'node_frontend_multiplayer_workspace',
+  lovable_tanstack_start: {
+    project_type: 'lovable_tanstack_start',
     primary_language: 'TypeScript',
-    environment_policy_summary: 'DLP e o desenvolvimento canonico. GitHub e o historico compartilhado. Oct e publicacao/proxy/frontend servido, nao ambiente de desenvolvimento.',
-    clone_topology_markdown: '- DLP: desenvolvimento canonico.\\n- GitHub: historico compartilhado.\\n- Oct: publicacao/proxy/frontend servido.',
+    write_paths: ['./src', './tests', './public', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './+context.json'],
+    forbidden_paths: ['./.git', './.env', './secrets', './keys', './certs', './package-lock.json'],
+    tools: ['bash', 'git', 'gh', 'node', 'bun', 'python3'],
     lint: [],
-    test: ['npm test'],
-    build: ['npm run build'],
-    smoke: ['validar asset publico servido em https://work.koomplet.com/office/'],
-    test_quick: 'npm test -- --findRelatedTests',
-    test_full: 'npm test',
-    test_build: 'npm test && npm run build',
-    l2_areas: ['deploy publico', 'rsync para Oct', 'proxy/SSL', 'base path /office/', 'assets publicados']
-  },
-  prescreve_mais: {
-    project_name: 'Prescreve Mais',
-    repo_name: 'GitKoomplet/prescreve_mais',
-    github_remote: 'https://github.com/GitKoomplet/prescreve_mais.git',
-    canonical_host: 'Oct',
-    canonical_path: '/srv/oct/prescreve_mais',
-    default_branch: 'main',
-    project_type: 'python_api_and_frontend',
-    primary_language: 'Python/TypeScript',
-    environment_policy_summary: 'GitHub e o historico compartilhado. Oct e o plano operacional. DLP e auditoria/laboratorio.',
-    clone_topology_markdown: '- GitHub: historico compartilhado.\\n- Oct: plano operacional.\\n- DLP: auditoria/laboratorio.',
-    lint: ['poetry run ruff check app tests', 'cd frontend && npm run lint'],
-    test: ['bash scripts/run_epic1_pr_gate.sh', 'cd frontend && npm run test:run'],
-    build: ['cd frontend && npm run build', 'docker compose config'],
+    test: ['bun test'],
+    build: ['bun run build'],
     smoke: [],
-    test_quick: 'cd frontend && npm run test:run',
-    test_full: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run test:run',
-    test_build: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run build && docker compose config',
-    l2_areas: ['Vidaas/IntegraICP', 'dados sensiveis', 'auth', 'banco', 'producao']
+    test_quick: 'bun test',
+    test_full: 'bun test',
+    test_build: 'bun test && bun run build',
+    l2_areas: ['deploy Cloudflare Workers', 'merge Lovable → main', 'edicao de keyframes CSS pela Lovable', 'edicao de routeTree.gen.ts'],
+    lovable_integration: {
+      enabled: true,
+      bot: 'gpt-engineer-app[bot]',
+      package_manager: 'bun',
+      forbidden_files: ['package-lock.json'],
+      fragile_paths: [
+        'src/routes/index.tsx',
+        'src/**/keyframes*.css',
+        'src/**/*parallax*',
+        'src/**/*tilt*'
+      ],
+      auto_delete_branch_on_merge: false,
+      collaboration_model: 'owner_plus_fork_pr'
+    }
   }
 };
 
@@ -224,11 +213,23 @@ async function install(args) {
   installPartyMode(directory, Boolean(args.force), settings.INSTALL_PARTY_MODE !== false);
   writeProjectConfig(directory, settings);
   appendSnapshotGitignore(directory);
+  generateInitialSnapshot(directory);
 
   handleGitHubMode(directory, settings, args);
 
+  if (settings.LOVABLE) {
+    appendLovableGitignore(directory);
+  }
+
   console.log('');
   console.log(`WSD installed in ${directory}`);
+  if (settings.LOVABLE) {
+    console.log('');
+    console.log('Lovable profile detected:');
+    console.log('  - package-lock.json marcado como forbidden (regra causa-raiz Preview travado)');
+    console.log('  - Use sempre `bun install`; nunca `npm install`');
+    console.log('  - Próximo passo opcional: ./+wsd/bin/wsd lovable bootstrap (desliga auto-delete branch no GitHub)');
+  }
 
   // Auto-run pos-install (escolhido no prompt interativo do bloco anterior).
   const autoRun = settings._AUTO_RUN_POST_INSTALL || 'nada';
@@ -368,6 +369,10 @@ function buildSettings(profile, detected, args, directory) {
     TEST_FULL_COMMAND: String(args['test-full'] || profile.test_full || [...(profile.lint || []), ...(profile.test || [])].join(' && ') || 'echo "no full gate configured"'),
     TEST_BUILD_COMMAND: String(args['test-build'] || profile.test_build || [...(profile.lint || []), ...(profile.test || []), ...(profile.build || [])].join(' && ') || 'echo "no build gate configured"'),
     BROWNFIELD: Boolean(args.brownfield),
+    LOVABLE: Boolean(profile.lovable_integration && profile.lovable_integration.enabled),
+    LOVABLE_INTEGRATION_JSON: profile.lovable_integration
+      ? JSON.stringify(profile.lovable_integration, null, 2).replace(/\n/g, '\n  ')
+      : '',
     INSTALL_DOCS: !args['no-docs'],
     INSTALL_PARTY_MODE: !args['no-party-mode'],
     INSTALL_EXAMPLES: Boolean(args.examples) && !args['no-examples'],
@@ -628,6 +633,38 @@ function appendSnapshotGitignore(directory) {
   const toAdd = entries.filter(e => !existing.includes(e));
   if (toAdd.length > 0) {
     const block = '\n# WSD generated (local state)\n' + toAdd.join('\n') + '\n';
+    fs.writeFileSync(gitignorePath, existing + block);
+  }
+}
+
+function generateInitialSnapshot(directory) {
+  const snapshotScript = path.join(directory, '+wsd', 'bin', 'wsd-snapshot.cjs');
+  if (!fs.existsSync(snapshotScript)) return;
+
+  const result = cp.spawnSync(process.execPath, [snapshotScript], {
+    cwd: directory,
+    encoding: 'utf8',
+  });
+  if (result.status === 0) {
+    console.log('WSD snapshot initialized: +wsd/snapshot.json');
+    return;
+  }
+
+  const stderr = (result.stderr || result.stdout || '').trim();
+  console.log(`warn: initial WSD snapshot failed${stderr ? ` — ${stderr.split(/\r?\n/)[0]}` : ''}`);
+}
+
+function appendLovableGitignore(directory) {
+  // Lovable scaffold é Bun-puro. Presença de package-lock.json é causa raiz
+  // do "Preview travado" (ver docs_lovable/r.2.11_lovable.md). Garantimos via
+  // .gitignore que `npm install` acidental não promova o lockfile ao repo.
+  const gitignorePath = path.join(directory, '.gitignore');
+  const entries = ['package-lock.json'];
+  let existing = '';
+  if (fs.existsSync(gitignorePath)) existing = fs.readFileSync(gitignorePath, 'utf8');
+  const toAdd = entries.filter(e => !existing.split(/\r?\n/).some(line => line.trim() === e));
+  if (toAdd.length > 0) {
+    const block = '\n# Lovable: package-lock.json proibido (scaffold é Bun-puro)\n' + toAdd.join('\n') + '\n';
     fs.writeFileSync(gitignorePath, existing + block);
   }
 }

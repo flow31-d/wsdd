@@ -1,7 +1,7 @@
 ---
 title: "Changelog WSD"
 created: 05/05/2026
-modified: 13/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -44,7 +44,8 @@ otimizado_para_obsidian: true
 18. [[#18. 0.2.0 — 13/05/2026]]
 19. [[#19. 0.2.1 — 13/05/2026]]
 20. [[#20. 0.3.0 — 13/05/2026]]
-21. [[#21. 🕒 Registro de Alterações por Agentes]]
+21. [[#21. 0.3.1 — 30/05/2026]]
+22. [[#22. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -69,6 +70,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.0`** (estável adotável) — minor release com 8 features funcionais + UX polish: CONCERNS.md como nota padrão (WSD-010), renderização condicional `{{#if}}` em templates (WSD-002), `scripts/wsd_release.sh` para automação de release (WSD-009), install com opt-out interativo de módulos opcionais (WSD-007 / D-001), `wsd check` L0+L1 robusto (WSD-004), CI no wsdd (WSD-003), Obsidian declarado como pré-requisito (WSD-006 / D-002), fix raiz de ENOENT em loops de cópia (WSD-013), e UX polish do install interativo (brownfield prompt + Enter=default header) baseado em feedback do piloto worc 13/05. Seção 18 adicionada, Registro renumerado para seção 19.
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.2.1`** (patch cosmético) — primeiro patch pós-v0.2.0, detectado durante validação do piloto worc com `./+wsd/bin/wsd update`. Lista "Refreshed: +wsd/{...}" do `update` agora reflete dinamicamente os módulos efetivamente copiados (respeita `config.modules`). Antes era string hardcoded `docs,templates,profiles,schemas,scripts,examples,bin` que conflitava com mensagens `info: skipping examples/ (modules.examples=false)`. Sem mudança de comportamento — apenas mensagem. Seção 19 adicionada, Registro renumerado para seção 20.
 - 13/05/2026 — Claude (Opus 4.7): Inclusão da versão **`0.3.0`** (minor — reforço do contrato operacional) — `scripts/wsd_check.sh` reescrito (185 linhas) valida as 6 notas obrigatórias de `+specs/project/` (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) como L0-required, suporta `--risk` e `--spec` e tem fallback degradado quando Node ausente. `+context.json` ganha blocos formais `environment`, `repository`, `permissions`, `workflow` e `clone_policy` (canonical_history/operational_clone/audit_lab_clone/deploy_clone/promotion_flow). Artefatos `+specs/project/` (PROJECT, ROADMAP, IDEAS, IDEAS_PIPELINE, CONCERNS) preenchidos com conteúdo real do projeto. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga os novos campos. `docs/05_contrato_artefatos.md` e `docs/17_snapshot_campos_explicados.md` atualizados. Inclui `REVIEW_PRE_V1.md` (tracker formal) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). Seção 20 adicionada, Registro renumerado para seção 21.
+- 30/05/2026 21:00:00 -03 — Codex: Correção de template para alinhar o check Lovable em projetos novos: inclusão da validação `lovable_integration` no `templates/repo/scripts/wsd_check.sh` (gatilho em `+context.json` exige `package-lock.json` ausente e `bun.lock` presente).
+- 30/05/2026 18:15:09 -03 — Codex: Inclusão da versão **`0.3.1`** (patch — inventário de versão WSD por projeto): `templates/local-wsd/bin/wsd` ganha subcomando `version`, inventário multi-repo, saída JSON e comparação com `wsd_source`; `package.json` adiciona gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -804,7 +807,40 @@ Mudança de chave `schema` → `$schema` no `+context.json` é **compatível** c
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 21. 🕒 Registro de Alterações por Agentes
+## 21. 0.3.1 — 30/05/2026
+
+**Patch — inventário de versão WSD por projeto.** Esta release resolve o problema operacional de ter WSD aplicado em vários repositórios sem uma forma simples de saber qual versão cada projeto usa.
+
+### Adicionado
+
+- **`./+wsd/bin/wsd version`** — consulta o projeto atual lendo `+wsd/config.json` e `+context.json`.
+- **Status de alinhamento** — compara `installed_version` com a versão do pacote em `wsd_source/package.json` quando a fonte local ainda existe. Estados principais: `aligned`, `behind-source`, `ahead-of-source`, `source-unknown`, `not-installed`.
+- **Inventário em lote** — `./+wsd/bin/wsd version --inventory --path <dir>` varre diretórios procurando `+wsd/config.json` e imprime uma tabela com path, projeto, versão instalada, data, fonte, versão da fonte e status.
+- **Saída JSON** — `--json` funciona tanto no projeto atual quanto no inventário, permitindo alimentar dashboards, auditorias e scripts.
+- **Documentação no `AGENTS.md` gerado** — `templates/repo/AGENTS.md.template` passa a listar `./+wsd/bin/wsd version` entre os comandos locais.
+- **Gate de regressão** — `package.json` adiciona `test:install-version` e inclui o gate no `npm test`.
+
+### Exemplos
+
+```bash
+./+wsd/bin/wsd version
+./+wsd/bin/wsd version --json
+./+wsd/bin/wsd version --inventory --path /srv/CLI/+Apps --max-depth 4
+./+wsd/bin/wsd version --json --inventory --path /srv/CLI
+```
+
+### Validação
+
+- `bash -n templates/local-wsd/bin/wsd` — PASS.
+- `npm run test:install-version` — PASS.
+
+### Nota de Compatibilidade
+
+Sem mudança quebra-compat. Projetos já instalados precisam rodar `./+wsd/bin/wsd update` ou reinstalar WSD para receber o novo subcomando no CLI vendorizado.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 22. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -827,5 +863,6 @@ Mudança de chave `schema` → `$schema` no `+context.json` é **compatível** c
 | 12/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.1.4`** (hotfix) — fix WSD-001 (templates faltantes ROADMAP/IDEAS/IDEAS_PIPELINE no wsdd) + sync wsdd dos 6 commits pendentes pós-v0.1.3 + fechamento dos gaps de governance do release v0.1.3 (README dessincronizado linha 217 + tag retroativa v0.1.3). Seção 17 adicionada, Registro renumerado para seção 18. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.0`** (minor "estável adotável") — 8 features funcionais (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013) + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto worc validados. Seção 18 adicionada, Registro renumerado para seção 19. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.1`** (patch cosmético) — mensagem "Refreshed" do `wsd update` agora reflete dinamicamente os módulos copiados (respeita `config.modules`). Bug detectado durante `./+wsd/bin/wsd update` no piloto worc logo após v0.2.0. Seção 19 adicionada, Registro renumerado para seção 20. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.3.1`** — subcomando `wsd version`, inventário multi-repo, saída JSON e gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

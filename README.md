@@ -1,7 +1,7 @@
 ---
 title: "WSD — Wolff Spec Driven"
 created: 05/05/2026
-modified: 13/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -65,6 +65,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Atualização para `v0.1.11-alpha` — Party Mode Integration: `/wsd-party-mode`, `wsd party`, `installPartyMode`, seção AGENTS.md, 7/7 testes PASS.
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Drop do sufixo `-alpha`: API estável após 11 iterações alpha + piloto operacional brownfield + 2 itens descartados com rationale (perfis stacks, YAML schema). Adicionada seção "Uso Oficial" como entry point recomendado.
 - 11/05/2026 — Claude: Atualização para **`v0.1.2`** — artefatos `ROADMAP.md`, `IDEAS.md` e `IDEAS_PIPELINE.md` instalados automaticamente em todo projeto; skill `/idea-{PROJECT_SLUG}` com captura estruturada, estimativa L0/L1/L2 e oferta de Party Mode; variável `PROJECT_SLUG` derivada no install; estratégia `npx github:flow31-d/WSD install` documentada em `docs/15`; seção dogfooding em "Estrutura do Pacote" explicando separação toolkit × gestão própria.
+- 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1` com subcomando `./+wsd/bin/wsd version`, inventário multi-repo e documentação de rastreamento da versão WSD instalada por projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -170,6 +171,7 @@ Dentro do projeto após o install, rotina diária:
 
 ```bash
 ./+wsd/bin/wsd doctor      # verifica saúde (uma vez)
+./+wsd/bin/wsd version     # mostra versão WSD instalada e status frente à fonte
 ./+wsd/bin/wsd start       # abre sessão
 # ... trabalho do agente: /wsd-specify, /wsd-design, /wsd-tasks, /wsd-party-mode ...
 ./+wsd/bin/wsd check       # valida gates antes do commit
@@ -180,7 +182,7 @@ Dentro do projeto após o install, rotina diária:
 
 - **Codex** (`--tools codex`): 6 skills em `.codex/skills/` — `wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`.
 - **Claude Code** (`--tools claude-code`): 7 slash commands em `.claude/commands/` — `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`. Hooks `PreToolUse|PreCompact|SessionStart|Stop` configurados em `.claude/settings.json`.
-- **CLI vendorizado** (`./+wsd/bin/wsd`): `start`, `check`, `finish`, `doctor`, `update`, `hooks`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`.
+- **CLI vendorizado** (`./+wsd/bin/wsd`): `start`, `check`, `finish`, `doctor`, `version`, `update`, `hooks`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`.
 
 ### 4.5 Política Git
 
@@ -193,7 +195,7 @@ Dentro do projeto após o install, rotina diária:
 Após qualquer mudança em código WSD:
 
 ```bash
-npm test                              # 7 gates de instalação
+npm test                              # 11 gates de instalação
 bash scripts/wsd_docs_check.sh        # sincronização documental
 bash scripts/wsd_self_check.sh        # consistência interna
 ```
@@ -214,7 +216,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.3.0`** (minor — reforço do contrato operacional WSD). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1 (revisão `REVIEW_PRE_V1.md`); `v0.2.1` corrige inconsistência cosmética na mensagem do `wsd update`; `v0.3.0` endurece o contrato operacional do método (checker reescrito validando 6 notas obrigatórias de `+specs/project/`, `+context.json` com blocos formais `environment`/`repository`/`permissions`/`workflow` + `clone_policy`, artefatos `+specs/project/` preenchidos, snapshot CJS expandido, tracker `REVIEW_PRE_V1.md` e manual leigo dos comandos `wsdd`).
+Este diretório está publicado como repositório GitHub público em versão **`v0.3.1`** (patch — inventário de versão WSD por projeto). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1 (revisão `REVIEW_PRE_V1.md`); `v0.2.1` corrige inconsistência cosmética na mensagem do `wsd update`; `v0.3.0` endurece o contrato operacional do método; `v0.3.1` adiciona `./+wsd/bin/wsd version` para consultar a versão instalada em um repo e fazer inventário em lote de múltiplos projetos com WSD aplicado.
 
 Histórico de entregas (alpha + estável):
 
@@ -237,6 +239,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.2.0`** (minor "estável adotável"): primeiro minor pós-`v0.1.0`. Agrupa 8 features do batch pré-v1 + UX polish: `CONCERNS.md` como nota padrão (WSD-010); renderização condicional `{{#if}}` em templates (WSD-002); `scripts/wsd_release.sh` automatizando release end-to-end (WSD-009); install com opt-out interativo de módulos opcionais `docs/`/`party-mode/`/`examples/` resolvendo D-001 Opção B+ (WSD-007); `wsd check` L0+L1 robusto valida 6 notas de project/ e coerência ROADMAP↔spec (WSD-004); CI no `wsdd` rodando 9 gates em cada push (WSD-003); Obsidian declarado como pré-requisito recomendado resolvendo D-002 Opção A (WSD-006); fix raiz de `ENOENT` em loops de cópia (WSD-013); UX polish do install interativo (header Enter=default + brownfield como prompt). 9/9 npm test + 27/27 cenários e2e + piloto operacional no `flow31-d/worc`.
 - **`v0.2.1`** (patch cosmético): mensagem "Refreshed" do `wsd update` agora construída dinamicamente a partir de `config.modules`, refletindo módulos efetivamente copiados. Antes a string era hardcoded e conflitava com mensagens `info: skipping ...` impressas na mesma execução. Detectado durante validação do piloto worc logo após v0.2.0. Sem mudança de comportamento.
 - **`v0.3.0`** (minor — reforço do contrato operacional): `scripts/wsd_check.sh` reescrito (185 linhas) validando as 6 notas obrigatórias de `+specs/project/` como L0-required (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) — antes só `STATE.md` era checada, o que permitiu WSD-001 escapar. `+context.json` ganha blocos formais `environment`, `repository` (com `clone_policy` canônico: canonical_history/operational_clone/audit_lab_clone/deploy_clone/promotion_flow), `permissions` (write/forbidden paths, tool_allowlist, secrets_policy, limites de runtime/tokens) e `workflow` (approval_mode, branch_policy, incident_mode, issue_policy, production_mutation_policy). Artefatos `+specs/project/` (PROJECT, ROADMAP, IDEAS, IDEAS_PIPELINE, CONCERNS) preenchidos com conteúdo real do WSD em vez de placeholders. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga os novos campos. `docs/05_contrato_artefatos.md` e `docs/17_snapshot_campos_explicados.md` atualizados. Inclui `REVIEW_PRE_V1.md` (1131 linhas, tracker formal de revisão pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (568 linhas, manual leigo dos comandos `wsdd` para operadores não-técnicos). Path rename `+Apps/WSD` → `+Apps/wsd` consolidado (PR #33). 9/9 npm test PASS.
+- **`v0.3.1`** (patch — inventário de versão): adiciona `./+wsd/bin/wsd version` no CLI vendorizado. Sem flags, mostra a versão WSD instalada no projeto atual, `installed_at`, fonte (`wsd_source`), versão da fonte e status (`aligned`, `behind-source`, `ahead-of-source`, `source-unknown`). Com `--inventory --path <dir>`, varre múltiplos projetos com `+wsd/config.json`; com `--json`, produz saída consumível por automações.
 
 Não contém segredos.
 
@@ -255,7 +258,7 @@ A camada de qualidade da v0.1.4 está detalhada em [[wsd/docs/14_qualidade_desen
 
 ## 8. Foco Atual
 
-WSD está em desenvolvimento ativo pós-v0.1.0. `v0.2.0` entregue como primeiro marco "estável adotável" (8 features + UX polish); `v0.2.1` corrige inconsistência cosmética detectada no piloto; **`v0.3.0` endurece o contrato operacional** (checker valida 6 notas obrigatórias, `+context.json` com blocos `environment`/`repository`/`permissions`/`workflow` + `clone_policy`, artefatos `+specs/project/` preenchidos, tracker `REVIEW_PRE_V1.md` e manual leigo `docs/18`). Próximas frentes mapeadas no `ROADMAP.md` e no `REVIEW_PRE_V1.md` (WSD-004 L2, WSD-005, WSD-012); candidatas imediatas:
+WSD está em desenvolvimento ativo pós-v0.1.0. `v0.2.0` entregue como primeiro marco "estável adotável"; `v0.3.0` endurece o contrato operacional; **`v0.3.1` adiciona rastreamento explícito de versão por projeto** para ambientes com WSD aplicado em vários repositórios. Próximas frentes mapeadas no `ROADMAP.md` e no `REVIEW_PRE_V1.md` (WSD-004 L2, WSD-005, WSD-012); candidatas imediatas:
 
 - `project-snapshot` (L1): JSON auto-gerado com visão geral do projeto (roadmap, ideias, git, saúde) para consumo por dashboards externos como o `wdb`.
 - Server-side hook como módulo opcional (enforcement inquebrável).
@@ -324,6 +327,7 @@ Após instalar no projeto:
 
 ```bash
 ./+wsd/bin/wsd doctor
+./+wsd/bin/wsd version
 ./+wsd/bin/wsd check
 ./+wsd/bin/wsd start
 ./+wsd/bin/wsd finish
@@ -377,5 +381,6 @@ Regra prática:
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.2.0` (minor "estável adotável"): linha 217 atualizada `v0.1.4` → `v0.2.0`, nova entrada `v0.2.0` no histórico listando as 8 features e UX polish, Foco Atual atualizado para próximas frentes pós-v0.2.0 (WSD-004 L2, WSD-005, WSD-008, WSD-012). |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/README.md` | Atualização para `v0.2.1` (patch cosmético): linha 217 `v0.2.0` → `v0.2.1`, nova entrada `v0.2.1` no histórico explicando o fix da mensagem "Refreshed". |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/wsd/README.md` | Atualização para `v0.3.0` (minor — reforço do contrato operacional): linha 217 `v0.2.1` → `v0.3.0` com descrição expandida, nova entrada `v0.3.0` no histórico (checker validando 6 notas, blocos formais no `+context.json`, artefatos `+specs/project/` preenchidos, snapshot CJS expandido, `REVIEW_PRE_V1.md` + `docs/18` manual leigo). Foco Atual atualizado removendo WSD-008 (parcialmente endereçado no tracker). |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.3.1`: status, histórico, foco atual e comandos pós-install passam a documentar `wsd version` e inventário multi-repo. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

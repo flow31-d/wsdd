@@ -1,7 +1,7 @@
 ---
 title: "08 — Rotinas de Sessão WSD"
 created: 05/05/2026
-modified: 05/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -45,6 +45,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Atualização da seção 4 para refletir `wsd finish` automatizado (`v0.1.7-alpha`): HANDOFF.md gerado pelo CLI e prompts interativos para STATE.md.
 - 07/05/2026 — Codex: Planejamento dos comandos Git/GitHub Governance no início, execução e promoção de sessão (`v0.1.10-alpha`).
 - 07/05/2026 — Codex: Atualização das rotinas para refletir comandos Git/GitHub Governance implementados na `v0.1.10-alpha`.
+- 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` na rotina de início quando for necessário confirmar a versão WSD aplicada no projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -56,16 +57,23 @@ Comando curto recomendado dentro do projeto:
 ./+wsd/bin/wsd start
 ```
 
+Quando houver dúvida sobre qual WSD está aplicado no repo, rodar antes ou logo após o start:
+
+```bash
+./+wsd/bin/wsd version
+```
+
 O agente deve:
 
 1. identificar repo e host canônico;
-2. rodar checks Git;
-3. detectar `+context.json`;
-4. carregar `+specs/project/STATE.md` (decisões ativas, bloqueadores) e `+specs/HANDOFF.md` se existir (perguntar "continuar de onde parou?");
-5. rodar checker L0;
-6. listar specs ativas em `+specs/features/`;
-7. **auto-sizing**: classificar a tarefa do usuário como L0/L1/L2 e propor fluxo (Quick / Specify+Execute / 4 fases);
-8. indicar próximo passo seguro.
+2. confirmar a versão WSD instalada quando isso afetar a tarefa;
+3. rodar checks Git;
+4. detectar `+context.json`;
+5. carregar `+specs/project/STATE.md` (decisões ativas, bloqueadores) e `+specs/HANDOFF.md` se existir (perguntar "continuar de onde parou?");
+6. rodar checker L0;
+7. listar specs ativas em `+specs/features/`;
+8. **auto-sizing**: classificar a tarefa do usuário como L0/L1/L2 e propor fluxo (Quick / Specify+Execute / 4 fases);
+9. indicar próximo passo seguro.
 
 Quando o módulo Git/GitHub Governance estiver instalado em modo `basic` ou `full`, o início de sessão também deve rodar `./+wsd/bin/wsd git preflight` e, para tarefas L1/L2, `./+wsd/bin/wsd git doctor`.
 
@@ -77,6 +85,7 @@ Host:
 Path:
 Branch/upstream:
 Worktree:
+WSD version:
 Context:
 STATE.md:
 HANDOFF.md:
@@ -240,5 +249,6 @@ bash scripts/wsd_docs_check.sh
 | 07/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Atualização da seção 4 (Fim de Sessão) para refletir `wsd finish` automatizado: HANDOFF.md gerado automaticamente pelo CLI e prompts interativos para STATE.md (v0.1.7-alpha). |
 | 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Planejamento dos comandos `wsd git preflight`, `doctor` e `pr-check` nas rotinas de sessão da v0.1.10-alpha. |
 | 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Atualização das rotinas para comandos `wsd git` implementados na v0.1.10-alpha. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do `wsd version` como checagem opcional de início de sessão para rastrear a versão WSD aplicada no repo. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

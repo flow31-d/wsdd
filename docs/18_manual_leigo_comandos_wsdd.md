@@ -1,7 +1,7 @@
 ---
 title: "18 — Manual Leigo dos Comandos WSDD"
 created: 13/05/2026
-modified: 13/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -24,7 +24,7 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Última release pública confirmada: **`v0.2.1`**, publicada em 13/05/2026 no repositório público `flow31-d/wsdd`.
+> Versão coberta: **`v0.3.1`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`.
 
 ## 📑 Índice
 
@@ -45,6 +45,7 @@ otimizado_para_obsidian: true
 ## 1. 🔄 Atualizações
 
 - 13/05/2026 — Codex: Criação do manual leigo com os comandos principais da release pública `wsdd v0.2.1`.
+- 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1`, incluindo o comando `wsd version` para saber qual versão do WSD está instalada em cada projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -98,7 +99,7 @@ Depois da instalação, o comando principal passa a ser:
 Entre na pasta do projeto e rode:
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install --init-git
+npx github:flow31-d/wsdd#v0.3.1 install --init-git
 ```
 
 Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
@@ -108,7 +109,7 @@ Use essa forma quando você quer responder às perguntas na tela. Se aparecer um
 Use quando você quer instalar rápido com escolhas padrão:
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install \
+npx github:flow31-d/wsdd#v0.3.1 install \
   --directory . \
   --init-git \
   --tools both \
@@ -133,7 +134,7 @@ O que isso faz:
 Use `--brownfield` quando o projeto já tem código:
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install \
+npx github:flow31-d/wsdd#v0.3.1 install \
   --directory . \
   --tools both \
   --git-policy full \
@@ -149,7 +150,7 @@ npx github:flow31-d/wsdd#v0.2.1 install \
 Se você quiser menos arquivos dentro de `+wsd/`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install \
+npx github:flow31-d/wsdd#v0.3.1 install \
   --directory . \
   --init-git \
   --tools both \
@@ -181,7 +182,31 @@ Use quando:
 - clonou o projeto em outra máquina;
 - algo parece quebrado.
 
-### 5.2 Começar uma sessão de trabalho
+### 5.2 Ver qual versão do WSD está instalada
+
+```bash
+./+wsd/bin/wsd version
+```
+
+Use quando:
+
+- você tem vários projetos com WSD aplicado;
+- quer saber se um repo está atrasado em relação à fonte WSD;
+- vai registrar status de implantação.
+
+Para varrer vários projetos:
+
+```bash
+./+wsd/bin/wsd version --inventory --path /srv/CLI/+Apps --max-depth 4
+```
+
+Para saída legível por automação:
+
+```bash
+./+wsd/bin/wsd version --json --inventory --path /srv/CLI
+```
+
+### 5.3 Começar uma sessão de trabalho
 
 ```bash
 ./+wsd/bin/wsd start
@@ -191,7 +216,7 @@ Ele mostra estado do Git, branch, remote, checks básicos e últimos arquivos de
 
 Use antes de pedir trabalho para um agente.
 
-### 5.3 Validar o projeto
+### 5.4 Validar o projeto
 
 ```bash
 ./+wsd/bin/wsd check
@@ -215,7 +240,7 @@ Regra simples:
 | `L1`  | Feature normal, endpoint, integração, refatoração moderada |
 | `L2`  | Mudança estrutural, segurança, dados sensíveis, produção   |
 
-### 5.4 Fechar uma sessão
+### 5.5 Fechar uma sessão
 
 ```bash
 ./+wsd/bin/wsd finish
@@ -231,7 +256,7 @@ Ele:
 
 Use antes de parar o trabalho ou trocar de agente.
 
-### 5.5 Gerar snapshot para dashboard
+### 5.6 Gerar snapshot para dashboard
 
 ```bash
 ./+wsd/bin/wsd snapshot
@@ -390,7 +415,7 @@ Esse comando atualiza a parte vendorizada do WSD no projeto. Ele preserva:
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install \
+npx github:flow31-d/wsdd#v0.3.1 install \
   --directory . \
   --force
 ```
@@ -398,13 +423,13 @@ npx github:flow31-d/wsdd#v0.2.1 install \
 ### 9.3 Ver opções do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 install --list-options
+npx github:flow31-d/wsdd#v0.3.1 install --list-options
 ```
 
 ### 9.4 Ver ajuda do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.2.1 help
+npx github:flow31-d/wsdd#v0.3.1 help
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -516,11 +541,17 @@ gh auth status
 ## 12. Cola Rápida
 
 ```bash
-# Instalar WSDD v0.2.1 na pasta atual
-npx github:flow31-d/wsdd#v0.2.1 install --init-git
+# Instalar WSDD v0.3.1 na pasta atual
+npx github:flow31-d/wsdd#v0.3.1 install --init-git
 
 # Ver se está tudo certo
 ./+wsd/bin/wsd doctor
+
+# Ver versão instalada
+./+wsd/bin/wsd version
+
+# Inventariar vários projetos
+./+wsd/bin/wsd version --inventory --path /srv/CLI/+Apps --max-depth 4
 
 # Começar trabalho
 ./+wsd/bin/wsd start
@@ -559,5 +590,6 @@ npx github:flow31-d/wsdd#v0.2.1 install --init-git
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
 | 13/05/2026 — | Codex | `x/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Criação do manual leigo para instalação e uso diário do WSDD `v0.2.1`, incluindo comandos de install, sessão, check, Git, Party Mode, manutenção e troubleshooting. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.3.1`: inclusão de `wsd version`, inventário multi-repo e exemplos de saída JSON para automação. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

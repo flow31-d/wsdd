@@ -1,7 +1,7 @@
 ---
 title: "09 — Publicação do WSD em GitHub Privado"
 created: 05/05/2026
-modified: 05/05/2026
+modified: 30/05/2026
 tags:
   - x
   - wsd
@@ -50,6 +50,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Claude: Release **`v0.1.0`** estável — Fase 4 concluída. Versão atual e tag de exemplo atualizadas. Lista de tags alpha consolidada como histórico.
 - 13/05/2026 — Claude (Opus 4.7): Atualização para `v0.3.0` (minor — reforço do contrato operacional WSD): versão atual atualizada para `v0.3.0`; nova entrada na lista de Release estável (`v0.3.0` minor com `wsd_check.sh` reescrito, `+context.json` com blocos formais, artefatos `+specs/project/` preenchidos, `REVIEW_PRE_V1.md` + `docs/18` manual leigo).
 - 11/05/2026 — Claude: Adição de link para `docs/15_repositorio_publico_e_quick_start.md` — novo documento de estratégia privado × público e quick start via GitHub.
+- 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1` (patch — inventário de versão WSD por projeto): versão atual atualizada e release estável adicionada com `wsd version`, inventário multi-repo e saída JSON.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -91,7 +92,7 @@ main
 Versão atual do pacote:
 
 ```text
-v0.3.0
+v0.3.1
 ```
 
 Tags alpha já usadas:
@@ -116,6 +117,7 @@ Release estável:
 - **`v0.2.0`** (13/05/2026): primeiro minor pós-`v0.1.0`, marco "estável adotável". 8 features funcionais + UX polish do install interativo (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013). Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto operacional `flow31-d/worc`.
 - **`v0.2.1`** (13/05/2026): patch cosmético — `wsd update` agora monta a lista "Refreshed: +wsd/{...}" dinamicamente a partir de `config.modules`, refletindo módulos efetivamente copiados. Sem mudança de comportamento. Detectado durante validação do piloto worc logo após v0.2.0.
 - **`v0.3.0`** (13/05/2026): minor — reforço do contrato operacional WSD. `scripts/wsd_check.sh` reescrito (185 linhas) valida as 6 notas obrigatórias de `+specs/project/` como L0-required (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) — antes só `STATE.md` era checada, gap que permitiu WSD-001 escapar. `+context.json` ganha blocos formais (`environment`, `repository` com `clone_policy` canônico, `permissions` com write/forbidden paths/tool_allowlist/secrets_policy/limites, `workflow` com approval_mode/branch_policy/incident_mode/issue_policy/production_mutation_policy). Artefatos `+specs/project/` preenchidos com conteúdo real do WSD. Templates instaláveis (`templates/local-wsd/bin/wsd-snapshot.cjs` +81, `templates/repo/scripts/wsd_check.sh` +45) propagam mudanças para projetos cliente. Inclui `REVIEW_PRE_V1.md` (1131 linhas, tracker formal pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (568 linhas, manual leigo dos comandos `wsdd`). Path rename `+Apps/WSD` → `+Apps/wsd` consolidado (PR #33). 9/9 npm test PASS.
+- **`v0.3.1`** (30/05/2026): patch — inventário de versão WSD por projeto. `./+wsd/bin/wsd version` lê `+wsd/config.json`, mostra versão instalada, data, fonte, versão da fonte e status de alinhamento. `--inventory --path <dir>` varre múltiplos projetos com WSD aplicado; `--json` expõe saída estruturada para automações. `npm test` inclui `test:install-version`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -227,5 +229,6 @@ npm run test:install
 | 07/05/2026 — | Codex | `x/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.1.10-alpha`: versão atual, tag de exemplo e lista de tags alpha atualizada. |
 | 07/05/2026 — | Claude | `x/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.1.11-alpha`: versão atual, tag de exemplo e lista de tags alpha atualizada com Party Mode Integration. |
 | 07/05/2026 — | Claude | `x/wsd/docs/09_publicacao_github_privado.md` | Release **`v0.1.0`** estável: versão atual, tag de exemplo e seção de release estável adicionadas. Lista de tags alpha mantida como histórico. |
+| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.3.1`: versão atual e histórico de releases passam a registrar `wsd version` e inventário multi-repo. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

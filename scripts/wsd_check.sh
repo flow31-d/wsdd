@@ -94,6 +94,29 @@ grep -q '^## Backlog' +specs/project/ROADMAP.md || fail "ROADMAP.md missing 'Bac
 grep -Eq '^## (Bloqueadores Ativos|Blockers)' +specs/project/STATE.md || fail "STATE.md missing blockers section"
 pass_step "ROADMAP/STATE estruturados para snapshot"
 
+# Lovable gate: se +context.json declara lovable_integration.enabled=true,
+# repo é Bun-puro. package-lock.json proibido (causa raiz Preview travado),
+# bun.lock obrigatório.
+_lovable_enabled=""
+if command -v python3 >/dev/null 2>&1; then
+  _lovable_enabled="$(python3 - <<'PY' 2>/dev/null || true
+import json
+try:
+    with open("+context.json", encoding="utf-8") as fh:
+        data = json.load(fh)
+    li = data.get("lovable_integration", {})
+    print("true" if li.get("enabled") else "")
+except Exception:
+    pass
+PY
+)"
+fi
+if [[ "$_lovable_enabled" == "true" ]]; then
+  [[ ! -f package-lock.json ]] || fail "package-lock.json presente — Lovable é Bun-puro (causa raiz Preview travado)"
+  [[ -f bun.lock ]] || fail "bun.lock ausente — rode 'bun install' (Lovable é Bun-puro)"
+  pass_step "Lovable invariantes (sem package-lock.json, bun.lock presente)"
+fi
+
 _placeholder_targets=(AGENTS.md +context.json +specs scripts)
 [[ -d +logs ]] && _placeholder_targets+=(+logs)
 if grep -R "{{[A-Z0-9_][A-Z0-9_]*}}" "${_placeholder_targets[@]}" 2>/dev/null; then
