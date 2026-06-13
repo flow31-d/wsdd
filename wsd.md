@@ -93,7 +93,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.3.1`** (patch — inventário de versão WSD por projeto).
+Versão atual do pacote: **`v0.3.3`** (patch — publicação pública do carimbo de versão no snapshot).
 
 O WSD já possui:
 
@@ -127,6 +127,8 @@ O WSD já possui:
 - Release **`v0.2.1`** (13/05/2026): patch cosmético — mensagem "Refreshed" do `wsd update` agora dinâmica via `config.modules`. Detectado no piloto worc logo após v0.2.0.
 - Release **`v0.3.0`** (13/05/2026): minor — reforço do contrato operacional WSD. `scripts/wsd_check.sh` reescrito (185 linhas) validando as 6 notas obrigatórias de `+specs/project/` como L0-required (antes só STATE.md era checada — WSD-001 escapou). `+context.json` ganha blocos formais `environment`, `repository` (+ `clone_policy` canônico), `permissions` e `workflow`. Artefatos `+specs/project/` preenchidos com conteúdo real. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga novos campos. Inclui `REVIEW_PRE_V1.md` (tracker pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). 9/9 npm test PASS.
 - Release **`v0.3.1`** (30/05/2026): patch — inventário de versão WSD por projeto. `./+wsd/bin/wsd version` mostra versão instalada, fonte, versão da fonte e status de alinhamento; `--inventory --path <dir>` varre múltiplos repos com `+wsd/config.json`; `--json` permite automação. `npm test` inclui `test:install-version`.
+- Release **`v0.3.2`** (13/06/2026): patch — versão carimbada no snapshot. `templates/local-wsd/bin/wsd-snapshot.cjs` grava `wsd_version` em cada `+wsd/snapshot.json`, permitindo que consumidores que já leem snapshots (ex.: Zelador) detectem deriva de versão passivamente, sem abrir `+wsd/config.json` por repo.
+- Release **`v0.3.3`** (13/06/2026): patch — publicação pública. Leva ao `wsdd` público a feature de `wsd_version` no snapshot (privada na v0.3.2). O público estava em v0.3.1; passa a ter o carimbo de versão e a detecção passiva de deriva.
 
 Foco atual: **`v0.3.1` publicada** (30/05/2026). Modo de manutenção pós-marco "estável adotável": próximas frentes em `v0.3.x`/`v0.4.0` (WSD-004 L2, WSD-005, WSD-012 — WSD-008 parcialmente endereçado pelo `REVIEW_PRE_V1.md`).
 

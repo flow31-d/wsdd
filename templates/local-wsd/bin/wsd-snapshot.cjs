@@ -251,9 +251,15 @@ const state   = parseState();
 const health  = readHealth();
 const open_specs = roadmap.items.filter(i => i.status === 'in-progress').map(i => i.id);
 
+function readWsdVersion() {
+  try { return JSON.parse(readFile('+wsd/config.json') || '{}').version || null; }
+  catch { return null; }
+}
+
 const snapshot = {
   schema: 'wsd/project-snapshot/v1',
   generated_at: new Date().toISOString(),
+  wsd_version: readWsdVersion(),
   project,
   git: {
     branch,

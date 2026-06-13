@@ -73,6 +73,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 30/05/2026 21:00:00 -03 — Codex: Correção de template para alinhar o check Lovable em projetos novos: inclusão da validação `lovable_integration` no `templates/repo/scripts/wsd_check.sh` (gatilho em `+context.json` exige `package-lock.json` ausente e `bun.lock` presente).
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão da versão **`0.3.1`** (patch — inventário de versão WSD por projeto): `templates/local-wsd/bin/wsd` ganha subcomando `version`, inventário multi-repo, saída JSON e comparação com `wsd_source`; `package.json` adiciona gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22.
 - 30/05/2026 — Codex: Higiene pós-release `v0.3.1`: quick start atual padronizado para `flow31-d/wsdd`, registro de fechamento público adicionado em `docs/15` e pendências antigas de estabilização `v0.1.0` marcadas como concluídas.
+- 13/06/2026 — Claude (Opus 4.8): Inclusão da versão **`0.3.2`** (patch — versão no snapshot): `templates/local-wsd/bin/wsd-snapshot.cjs` passa a carimbar o campo `wsd_version` (lido do `+wsd/config.json`) em cada `+wsd/snapshot.json`. Permite detecção passiva de deriva de versão por consumidores que já leem snapshots (ex.: Zelador), sem abrir o `config.json` por repo. Complementa o subcomando ativo `wsd version` da v0.3.1. Snapshots sem o campo passam a sinalizar gerador antigo.
+- 13/06/2026 — Claude (Opus 4.8): Inclusão da versão **`0.3.3`** (patch — publicação pública): leva ao `wsdd` público a feature de `wsd_version` no snapshot (privada na `0.3.2`). Público estava em `0.3.1`; passa a receber o carimbo de versão e a detecção passiva de deriva. Seção 22 adicionada, Registro renumerado para seção 23.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -841,7 +843,22 @@ Sem mudança quebra-compat. Projetos já instalados precisam rodar `./+wsd/bin/w
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 22. 🕒 Registro de Alterações por Agentes
+## 22. 0.3.3 — 13/06/2026
+
+**Patch — versão carimbada no snapshot (publicação pública).** Leva ao `wsdd` público a feature introduzida no privado em `0.3.2`: o gerador de snapshot passa a registrar a versão WSD instalada dentro de cada `+wsd/snapshot.json`, permitindo detecção passiva de deriva de versão por consumidores que já leem snapshots — sem abrir o `+wsd/config.json` de cada repositório.
+
+### Adicionado
+
+- **`wsd_version` no snapshot** — `templates/local-wsd/bin/wsd-snapshot.cjs` grava o campo `wsd_version` (lido de `+wsd/config.json`) em cada `+wsd/snapshot.json`.
+- **Detecção passiva de deriva** — consumidores comparam `wsd_version` com a versão da fonte e classificam `atual` / `patch_atras` / `minor_atras` / `desconhecida`. Snapshots sem o campo sinalizam gerador antigo. Complementa o `wsd version` ativo da v0.3.1.
+
+### Nota de Compatibilidade
+
+Sem mudança quebra-compat. Projetos já instalados recebem o gerador novo ao rodar `./+wsd/bin/wsd update`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 23. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|

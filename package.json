@@ -1,6 +1,6 @@
 {
   "name": "wsd-method",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "private": true,
   "description": "Wolff Spec Driven alpha toolkit for agent-governed private repositories.",
   "bin": {
