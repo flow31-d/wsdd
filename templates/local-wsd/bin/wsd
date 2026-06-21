@@ -1570,9 +1570,17 @@ function strip(value) {
     .trim();
 }
 
+function normalizeHeading(value) {
+  return strip(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 function section(markdown, heading) {
   const lines = markdown.split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim() === heading);
+  const wanted = normalizeHeading(heading);
+  const start = lines.findIndex((line) => normalizeHeading(line.trim()) === wanted);
   if (start === -1) return '';
   const out = [];
   for (let i = start + 1; i < lines.length; i += 1) {

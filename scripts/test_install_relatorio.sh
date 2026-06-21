@@ -80,9 +80,9 @@ EOF
 cat > "$tmpdir/+specs/project/CONCERNS.md" <<'EOF'
 # CONCERNS
 
-## Preocupacoes Ativas
+## Preocupações Ativas
 
-| ID | Preocupacao | Categoria | Severidade | Status | Area/Arquivo | Plano | Owner | Aberta em |
+| ID | Preocupação | Categoria | Severidade | Status | Área/Arquivo | Plano | Owner | Aberta em |
 |---|---|---|---|---|---|---|---|---|
 | CONC-001 | Checkout sem teste regressivo | Qualidade | Alta | active | src/checkout | Criar teste | Codex | 2026-06-21 |
 EOF
@@ -109,6 +109,7 @@ grep -q 'Implementação pela metade: sim' "$report_out"
 grep -q 'Checkout Flow' "$report_out"
 grep -q 'IDEA-001' "$report_out"
 grep -q 'CONC-001' "$report_out"
+grep -q 'Concerns: 1 ativa(s), 1 ativa(s) no pipeline, 0 sem pipeline' "$report_out"
 grep -q 'Sugestão do agente:' "$report_out"
 grep -q 'Worktree: clean' "$report_out"
 

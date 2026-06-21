@@ -57,6 +57,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.3` (patch — finish limpo): versão atual e release estável adicionadas com gates, docs audit, HANDOFF, snapshot, commit automático e worktree limpo.
 - 21/06/2026 — Codex: Atualização para `v0.4.4` (patch — relatório WSD): versão atual e release estável adicionadas com `wsd relatorio`, skill/comando de relatório e `test:install-relatorio`.
 - 21/06/2026 — Codex: Atualização para `v0.4.5` (patch — update/adherence preservador): versão atual e release estável adicionadas com update de novos atalhos de agente e `test:install-update-adherence`.
+- 21/06/2026 — Codex: Atualização para `v0.4.6` (patch — relatório tolerante a acentos): versão atual e release estável adicionadas com parser de headings acentuados.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -98,7 +99,7 @@ main
 Versão atual do pacote:
 
 ```text
-v0.4.5
+v0.4.6
 ```
 
 Tags alpha já usadas:
@@ -130,6 +131,7 @@ Release estável:
 - **`v0.4.3`** (21/06/2026): patch — finish limpo. `wsd finish` roda gates, auditoria documental WSD quando disponível, gera `HANDOFF.md`, atualiza snapshot, cria commit automático e só passa com worktree limpo. `npm test` inclui `test:install-finish-clean`.
 - **`v0.4.4`** (21/06/2026): patch — relatório WSD. `wsd relatorio` gera Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão do agente. `npm test` inclui `test:install-relatorio`.
 - **`v0.4.5`** (21/06/2026): patch — update/adherence preservador. `wsd update` instala novos atalhos de agente em projetos existentes sem sobrescrever arquivos já customizados; `wsd update --help` não altera o projeto. `npm test` inclui `test:install-update-adherence`.
+- **`v0.4.6`** (21/06/2026): patch — relatório tolerante a acentos. `wsd relatorio` normaliza headings Markdown ao procurar seções, cobrindo `Preocupações Ativas`. `test:install-relatorio` cobre o caso.
 - **`v0.3.2`** (13/06/2026): patch — versão carimbada no snapshot. `templates/local-wsd/bin/wsd-snapshot.cjs` grava `wsd_version` em cada `+wsd/snapshot.json`, lido de `+wsd/config.json`. Consumidores que já leem snapshots (ex.: Zelador) detectam deriva de versão sem abrir o `config.json` por repo. Complementa o `wsd version` ativo da v0.3.1.
 - **`v0.3.3`** (13/06/2026): patch — publicação pública. Leva ao `wsdd` público a feature da v0.3.2 (público estava em v0.3.1). Entrega o carimbo `wsd_version` no snapshot e a detecção passiva de deriva ao repositório público.
 
@@ -246,5 +248,6 @@ npm run test:install
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.3.1`: versão atual e histórico de releases passam a registrar `wsd version` e inventário multi-repo. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.4.4`: versão atual e release estável registram `wsd relatorio` e `test:install-relatorio`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.4.5`: versão atual e release estável registram update/adherence preservador. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/09_publicacao_github_privado.md` | Atualização para `v0.4.6`: versão atual e release estável registram relatório tolerante a acentos. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

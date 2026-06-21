@@ -24,7 +24,7 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Versão coberta: **`v0.4.5`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, relatório geral via `wsd relatorio`, pipeline de preocupações via `CONCERNS_PIPELINE.md`, fechamento limpo via `wsd finish` e `wsd update` preservador.
+> Versão coberta: **`v0.4.6`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, relatório geral via `wsd relatorio`, pipeline de preocupações via `CONCERNS_PIPELINE.md`, fechamento limpo via `wsd finish` e `wsd update` preservador.
 
 ## 📑 Índice
 
@@ -50,6 +50,7 @@ otimizado_para_obsidian: true
 - 15/06/2026 — Codex: Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `start --brief`.
 - 21/06/2026 — Codex: Inclusão do comando `wsd relatorio` da `v0.4.4`.
 - 21/06/2026 — Codex: Atualização para `v0.4.5`: `wsd update` passa a trazer novos atalhos de agente sem sobrescrever arquivos customizados.
+- 21/06/2026 — Codex: Atualização para `v0.4.6`: `wsd relatorio` passa a reconhecer headings acentuados em português.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -103,7 +104,7 @@ Depois da instalação, o comando principal passa a ser:
 Entre na pasta do projeto e rode:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install --init-git
+npx github:flow31-d/wsdd#v0.4.6 install --init-git
 ```
 
 Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
@@ -113,7 +114,7 @@ Use essa forma quando você quer responder às perguntas na tela. Se aparecer um
 Use quando você quer instalar rápido com escolhas padrão:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install \
+npx github:flow31-d/wsdd#v0.4.6 install \
   --directory . \
   --init-git \
   --tools both \
@@ -138,7 +139,7 @@ O que isso faz:
 Use `--brownfield` quando o projeto já tem código:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install \
+npx github:flow31-d/wsdd#v0.4.6 install \
   --directory . \
   --tools both \
   --git-policy full \
@@ -154,7 +155,7 @@ npx github:flow31-d/wsdd#v0.4.5 install \
 Se você quiser menos arquivos dentro de `+wsd/`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install \
+npx github:flow31-d/wsdd#v0.4.6 install \
   --directory . \
   --init-git \
   --tools both \
@@ -532,7 +533,7 @@ Esse comando atualiza a parte vendorizada do WSD no projeto e adiciona novos ata
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install \
+npx github:flow31-d/wsdd#v0.4.6 install \
   --directory . \
   --force
 ```
@@ -540,13 +541,13 @@ npx github:flow31-d/wsdd#v0.4.5 install \
 ### 9.3 Ver opções do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 install --list-options
+npx github:flow31-d/wsdd#v0.4.6 install --list-options
 ```
 
 ### 9.4 Ver ajuda do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.5 help
+npx github:flow31-d/wsdd#v0.4.6 help
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -658,8 +659,8 @@ gh auth status
 ## 12. Cola Rápida
 
 ```bash
-# Instalar WSDD v0.4.5 na pasta atual
-npx github:flow31-d/wsdd#v0.4.5 install --init-git
+# Instalar WSDD v0.4.6 na pasta atual
+npx github:flow31-d/wsdd#v0.4.6 install --init-git
 
 # Ver se está tudo certo
 ./+wsd/bin/wsd doctor
@@ -731,5 +732,6 @@ npx github:flow31-d/wsdd#v0.4.5 install --init-git
 | 17/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Inclusão de atalhos WSD Loop para Codex (`/prompts:loop`), Claude Code (`/loop status`) e shell (`shortcuts`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.4`: inclusão de `wsd relatorio`, `/wsd-relatorio` e exemplos de relatório geral. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.5`: `wsd update` preservador e exemplos de instalação com nova tag. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.6`: relatório tolerante a headings acentuados. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

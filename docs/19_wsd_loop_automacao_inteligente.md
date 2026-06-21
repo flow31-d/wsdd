@@ -31,6 +31,7 @@ otimizado_para_obsidian: true
 - 21/06/2026 — Codex: Nota de compatibilidade `v0.4.3`: `wsd finish` fecha limpo após gates, reduzindo aprovações manuais no encerramento sem alterar o contrato do loop.
 - 21/06/2026 — Codex: Nota de compatibilidade `v0.4.4`: `wsd relatorio` oferece visão geral antes ou depois de loops sem alterar execução automática.
 - 21/06/2026 — Codex: Nota de compatibilidade `v0.4.5`: `wsd update` passa a propagar novos atalhos de agente em projetos existentes sem sobrescrever customizações.
+- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.6`: `wsd relatorio` reconhece headings acentuados em português ao auditar concerns antes/depois do loop.
 
 ## 2. Modelo Mental
 
@@ -177,3 +178,4 @@ As próximas features sugeridas ficam em `+specs/project/IDEAS.md`:
 | 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.3`: `wsd finish` fecha limpo após gates e commit automático. |
 | 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.4`: `wsd relatorio` consolida estado, plano, ideias e concerns antes ou depois do loop. |
 | 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.5`: `wsd update` propaga novos atalhos de agente preservando customizações. |
+| 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.6`: `wsd relatorio` reconhece headings acentuados. |

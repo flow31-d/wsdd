@@ -53,6 +53,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.3` e `npm test` com 14 gates, incluindo `test:install-finish-clean`.
 - 21/06/2026 — Codex: Atualização para `v0.4.4` e `npm test` com 15 gates, incluindo `test:install-relatorio`.
 - 21/06/2026 — Codex: Atualização para `v0.4.5` e `npm test` com 16 gates, incluindo `test:install-update-adherence`.
+- 21/06/2026 — Codex: Atualização para `v0.4.6` mantendo 16 gates e corrigindo `wsd relatorio` para headings acentuados.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -90,7 +91,7 @@ npx github:flow31-d/wsdd install --tools claude-code --git-policy basic --yes
 npx github:flow31-d/wsdd install --tools both --git-policy full --brownfield --yes
 
 # Versão específica via tag Git
-npx github:flow31-d/wsdd#v0.4.5 install
+npx github:flow31-d/wsdd#v0.4.6 install
 ```
 
 ### 3.1 Pré-requisitos do usuário
@@ -300,5 +301,6 @@ Desvantagem: mais um registry externo para manter; o quick start via GitHub já 
 | 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 14/14 gates de `npm test`, incluindo finish clean close. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 15/15 gates de `npm test`, incluindo `test:install-relatorio`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 16/16 gates de `npm test`, incluindo `test:install-update-adherence`. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização para `v0.4.6`: relatório tolerante a headings acentuados, sem novo gate. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

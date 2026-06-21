@@ -52,7 +52,8 @@ otimizado_para_obsidian: true
 26. [[#26. 0.4.3 — 21/06/2026]]
 27. [[#27. 0.4.4 — 21/06/2026]]
 28. [[#28. 0.4.5 — 21/06/2026]]
-29. [[#29. 🕒 Registro de Alterações por Agentes]]
+29. [[#29. 0.4.6 — 21/06/2026]]
+30. [[#30. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -88,6 +89,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.3`** (patch — finish limpo): `wsd finish` passa a rodar gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e verificação final de worktree limpa. Seção 26 adicionada, Registro renumerado para seção 27.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.4`** (patch — relatório WSD): `wsd relatorio` gera relatório operacional com estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente. Seção 27 adicionada, Registro renumerado para seção 28.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.5`** (patch — update/adherence preservador): `wsd update` passa a instalar novos atalhos de agente em projetos existentes sem sobrescrever customizações e `update --help` deixa de alterar o projeto. Seção 28 adicionada, Registro renumerado para seção 29.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.6`** (patch — relatório tolerante a acentos): `wsd relatorio` normaliza acentos ao localizar headings, cobrindo `Preocupações Ativas`. Seção 29 adicionada, Registro renumerado para seção 30.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -1007,7 +1009,19 @@ Documentação:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 29. 🕒 Registro de Alterações por Agentes
+## 29. 0.4.6 — 21/06/2026
+
+**Patch — relatório tolerante a acentos.** Corrige a leitura de seções do `wsd relatorio` em projetos que usam headings em português com acentos, como `## Preocupações Ativas`.
+
+Inclui:
+
+- **Normalização de headings** — o parser remove diacríticos ao localizar seções Markdown.
+- **Cobertura de regressão** — `test:install-relatorio` agora usa `## Preocupações Ativas` e valida a contagem de concerns ativas.
+- **Validação real via WDB** — o caso foi detectado ao atualizar o WSD do WDB.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 30. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -1037,5 +1051,6 @@ Documentação:
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.3`** — finish limpo, docs audit, HANDOFF, snapshot, commit automático e teste `test:install-finish-clean`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.4`** — `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.5`** — update preservador para aderência de agente em projetos existentes e teste `test:install-update-adherence`. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.6`** — relatório tolerante a headings acentuados e teste de regressão. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

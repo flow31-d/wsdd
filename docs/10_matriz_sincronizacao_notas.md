@@ -62,6 +62,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão do contrato de finish limpo (`wsd finish`) na matriz de sincronização da v0.4.3.
 - 21/06/2026 — Codex: Inclusão de `wsd relatorio`, `wsd-relatorio` e `/wsd-relatorio` na matriz de sincronização da v0.4.4.
 - 21/06/2026 — Codex: Inclusão do update/adherence preservador da v0.4.5 e atualização do gate público para 16 testes.
+- 21/06/2026 — Codex: Inclusão do hotfix de headings acentuados do `wsd relatorio` na matriz de sincronização da v0.4.6.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -294,5 +295,6 @@ Se mover ou renomear `.md`, usar `/usr/local/bin/obsidian`; nunca `mv` ou `renam
 | 15/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do Codex Adherence Pack e atualização do checklist público para 13 gates. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do contrato `wsd relatorio` na matriz de sincronização da v0.4.4 e atualização do checklist público para 15 gates. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do update/adherence preservador da v0.4.5 e atualização do checklist público para 16 gates. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do hotfix de headings acentuados do `wsd relatorio` na v0.4.6. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
