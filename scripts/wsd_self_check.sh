@@ -74,6 +74,7 @@ required_files=(
   "scripts/wsd_check.sh"
   "scripts/test_install_codex_adherence.sh"
   "scripts/test_install_finish_clean.sh"
+  "scripts/test_install_relatorio.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -239,6 +240,12 @@ grep -q 'chore(wsd): finish session' templates/local-wsd/bin/wsd || fail "templa
 grep -q 'git commit -m' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing closing commit"
 grep -q 'test:install-finish-clean' package.json || fail "package.json missing test:install-finish-clean"
 ok "wsd CLI finish clean-close contract present"
+
+grep -q '_wsd_relatorio' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_relatorio"
+grep -q 'Relatorio WSD' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing report title"
+grep -q 'Sugestão do agente' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd report missing agent suggestion"
+grep -q 'test:install-relatorio' package.json || fail "package.json missing test:install-relatorio"
+ok "wsd CLI relatorio contract present"
 
 # git-hooks templates are executable
 for hook in templates/git-hooks/pre-commit templates/git-hooks/commit-msg templates/git-hooks/pre-push; do

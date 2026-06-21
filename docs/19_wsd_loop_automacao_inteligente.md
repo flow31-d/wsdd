@@ -29,6 +29,7 @@ otimizado_para_obsidian: true
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt`, `codex` e `test:install-codex-adherence`.
 - 17/06/2026 — Codex: Inclusão dos atalhos `wsd-loop` para Codex, `/loop status` para Claude Code, `/prompts:loop` opcional no Codex CLI e comandos `codex-shortcuts`/`shortcuts`.
 - 21/06/2026 — Codex: Nota de compatibilidade `v0.4.3`: `wsd finish` fecha limpo após gates, reduzindo aprovações manuais no encerramento sem alterar o contrato do loop.
+- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.4`: `wsd relatorio` oferece visão geral antes ou depois de loops sem alterar execução automática.
 
 ## 2. Modelo Mental
 
@@ -173,3 +174,4 @@ As próximas features sugeridas ficam em `+specs/project/IDEAS.md`:
 | 17/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Inclusão de atalhos de agente para WSD Loop em Codex/Claude/shell (`v0.4.1`). |
 | 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.2`: WSD Loop mantém contrato, e concerns passam a ter pipeline próprio antes de automações longas. |
 | 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.3`: `wsd finish` fecha limpo após gates e commit automático. |
+| 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.4`: `wsd relatorio` consolida estado, plano, ideias e concerns antes ou depois do loop. |

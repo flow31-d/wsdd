@@ -50,6 +50,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
 - 21/06/2026 — Codex: Adição de `CONCERNS_PIPELINE.md` à seção `+specs/project/` (v0.4.2), com regra de captura em par `CONCERNS.md` + pipeline.
 - 21/06/2026 — Codex: `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo (`v0.4.3`).
+- 21/06/2026 — Codex: `wsd relatorio` passa a gerar relatório operacional opcional em `+specs/RELATORIO.md` (`v0.4.4`).
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
 - 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
@@ -243,6 +244,9 @@ Pipeline de resolução das preocupações registradas em `CONCERNS.md`. Cada co
 
 **Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia. Quando identificar concerns durante o trabalho (componente frágil tocado, dívida técnica descoberta, área que precisa de aprovação humana, workaround, dependência instável ou item "precisa conferir"), atualizar `CONCERNS.md` e `CONCERNS_PIPELINE.md` na mesma sessão.
 
+### `+specs/RELATORIO.md` (opcional, v0.4.4)
+Relatório operacional gerado por `./+wsd/bin/wsd relatorio --save`. Consolida estado Git/WSD, implementação em andamento, plano programado, ideias, concerns, alinhamento dos pipelines e sugestão do agente. Não é criado automaticamente no install e não substitui `STATE.md`, `ROADMAP.md`, `IDEAS.md` ou `CONCERNS.md`; é uma fotografia de leitura para orientação humana.
+
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 7. `+logs/error_vault.json`
@@ -301,7 +305,7 @@ Estrutura principal:
 
 | Caminho | Função |
 |---|---|
-| `+wsd/bin/wsd` | CLI local — `wsd start`, `start --brief`, `check`, `finish`, `doctor`, `version`, `update`, `git`, `party`, `snapshot`, `loop`, `codex-prompt`, `codex` |
+| `+wsd/bin/wsd` | CLI local — `wsd start`, `start --brief`, `check`, `finish`, `relatorio`, `doctor`, `version`, `update`, `git`, `party`, `snapshot`, `loop`, `codex-prompt`, `codex` |
 | `+wsd/bin/wsd-validate-context.cjs` | Validador zero-deps do `+context.json` contra o schema |
 | `+wsd/bin/wsd-snapshot.cjs` | Gerador do `+wsd/snapshot.json` (resumo do estado do projeto) |
 | `+wsd/schemas/context.schema.json` | JSON Schema 2020-12 canônico do `+context.json` |
@@ -329,6 +333,16 @@ Estrutura principal:
 - atualizar snapshot quando possível;
 - criar commit de fechamento por padrão;
 - terminar com `git status --short` vazio.
+
+### Contrato `wsd relatorio` (v0.4.4)
+
+`./+wsd/bin/wsd relatorio` é leitura operacional. O comando deve:
+
+- imprimir Markdown no terminal por padrão;
+- salvar em `+specs/RELATORIO.md` quando usado com `--save`;
+- consolidar Git, `+context.json`, ROADMAP, specs, STATE, IDEAS/IDEAS_PIPELINE e CONCERNS/CONCERNS_PIPELINE;
+- indicar implementações em andamento, plano programado, ideias e concerns sem pipeline;
+- terminar com sugestão de próximo passo baseada nos sinais WSD.
 
 O comando não deve usar `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge. Se gate, hook ou path sensível falhar, o fechamento não está aprovado.
 
@@ -363,5 +377,6 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 17/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato de skills Codex em `.agents/skills/` e prompts opcionais `codex-shortcuts` (`v0.4.1`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `CONCERNS_PIPELINE.md` como artefato obrigatório e regra de manutenção em par com `CONCERNS.md` (`v0.4.2`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd finish` limpo com gates, docs audit e commit de fechamento (`v0.4.3`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd relatorio` e do artefato opcional `+specs/RELATORIO.md` (`v0.4.4`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

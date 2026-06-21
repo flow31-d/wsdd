@@ -50,6 +50,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt` e `codex`.
 - 21/06/2026 — Codex: Inclusão de concerns como leitura base de sessão e fluxo `/concern-{PROJECT_SLUG}` / `wsd-concern`.
 - 21/06/2026 — Codex: `wsd finish` passa a ser fechamento limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot e commit automático aprovado.
+- 21/06/2026 — Codex: Inclusão de `wsd relatorio` como visão geral operacional de estado, plano, ideias, concerns e sugestão do agente.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -74,6 +75,20 @@ Quando houver dúvida sobre qual WSD está aplicado no repo, rodar antes ou logo
 ```bash
 ./+wsd/bin/wsd version
 ```
+
+Quando o operador pedir "relatório do WSD", "geral do projeto", "estado atual" ou "o que fazer agora", o agente deve rodar:
+
+```bash
+./+wsd/bin/wsd relatorio
+```
+
+Para salvar o relatório em Markdown dentro do projeto:
+
+```bash
+./+wsd/bin/wsd relatorio --save
+```
+
+O relatório consolida Git, `+context.json`, ROADMAP, specs, STATE, IDEAS/IDEAS_PIPELINE, CONCERNS/CONCERNS_PIPELINE e termina com sugestão de próximo passo.
 
 O agente deve:
 
@@ -228,6 +243,7 @@ Quando o WSD for instalado com `--tools codex`, o projeto recebe:
 .agents/skills/wsd/SKILL.md
 .agents/skills/wsd-start/SKILL.md
 .agents/skills/wsd-finish/SKILL.md
+.agents/skills/wsd-relatorio/SKILL.md
 .agents/skills/wsd-specify/SKILL.md
 .agents/skills/wsd-design/SKILL.md
 .agents/skills/wsd-tasks/SKILL.md
@@ -245,7 +261,8 @@ Uso prático:
 - `wsd-tasks`: fase Tasks — quebra em `+specs/features/<slug>/tasks.md` atômico com gate level por task;
 - `wsd-concern`: captura preocupação, risco, fragilidade ou item "precisa conferir" em `CONCERNS.md` + `CONCERNS_PIPELINE.md`;
 - `wsd-loop`: atalhos de Ralph/WSD Loop como `loop status`, `loop auto on`, `loop auto off`, `loop plan <feature>`;
-- `wsd-finish`: fechamento limpo com gates, docs audit quando disponível, HANDOFF.md, snapshot e commit de fechamento.
+- `wsd-finish`: fechamento limpo com gates, docs audit quando disponível, HANDOFF.md, snapshot e commit de fechamento;
+- `wsd-relatorio`: pedidos de relatório WSD, estado atual, plano, ideias, concerns ou recomendação de próximo passo.
 
 ### 6.2 Claude Code (`--tools claude-code`)
 
@@ -254,6 +271,7 @@ Quando o WSD for instalado com `--tools claude-code`, o projeto recebe:
 ```text
 .claude/commands/wsd-start.md
 .claude/commands/wsd-finish.md
+.claude/commands/wsd-relatorio.md
 .claude/commands/wsd-specify.md
 .claude/commands/wsd-design.md
 .claude/commands/wsd-tasks.md
@@ -269,7 +287,8 @@ Uso prático:
 - `/wsd-design`: cria `+specs/features/<slug>/design.md` (pode pular em casos simples);
 - `/wsd-tasks`: cria `+specs/features/<slug>/tasks.md` atômico;
 - `/loop status`: consulta estado do Ralph/WSD Loop; `/loop on` e `/loop off` alternam `automation.loop.auto_use`;
-- `/wsd-finish`: fecha sessão com gates, HANDOFF.md, snapshot e commit de fechamento.
+- `/wsd-finish`: fecha sessão com gates, HANDOFF.md, snapshot e commit de fechamento;
+- `/wsd-relatorio`: gera relatório geral com estado atual, plano, ideias, concerns e sugestão.
 
 A governança (conteúdo da skill `wsd` do Codex) vive no `AGENTS.md` gerado + hooks — não em comando persistente, porque Claude Code usa comandos slash sob demanda.
 
@@ -285,12 +304,14 @@ Ao alterar comandos de sessão, revisar sempre:
 - `templates/codex-skills/wsd/SKILL.md`;
 - `templates/codex-skills/wsd-start/SKILL.md`;
 - `templates/codex-skills/wsd-finish/SKILL.md`;
+- `templates/codex-skills/wsd-relatorio/SKILL.md`;
 - `templates/codex-skills/wsd-specify/SKILL.md`;
 - `templates/codex-skills/wsd-design/SKILL.md`;
 - `templates/codex-skills/wsd-tasks/SKILL.md`;
 - `templates/codex-skills/wsd-loop/SKILL.md`;
 - `templates/claude-commands/commands/wsd-start.md`;
 - `templates/claude-commands/commands/wsd-finish.md`;
+- `templates/claude-commands/commands/wsd-relatorio.md`;
 - `templates/claude-commands/commands/wsd-specify.md`;
 - `templates/claude-commands/commands/wsd-design.md`;
 - `templates/claude-commands/commands/wsd-tasks.md`;
@@ -325,5 +346,6 @@ bash scripts/wsd_docs_check.sh
 | 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do Codex Adherence Pack: `start --brief`, `codex-prompt`, `codex` e bootstrap via `AGENTS.md`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de concerns como leitura base de sessão e fluxo `wsd-concern`/`concern-{PROJECT_SLUG}`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Atualização do contrato `wsd finish`: fechamento limpo com gates, docs audit, HANDOFF, snapshot e commit automático (`v0.4.3`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de `wsd relatorio` para visão geral operacional e artefatos `wsd-relatorio`/`/wsd-relatorio`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

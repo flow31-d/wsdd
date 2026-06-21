@@ -45,6 +45,8 @@ Ao iniciar qualquer tarefa:
 8. Verificar `automation.loop.auto_use` em `+context.json`.
 9. Antes de finalizar mudanças relevantes, rodar `git diff --check` e `./+wsd/bin/wsd check`.
 
+Se o operador pedir relatório WSD, visão geral, estado atual, plano, ideias, concerns ou "o que fazer agora", rodar `./+wsd/bin/wsd relatorio` e responder com o resumo e a sugestão final.
+
 Política Ralph/WSD Loop:
 
 - Se `automation.loop.auto_use=true`, então para tarefas L0/L1 elegíveis, com spec aprovada e worktree limpa, usar WSD Loop automaticamente antes de executar manualmente.
@@ -64,6 +66,7 @@ Comandos curtos para aderência Codex:
 ./+wsd/bin/wsd loop auto off
 ./+wsd/bin/wsd codex-shortcuts status
 ./+wsd/bin/wsd shortcuts status
+./+wsd/bin/wsd relatorio
 ```
 
 Use `codex-prompt` quando quiser apenas gerar o prompt auditável. Use `codex` quando quiser abrir o Codex já apontado para este repositório e contrato WSD.
@@ -122,6 +125,7 @@ Comandos locais:
 ./+wsd/bin/wsd start    # abre sessão: git state, contexto, specs, risco
 ./+wsd/bin/wsd check    # valida contrato WSD do repo
 ./+wsd/bin/wsd finish   # fecha sessão: gates, docs audit, HANDOFF.md, commit e worktree limpo
+./+wsd/bin/wsd relatorio # mostra estado atual, plano, ideias, concerns e sugestao
 ./+wsd/bin/wsd doctor   # diagnóstico de dependências e hooks
 ./+wsd/bin/wsd hooks    # reinstala git hooks em .git/hooks/
 ./+wsd/bin/wsd version  # checa versão do WSD instalada no repo ou inventário em lote
@@ -210,6 +214,7 @@ Comandos de sessão (Claude Code):
 ```
 /wsd-start       — abre sessão: git state, STATE.md, HANDOFF.md, risco e auto-sizing
 /wsd-finish      — fecha sessão: gates, HANDOFF.md, commit de fechamento e worktree limpo
+/wsd-relatorio   — relatório geral: estado atual, plano, ideias, concerns e sugestão
 /wsd-specify     — fase Specify: clarifica requirements, escreve spec.md WHEN/THEN/SHALL
 /wsd-design      — fase Design: arquitetura, componentes, design.md
 /wsd-tasks       — fase Tasks: tasks.md atômico com gate checks e dependências

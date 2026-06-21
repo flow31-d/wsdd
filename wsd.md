@@ -66,6 +66,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 17/06/2026 — Codex: Atualização para `v0.4.1` com atalhos WSD Loop para Codex/Claude/shell e skills Codex no caminho `.agents/skills`.
 - 21/06/2026 — Codex: Atualização para `v0.4.2` com pipeline de concerns, skill/comando de captura de preocupação e `CONCERNS_PIPELINE.md` como nota obrigatória.
 - 21/06/2026 — Codex: Atualização para `v0.4.3` com `wsd finish` limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree final limpo.
+- 21/06/2026 — Codex: Atualização para `v0.4.4` com `wsd relatorio`: relatório operacional de estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -98,17 +99,17 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.4.3`** (patch — fechamento limpo do `wsd finish`).
+Versão atual do pacote: **`v0.4.4`** (patch — relatório operacional WSD).
 
 O WSD já possui:
 
-- `package.json` com binário `wsd-method` e `npm test` (14 gates);
+- `package.json` com binário `wsd-method` e `npm test` (15 gates);
 - `bin/wsd-method.js` com `install`, `doctor`, `help`, `update`, `--list-options`, flag `--brownfield` e `--git-policy none|basic|full`;
 - `install.sh` como wrapper local;
 - instalação vendorizada em `+wsd/`;
-- `templates/local-wsd/bin/wsd` com `start`, `start --brief`, `check`, `finish`, `doctor`, `version`, `update`, `hooks`, `snapshot`, `lovable`, namespace `git doctor|preflight|pr-check`, namespace `party status|list-agents|when-to-use`, `loop plan|once|run|status|stop`, `codex-prompt` e `codex`;
-- 9 skills Codex em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`), espelhadas em `.codex/skills/` para compatibilidade;
-- 9 comandos slash Claude Code em `.claude/commands/` (`loop`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`), `.claude/settings.json` com hooks e `+wsd/hooks/pre-tool.sh`;
+- `templates/local-wsd/bin/wsd` com `start`, `start --brief`, `check`, `finish`, `relatorio`, `doctor`, `version`, `update`, `hooks`, `snapshot`, `lovable`, namespace `git doctor|preflight|pr-check`, namespace `party status|list-agents|when-to-use`, `loop plan|once|run|status|stop`, `codex-prompt` e `codex`;
+- 10 skills Codex em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`), espelhadas em `.codex/skills/` para compatibilidade;
+- 10 comandos slash Claude Code em `.claude/commands/` (`loop`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`), `.claude/settings.json` com hooks e `+wsd/hooks/pre-tool.sh`;
 - atalhos WSD Loop para agentes: `codex-shortcuts` oferece `/prompts:loop status` no Codex e `/loop status` fica disponível no Claude Code;
 - `--tools both` gera os dois conjuntos sem conflito;
 - matriz e checker de sincronização documental (com 20+ assertions TLC);
@@ -121,6 +122,7 @@ O WSD já possui:
 - ghost spec detector em `wsd_check.sh` — specs `approved`/`implemented` sem WHEN/THEN/SHALL bloqueadas em L1/L2 (v0.1.6);
 - git hooks no bootstrap (`pre-commit`, `commit-msg`, `pre-push`) instalados por `wsd-method install`; subcomando `wsd hooks` para reinstalar após clone (v0.1.6);
 - `wsd finish` automatizado: roda gates, auditoria documental quando disponível, gera `+specs/HANDOFF.md`, atualiza snapshot, captura prompts de STATE.md quando interativo, cria commit de fechamento e termina com worktree limpo (`v0.4.3`);
+- `wsd relatorio`: gera visão geral em Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão do agente (`v0.4.4`);
 - instalação interativa rica: linguagem principal, path canônico, comandos test/build/lint, forbidden_paths (v0.1.8);
 - `wsd update` real: atualiza `+wsd/` vendor tree via `wsd_source` em `+wsd/config.json` sem tocar em arquivos do projeto (v0.1.8);
 - validação WHEN+THEN+SHALL completa: todos os três keywords obrigatórios em ghost scan e L1/L2 (v0.1.8).
@@ -139,8 +141,9 @@ O WSD já possui:
 - Release **`v0.4.1`** (17/06/2026): patch — instala skills Codex em `.agents/skills/`, adiciona `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, atalhos shell `wsd()`/`wl()` via `wsd shortcuts shell` e reforça `wsd-idea`/`IDEAS_PIPELINE`.
 - Release **`v0.4.2`** (21/06/2026): patch — adiciona `CONCERNS_PIPELINE.md`, reestrutura `CONCERNS.md` com concerns ativas `CONC-###`, cria `wsd-concern`/`concern-{PROJECT_SLUG}` e inclui concerns em bootstrap, start brief e snapshot.
 - Release **`v0.4.3`** (21/06/2026): patch — `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo; teste `test:install-finish-clean` cobre a regressão.
+- Release **`v0.4.4`** (21/06/2026): patch — `wsd relatorio` consolida estado atual, implementações em andamento, plano, ideias, concerns e sugestão; adiciona `wsd-relatorio`, `/wsd-relatorio` e `test:install-relatorio`.
 
-Foco atual: **`v0.4.3` em preparação pública** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
+Foco atual: **`v0.4.4` em preparação pública** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -214,5 +217,6 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 17/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.1`: atalhos WSD Loop para Codex/Claude/shell e `.agents/skills` como caminho atual do Codex. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.2`: pipeline de concerns, skill/comando de captura e nota obrigatória `CONCERNS_PIPELINE.md`. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.3`: `wsd finish` limpo com gates, docs audit, HANDOFF, snapshot, commit automático e teste de regressão. |
+| 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.4`: `wsd relatorio`, artefatos de agente e teste de instalação. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

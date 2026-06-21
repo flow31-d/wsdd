@@ -1,6 +1,6 @@
 ---
 name: wsd
-description: Govern development in repositories that use Wolff Spec Driven. Use when asked to operate, audit, bootstrap, customize, or enforce WSD artifacts such as AGENTS.md, +context.json, +specs, +specs/project/STATE.md, +specs/project/CONCERNS.md, +specs/project/CONCERNS_PIPELINE.md, scripts/wsd_check.sh, Git branches, PRs, validation gates, host topology, or L0/L1/L2 classification.
+description: Govern development in repositories that use Wolff Spec Driven. Use when asked to operate, audit, report, bootstrap, customize, or enforce WSD artifacts such as AGENTS.md, +context.json, +specs, +specs/project/STATE.md, +specs/project/CONCERNS.md, +specs/project/CONCERNS_PIPELINE.md, scripts/wsd_check.sh, Git branches, PRs, validation gates, host topology, or L0/L1/L2 classification.
 ---
 
 # WSD Governance
@@ -25,6 +25,12 @@ If `+context.json` exists:
 bash scripts/wsd_check.sh --risk L0 .
 ```
 
+If the user asks for a WSD report, project overview, current state, active plan, ideas, concerns, or what should be done next:
+
+```bash
+./+wsd/bin/wsd relatorio
+```
+
 ## Risk
 
 - L0: small local change; Task Card is enough.
@@ -36,6 +42,7 @@ bash scripts/wsd_check.sh --risk L0 .
 - Respect `AGENTS.md`.
 - Respect `+context.json`.
 - Treat the `WSD Codex Bootstrap` section in `AGENTS.md` as the default startup contract when present.
+- For report/overview requests, prefer `./+wsd/bin/wsd relatorio` over manually scanning each WSD file.
 - Read `+specs/project/CONCERNS.md` and `+specs/project/CONCERNS_PIPELINE.md` before editing; check active concerns touching the target area.
 - If a fragile component, risk, debt, workaround, unstable dependency, L2 area, or "needs verification" item appears, register it immediately in both concerns files.
 - Load `+specs/context/*.md` selectively.

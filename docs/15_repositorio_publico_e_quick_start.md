@@ -51,6 +51,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Atualização para `v0.4.0` e `npm test` com 13 gates, incluindo `test:install-loop` e `test:install-codex-adherence`.
 - 17/06/2026 — Codex: Atualização para `v0.4.1` com atalhos WSD Loop para Codex/Claude/shell.
 - 21/06/2026 — Codex: Atualização para `v0.4.3` e `npm test` com 14 gates, incluindo `test:install-finish-clean`.
+- 21/06/2026 — Codex: Atualização para `v0.4.4` e `npm test` com 15 gates, incluindo `test:install-relatorio`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -88,7 +89,7 @@ npx github:flow31-d/wsdd install --tools claude-code --git-policy basic --yes
 npx github:flow31-d/wsdd install --tools both --git-policy full --brownfield --yes
 
 # Versão específica via tag Git
-npx github:flow31-d/wsdd#v0.4.3 install
+npx github:flow31-d/wsdd#v0.4.4 install
 ```
 
 ### 3.1 Pré-requisitos do usuário
@@ -173,7 +174,7 @@ Se retornar algo, avaliar se o dado é sensível. Perfis internos devem ser remo
 
 ```bash
 # 1. Testar tudo localmente
-npm test                          # 14 gates de instalação PASS
+npm test                          # 15 gates de instalação PASS
 bash scripts/wsd_docs_check.sh    # sincronização documental
 bash scripts/wsd_self_check.sh    # consistência interna
 
@@ -228,12 +229,12 @@ Nunca push de branch de feature para o remoto público sem merge em main local c
 ## 7. Regras de Compatibilidade
 
 1. **Público é sempre subset testado do privado.** Nunca feature exclusiva no público que não exista e seja testada no privado.
-2. **`npm test` (14 gates) é o gate mínimo** para qualquer push, incluindo docs.
+2. **`npm test` (15 gates) é o gate mínimo** para qualquer push, incluindo docs.
 3. **Versão do `package.json` é fonte de verdade.** README, CHANGELOG, docs/09 e esta nota devem citar a mesma versão após qualquer release.
 4. **Perfis internos não chegam ao público.** Gate de `git diff --staged` antes de cada commit.
 5. **Nenhuma mudança de API sem bump de versão.** Alterações em flags do CLI, schema do `+context.json` ou contrato de templates requerem entrada no CHANGELOG e nova `vX.Y.Z`.
 6. **Tags são imutáveis.** Nunca reescrever tag já publicada — criar nova tag corrija com sufixo ou `+1`.
-7. **O privado testa primeiro.** Se uma mudança não passou nos 14 gates localmente, não vai para o público, mesmo que pareça trivial.
+7. **O privado testa primeiro.** Se uma mudança não passou nos 15 gates localmente, não vai para o público, mesmo que pareça trivial.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -241,7 +242,7 @@ Nunca push de branch de feature para o remoto público sem merge em main local c
 
 Antes de `git push` e `git tag`:
 
-- [ ] `npm test` — 14/14 gates PASS
+- [ ] `npm test` — 15/15 gates PASS
 - [ ] `bash scripts/wsd_docs_check.sh` — sem erros
 - [ ] `bash scripts/wsd_self_check.sh` — sem erros
 - [ ] `package.json#version` atualizado
@@ -296,5 +297,6 @@ Desvantagem: mais um registry externo para manter; o quick start via GitHub já 
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 11/11 gates de `npm test`, incluindo version inventory. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 13/13 gates de `npm test`, incluindo WSD Loop e Codex Adherence Pack. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 14/14 gates de `npm test`, incluindo finish clean close. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 15/15 gates de `npm test`, incluindo `test:install-relatorio`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

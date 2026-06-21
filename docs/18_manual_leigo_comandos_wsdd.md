@@ -24,7 +24,7 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Versão coberta: **`v0.4.3`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, pipeline de preocupações via `CONCERNS_PIPELINE.md` e fechamento limpo via `wsd finish`.
+> Versão coberta: **`v0.4.4`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, relatório geral via `wsd relatorio`, pipeline de preocupações via `CONCERNS_PIPELINE.md` e fechamento limpo via `wsd finish`.
 
 ## 📑 Índice
 
@@ -48,6 +48,7 @@ otimizado_para_obsidian: true
 - 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1`, incluindo o comando `wsd version` para saber qual versão do WSD está instalada em cada projeto.
 - 15/06/2026 — Codex: Inclusão dos comandos `wsd loop` da `v0.4.0` para automação com menos aprovações.
 - 15/06/2026 — Codex: Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `start --brief`.
+- 21/06/2026 — Codex: Inclusão do comando `wsd relatorio` da `v0.4.4`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -101,7 +102,7 @@ Depois da instalação, o comando principal passa a ser:
 Entre na pasta do projeto e rode:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install --init-git
+npx github:flow31-d/wsdd#v0.4.4 install --init-git
 ```
 
 Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
@@ -111,7 +112,7 @@ Use essa forma quando você quer responder às perguntas na tela. Se aparecer um
 Use quando você quer instalar rápido com escolhas padrão:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install \
+npx github:flow31-d/wsdd#v0.4.4 install \
   --directory . \
   --init-git \
   --tools both \
@@ -136,7 +137,7 @@ O que isso faz:
 Use `--brownfield` quando o projeto já tem código:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install \
+npx github:flow31-d/wsdd#v0.4.4 install \
   --directory . \
   --tools both \
   --git-policy full \
@@ -152,7 +153,7 @@ npx github:flow31-d/wsdd#v0.4.3 install \
 Se você quiser menos arquivos dentro de `+wsd/`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install \
+npx github:flow31-d/wsdd#v0.4.4 install \
   --directory . \
   --init-git \
   --tools both \
@@ -248,7 +249,42 @@ Regra simples:
 | `L1`  | Feature normal, endpoint, integração, refatoração moderada |
 | `L2`  | Mudança estrutural, segurança, dados sensíveis, produção   |
 
-### 5.5 Fechar uma sessão
+### 5.5 Pedir um relatório geral
+
+```bash
+./+wsd/bin/wsd relatorio
+```
+
+Use quando você quer entender rapidamente:
+
+- estado atual do Git e do WSD;
+- se há implementação pela metade;
+- se existe plano em ordem para executar;
+- quais ideias estão ativas e se têm pipeline;
+- quais concerns estão ativas e se têm pipeline;
+- qual próximo passo o agente sugere.
+
+Para salvar em arquivo:
+
+```bash
+./+wsd/bin/wsd relatorio --save
+```
+
+Isso cria:
+
+```text
++specs/RELATORIO.md
+```
+
+Também funcionam os aliases:
+
+```bash
+./+wsd/bin/wsd report
+./+wsd/bin/wsd status-report
+./+wsd/bin/wsd resumo
+```
+
+### 5.6 Fechar uma sessão
 
 ```bash
 ./+wsd/bin/wsd finish
@@ -269,7 +305,7 @@ Use antes de parar o trabalho ou trocar de agente.
 
 Se algum gate falhar, o comando para e mostra o motivo. Ele não usa `git reset`, `git stash`, `git clean`, `--no-verify`, auto-push ou auto-merge.
 
-### 5.6 Gerar snapshot para dashboard
+### 5.7 Gerar snapshot para dashboard
 
 ```bash
 ./+wsd/bin/wsd snapshot
@@ -283,7 +319,7 @@ Isso gera:
 
 Esse arquivo é lido por ferramentas como o WDB.
 
-### 5.7 Automatizar uma feature com WSD Loop
+### 5.8 Automatizar uma feature com WSD Loop
 
 ```bash
 ./+wsd/bin/wsd loop plan --feature minha-feature
@@ -387,6 +423,7 @@ Se você estiver usando Claude Code, os comandos aparecem como slash commands:
 /wsd-design
 /wsd-tasks
 /wsd-finish
+/wsd-relatorio
 /wsd-party-mode
 /loop status
 /loop on
@@ -403,6 +440,7 @@ Crie uma spec WSD para esta feature.
 Rode wsd-design para esta mudança.
 Quebre isso em tasks WSD.
 Finalize a sessão com wsd-finish.
+Faça um relatório WSD do projeto.
 loop status
 loop auto on
 loop auto off
@@ -492,7 +530,7 @@ Esse comando atualiza a parte vendorizada do WSD no projeto. Ele preserva:
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install \
+npx github:flow31-d/wsdd#v0.4.4 install \
   --directory . \
   --force
 ```
@@ -500,13 +538,13 @@ npx github:flow31-d/wsdd#v0.4.3 install \
 ### 9.3 Ver opções do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 install --list-options
+npx github:flow31-d/wsdd#v0.4.4 install --list-options
 ```
 
 ### 9.4 Ver ajuda do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.3 help
+npx github:flow31-d/wsdd#v0.4.4 help
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -618,8 +656,8 @@ gh auth status
 ## 12. Cola Rápida
 
 ```bash
-# Instalar WSDD v0.4.3 na pasta atual
-npx github:flow31-d/wsdd#v0.4.3 install --init-git
+# Instalar WSDD v0.4.4 na pasta atual
+npx github:flow31-d/wsdd#v0.4.4 install --init-git
 
 # Ver se está tudo certo
 ./+wsd/bin/wsd doctor
@@ -635,6 +673,9 @@ npx github:flow31-d/wsdd#v0.4.3 install --init-git
 
 # Contexto curto para agente/script
 ./+wsd/bin/wsd start --brief
+
+# Relatorio geral do projeto
+./+wsd/bin/wsd relatorio
 
 # Prompt curto para Codex seguir WSDD
 ./+wsd/bin/wsd codex-prompt --task "minha tarefa"
@@ -686,5 +727,6 @@ npx github:flow31-d/wsdd#v0.4.3 install --init-git
 | 15/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.0`: inclusão de `wsd loop` e exemplos de automação L0/L1. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Inclusão de `wsd codex-prompt`, `wsd codex` e `start --brief`. |
 | 17/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Inclusão de atalhos WSD Loop para Codex (`/prompts:loop`), Claude Code (`/loop status`) e shell (`shortcuts`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.4`: inclusão de `wsd relatorio`, `/wsd-relatorio` e exemplos de relatório geral. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

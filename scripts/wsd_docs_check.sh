@@ -94,8 +94,10 @@ tlc_required=(
   "templates/codex-skills/wsd-tasks/SKILL.md"
   "templates/codex-skills/wsd-idea/SKILL.md"
   "templates/codex-skills/wsd-finish/SKILL.md"
+  "templates/codex-skills/wsd-relatorio/SKILL.md"
   "templates/codex-skills/wsd-concern/SKILL.md"
   "templates/codex-skills/wsd-loop/SKILL.md"
+  "templates/claude-commands/commands/wsd-relatorio.md"
   "templates/claude-commands/commands/wsd-finish.md"
   "templates/claude-commands/commands/wsd-specify.md"
   "templates/claude-commands/commands/wsd-design.md"
@@ -116,6 +118,12 @@ grep -q 'test:install-finish-clean' package.json || fail "package.json missing f
 grep -q 'finish limpo' docs/10_matriz_sincronizacao_notas.md || fail "sync matrix missing finish clean contract"
 grep -q 'worktree limpo' docs/08_rotinas_sessao.md || fail "docs/08 missing clean finish contract"
 ok "WSD finish clean-close artifacts documented"
+
+grep -q '_wsd_relatorio' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_relatorio"
+grep -q 'test:install-relatorio' package.json || fail "package.json missing relatorio regression test"
+grep -q 'wsd relatorio' README.md wsd.md docs/08_rotinas_sessao.md docs/18_manual_leigo_comandos_wsdd.md || fail "wsd relatorio not documented in central docs"
+grep -q 'Relatorio WSD' templates/codex-skills/wsd-relatorio/SKILL.md templates/claude-commands/commands/wsd-relatorio.md || fail "agent report command artifacts missing Relatorio WSD"
+ok "WSD relatorio artifacts documented"
 
 # legacy paths must not appear in new templates / installer / scripts
 if grep -rnE '\.specs/|\.logs/error_vault' bin/ scripts/ templates/repo/+specs/ templates/repo/+logs/ templates/local-wsd/ templates/codex-skills/ templates/claude-commands/ profiles/ 2>/dev/null \

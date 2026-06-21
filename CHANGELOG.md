@@ -50,7 +50,8 @@ otimizado_para_obsidian: true
 24. [[#24. 0.4.1 — 17/06/2026]]
 25. [[#25. 0.4.2 — 21/06/2026]]
 26. [[#26. 0.4.3 — 21/06/2026]]
-27. [[#27. 🕒 Registro de Alterações por Agentes]]
+27. [[#27. 0.4.4 — 21/06/2026]]
+28. [[#28. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -84,6 +85,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 17/06/2026 — Codex: Inclusão da versão **`0.4.1`** (patch — atalhos de agente): skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, CLI `codex-shortcuts`/`shortcuts` e gates cobrindo a ergonomia de WSD Loop. Seção 24 adicionada, Registro renumerado para seção 25.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.2`** (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, concerns ativas `CONC-###`, skill `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações. Seção 25 adicionada, Registro renumerado para seção 26.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.3`** (patch — finish limpo): `wsd finish` passa a rodar gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e verificação final de worktree limpa. Seção 26 adicionada, Registro renumerado para seção 27.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.4`** (patch — relatório WSD): `wsd relatorio` gera relatório operacional com estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente. Seção 27 adicionada, Registro renumerado para seção 28.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -967,7 +969,26 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 27. 🕒 Registro de Alterações por Agentes
+## 27. 0.4.4 — 21/06/2026
+
+**Patch — relatório operacional WSD.** Esta release adiciona um comando de leitura consolidada para o operador pedir uma visão geral do projeto sem lembrar todos os arquivos WSD.
+
+Inclui:
+
+- **`wsd relatorio`** — imprime Markdown com estado Git/WSD, implementação em andamento, plano programado, ideias, concerns e sugestão do agente.
+- **`wsd relatorio --save`** — salva a fotografia operacional em `+specs/RELATORIO.md`.
+- **Aliases** — `report`, `status-report` e `resumo`.
+- **Skill `wsd-relatorio`** — faz pedidos em linguagem natural como "relatório WSD" usarem o comando.
+- **Comando Claude `/wsd-relatorio`** — atalho equivalente em Claude Code.
+- **`test:install-relatorio`** — instala WSD em repo temporário, cria ROADMAP/spec/ideia/concern de fixture e valida relatório, `--save` e alias.
+
+Documentação:
+
+- README, wsd.md, docs/05, docs/08, docs/09, docs/10, docs/15, docs/18, ROADMAP e specs atualizados para `v0.4.4`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 28. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -995,5 +1016,6 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 | 17/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.1`** — atalhos Codex/Claude/shell para WSD Loop, `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e gates de instalação. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.2`** — pipeline de concerns, `wsd-concern`, `/concern-{PROJECT_SLUG}`, `CONCERNS_PIPELINE.md` obrigatório e resumo de concerns em start/snapshot. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.3`** — finish limpo, docs audit, HANDOFF, snapshot, commit automático e teste `test:install-finish-clean`. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.4`** — `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

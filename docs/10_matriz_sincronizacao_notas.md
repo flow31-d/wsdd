@@ -60,6 +60,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack (`WSD Codex Bootstrap`, `codex-prompt`, `codex`, `start --brief`) na matriz de sincronização.
 - 21/06/2026 — Codex: Inclusão de `CONCERNS_PIPELINE.md`, `wsd-concern` e `/concern-{PROJECT_SLUG}` na matriz de sincronização da v0.4.2.
 - 21/06/2026 — Codex: Inclusão do contrato de finish limpo (`wsd finish`) na matriz de sincronização da v0.4.3.
+- 21/06/2026 — Codex: Inclusão de `wsd relatorio`, `wsd-relatorio` e `/wsd-relatorio` na matriz de sincronização da v0.4.4.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -136,6 +137,7 @@ Antes de finalizar, o agente deve responder:
 | WSD Loop / automação iterativa | docs/19, docs/08, docs/05, README, wsd.md, ROADMAP, CHANGELOG, `+specs/features/wsd-loop/`, `+specs/project/IDEAS.md`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/loop/`, `bin/wsd-method.js`, `package.json`, scripts de validação |
 | Concerns / preocupações ativas | docs/05, docs/08, docs/10, README, wsd.md, ROADMAP, CHANGELOG, `+specs/project/CONCERNS.md`, `+specs/project/CONCERNS_PIPELINE.md`, `templates/repo/+specs/project/CONCERNS*.md.template`, `templates/codex-skills/wsd-concern/`, `templates/claude-commands/commands/wsd-concern.md`, `templates/repo/AGENTS.md.template`, `bin/wsd-method.js`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/bin/wsd-snapshot.cjs`, `package.json`, scripts de validação |
 | `wsd finish` / fechamento limpo | docs/05, docs/08, docs/10, docs/13, docs/18, README, wsd.md, ROADMAP, CHANGELOG, `templates/local-wsd/bin/wsd`, `templates/codex-skills/wsd-finish/SKILL.md`, `templates/claude-commands/commands/wsd-finish.md`, `templates/repo/AGENTS.md.template`, `package.json`, `scripts/test_install_finish_clean.sh`, `scripts/wsd_self_check.sh`, `scripts/wsd_docs_check.sh` |
+| `wsd relatorio` / relatório geral | docs/08, docs/10, docs/18, README, wsd.md, ROADMAP, CHANGELOG, `templates/local-wsd/bin/wsd`, `templates/codex-skills/wsd-relatorio/SKILL.md`, `templates/claude-commands/commands/wsd-relatorio.md`, `templates/codex-skills/wsd/SKILL.md`, `templates/repo/AGENTS.md.template`, `package.json`, `scripts/test_install_relatorio.sh`, `scripts/wsd_self_check.sh`, `scripts/wsd_docs_check.sh` |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -149,7 +151,7 @@ Quando a mudança for de versão ou release, atualizar no mínimo:
 - `ROADMAP.md`;
 - `docs/09_publicacao_github_privado.md`.
 
-Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 14 gates de `npm test`, verificação de perfis privados e gate de secrets.
+Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 15 gates de `npm test`, verificação de perfis privados e gate de secrets.
 
 Quando a mudança for de instalação ou uso, atualizar no mínimo:
 
@@ -289,5 +291,6 @@ Se mover ou renomear `.md`, usar `/usr/local/bin/obsidian`; nunca `mv` ou `renam
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Atualização do checklist público para `npm test` com 11 gates, incluindo `test:install-version`. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do WSD Loop como fonte de verdade, matriz de artefatos e grupo mínimo de sincronização. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do Codex Adherence Pack e atualização do checklist público para 13 gates. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do contrato `wsd relatorio` na matriz de sincronização da v0.4.4 e atualização do checklist público para 15 gates. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -70,6 +70,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 17/06/2026 — Codex: Atualização para `v0.4.1` com atalhos WSD Loop para agentes: skills Codex em `.agents/skills/`, `/loop` no Claude Code, prompt opcional `/prompts:loop` e comandos `codex-shortcuts`/`shortcuts`.
 - 21/06/2026 — Codex: Atualização para `v0.4.2` com `CONCERNS_PIPELINE.md`, skill `wsd-concern`, comando `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns e snapshot com resumo de preocupações ativas.
 - 21/06/2026 — Codex: Atualização para `v0.4.3` com `wsd finish` limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree final limpo.
+- 21/06/2026 — Codex: Atualização para `v0.4.4` com `wsd relatorio`: relatório operacional consolidando estado atual, implementações em andamento, plano, ideias, concerns e sugestão do agente.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -182,6 +183,7 @@ Dentro do projeto após o install, rotina diária:
 ./+wsd/bin/wsd loop auto status  # mostra se Ralph/WSD Loop está em auto-use
 ./+wsd/bin/wsd codex-shortcuts status  # mostra atalhos Codex opcionais
 ./+wsd/bin/wsd shortcuts status  # mostra atalhos de terminal
+./+wsd/bin/wsd relatorio   # mostra estado atual, plano, ideias, concerns e sugestao
 ./+wsd/bin/wsd loop plan --feature minha-feature  # prepara automação L0/L1
 ./+wsd/bin/wsd check       # valida gates antes do commit
 ./+wsd/bin/wsd finish      # fecha sessão com gates, HANDOFF, commit e worktree limpo
@@ -189,9 +191,9 @@ Dentro do projeto após o install, rotina diária:
 
 ### 4.4 Comandos disponíveis após o install
 
-- **Codex** (`--tools codex`): 9 skills em `.agents/skills/` — `wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`. O instalador também espelha em `.codex/skills/` para compatibilidade. O `AGENTS.md` gerado inclui `WSD Codex Bootstrap`, então abrir o Codex na pasta já deve ativar as regras WSDD.
-- **Claude Code** (`--tools claude-code`): 9 slash commands em `.claude/commands/` — `loop`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`. Use `/loop status`, `/loop on` e `/loop off` para o Ralph/WSD Loop; use `/concern-{PROJECT_SLUG}` para registrar preocupações. Hooks `PreToolUse|PreCompact|SessionStart|Stop` configurados em `.claude/settings.json`.
-- **CLI vendorizado** (`./+wsd/bin/wsd`): `start`, `start --brief`, `check`, `finish`, `doctor`, `version`, `update`, `hooks`, `snapshot`, `lovable`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`, `loop plan|once|run|status|stop`, `codex-prompt`, `codex`, `codex-shortcuts`, `shortcuts`.
+- **Codex** (`--tools codex`): 10 skills em `.agents/skills/` — `wsd`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`. O instalador também espelha em `.codex/skills/` para compatibilidade. O `AGENTS.md` gerado inclui `WSD Codex Bootstrap`, então abrir o Codex na pasta já deve ativar as regras WSDD.
+- **Claude Code** (`--tools claude-code`): 10 slash commands em `.claude/commands/` — `loop`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`. Use `/wsd-relatorio` para gerar a visão geral do projeto; use `/loop status`, `/loop on` e `/loop off` para o Ralph/WSD Loop; use `/concern-{PROJECT_SLUG}` para registrar preocupações. Hooks `PreToolUse|PreCompact|SessionStart|Stop` configurados em `.claude/settings.json`.
+- **CLI vendorizado** (`./+wsd/bin/wsd`): `start`, `start --brief`, `check`, `finish`, `relatorio`, `doctor`, `version`, `update`, `hooks`, `snapshot`, `lovable`, `git doctor|preflight|pr-check`, `party status|list-agents|when-to-use`, `loop plan|once|run|status|stop`, `codex-prompt`, `codex`, `codex-shortcuts`, `shortcuts`.
 
 ### 4.5 Política Git
 
@@ -204,7 +206,7 @@ Dentro do projeto após o install, rotina diária:
 Após qualquer mudança em código WSD:
 
 ```bash
-npm test                              # 14 gates de instalação
+npm test                              # 15 gates de instalação
 bash scripts/wsd_docs_check.sh        # sincronização documental
 bash scripts/wsd_self_check.sh        # consistência interna
 ```
@@ -225,7 +227,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.4.3`** (patch — fechamento limpo do `wsd finish`). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo.
+Este diretório está publicado como repositório GitHub público em versão **`v0.4.4`** (patch — relatório operacional WSD). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo; `v0.4.4` adiciona `wsd relatorio`.
 
 Histórico de entregas (alpha + estável):
 
@@ -255,6 +257,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.4.1`** (patch — atalhos de agente): alinha skills Codex ao caminho atual `.agents/skills/` com espelho legado `.codex/skills/`, adiciona skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, CLI `codex-shortcuts`/`shortcuts` e reforço do fluxo `wsd-idea`/`IDEAS_PIPELINE`.
 - **`v0.4.2`** (patch — pipeline de concerns): adiciona `CONCERNS_PIPELINE.md` como nota obrigatória, reestrutura `CONCERNS.md` com preocupações ativas `CONC-###`, adiciona skill Codex `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` com contagem de concerns e snapshot com resumo de preocupações.
 - **`v0.4.3`** (patch — finish limpo): `./+wsd/bin/wsd finish` roda gates, auditoria documental WSD quando disponível, gera `HANDOFF.md`, atualiza snapshot, cria commit de fechamento por padrão e só passa com `git status --short` limpo. Adiciona `test:install-finish-clean`.
+- **`v0.4.4`** (patch — relatório WSD): `./+wsd/bin/wsd relatorio` gera Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão do agente. Adiciona `wsd-relatorio`, `/wsd-relatorio` e `test:install-relatorio`.
 
 Não contém segredos.
 
@@ -347,6 +350,7 @@ Após instalar no projeto:
 ./+wsd/bin/wsd version
 ./+wsd/bin/wsd check
 ./+wsd/bin/wsd start
+./+wsd/bin/wsd relatorio
 ./+wsd/bin/wsd loop auto status
 ./+wsd/bin/wsd loop auto on
 ./+wsd/bin/wsd loop auto off
@@ -359,9 +363,9 @@ Após instalar no projeto:
 
 `wsd finish` fecha limpo por padrão: roda gates, gera HANDOFF/snapshot, cria commit `chore(wsd): finish session` e falha se algum gate, hook ou path sensível impedir a aprovação.
 
-Para Codex (`--tools codex`): cria 9 skills em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`) e espelha em `.codex/skills/` para compatibilidade. O `AGENTS.md` gerado inclui bootstrap automático. Para atalhos de TUI opcionais, rode `./+wsd/bin/wsd codex-shortcuts install` uma vez e use `/prompts:loop status`; para linguagem natural, peça `loop status`, `loop auto on`, `loop auto off` ou "registre esta preocupação".
+Para Codex (`--tools codex`): cria 10 skills em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`) e espelha em `.codex/skills/` para compatibilidade. O `AGENTS.md` gerado inclui bootstrap automático. Para atalhos de TUI opcionais, rode `./+wsd/bin/wsd codex-shortcuts install` uma vez e use `/prompts:loop status`; para linguagem natural, peça `relatório WSD`, `loop status`, `loop auto on`, `loop auto off` ou "registre esta preocupação".
 
-Para Claude Code (`--tools claude-code`): cria 9 comandos slash em `.claude/commands/`: `loop`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`. Use `/loop status` para consultar, `/loop on` para ligar `automation.loop.auto_use`, `/loop off` para desligar e `/concern-{PROJECT_SLUG}` para registrar preocupações. Também `.claude/settings.json` com hooks `PreToolUse`/`PreCompact`/`SessionStart`/`Stop` e `+wsd/hooks/pre-tool.sh`.
+Para Claude Code (`--tools claude-code`): cria 10 comandos slash em `.claude/commands/`: `loop`, `wsd-start`, `wsd-finish`, `wsd-relatorio`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`. Use `/wsd-relatorio` para a visão geral, `/loop status` para consultar, `/loop on` para ligar `automation.loop.auto_use`, `/loop off` para desligar e `/concern-{PROJECT_SLUG}` para registrar preocupações. Também `.claude/settings.json` com hooks `PreToolUse`/`PreCompact`/`SessionStart`/`Stop` e `+wsd/hooks/pre-tool.sh`.
 
 Para ambos: `--tools both` gera os dois conjuntos sem conflito.
 
@@ -412,5 +416,6 @@ Regra prática:
 | 17/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.1`: atalhos WSD Loop para Codex/Claude/shell, `.agents/skills`, `/prompts:loop`, `/loop` e comandos `codex-shortcuts`/`shortcuts`. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.2`: pipeline de concerns, skill/comando de captura de preocupação, nota obrigatória `CONCERNS_PIPELINE.md` e contagem no snapshot/start brief. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.3`: `wsd finish` limpo com gates, docs audit, HANDOFF, snapshot, commit automático e teste de regressão. |
+| 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.4`: `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
