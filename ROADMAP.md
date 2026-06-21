@@ -71,6 +71,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.4` (patch — relatório WSD): `wsd relatorio` consolida estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente.
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.5` (patch — update/adherence): `wsd update` preservador garante novos atalhos de agente em projetos já instalados e `update --help` não altera o projeto.
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.6` (patch — relatório): parser tolerante a acentos em headings como `Preocupações Ativas`.
+- 21/06/2026 — Codex: Consolidação da entrega `v0.4.7` (patch — start brief): contador `concerns_active` corrigido para linhas `CONC-###`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -168,6 +169,7 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.4.4` — **WSD Relatorio**: `wsd relatorio` gera visão geral em Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão; adiciona `wsd-relatorio`, `/wsd-relatorio` e teste `test:install-relatorio`.
 - [x] `v0.4.5` — **Update Adherence Preservation**: `wsd update --help` deixa de atualizar por acidente; `wsd update` instala novos arquivos de agente em `.agents/skills`, `.codex/skills`, `.claude/commands` e `+wsd/hooks` sem sobrescrever customizações. Gate `test:install-update-adherence`.
 - [x] `v0.4.6` — **Relatorio Accent-Safe Headings**: `wsd relatorio` normaliza acentos ao localizar seções, cobrindo `Preocupações Ativas` em projetos reais como WDB.
+- [x] `v0.4.7` — **Start Brief Concern Count**: `wsd start --brief` conta concerns ativas no pipeline com linhas `| CONC-...`; `test:install-relatorio` cobre o caso.
 - [ ] `v0.4.x` / `v0.5.0` — **Próximas frentes**: auto-PR/Issues, dashboard de runs, sandbox forte, adapters multi-agente e checkpoints L2 assistidos. Ver `+specs/project/IDEAS.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -242,5 +244,6 @@ Regra de acompanhamento:
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.4`: relatório WSD operacional com estado, plano, ideias, concerns e sugestão. |
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.5`: update preservador cobre aderência de agente em projetos já instalados. |
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.6`: relatório tolerante a headings acentuados. |
+| 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.7`: contador de concerns ativas no `start --brief`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

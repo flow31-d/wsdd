@@ -7,7 +7,8 @@ cd "$root"
 tmpdir="$(mktemp -d)"
 report_out="$(mktemp)"
 save_out="$(mktemp)"
-trap 'rm -rf "$tmpdir" "$report_out" "$save_out"' EXIT
+start_out="$(mktemp)"
+trap 'rm -rf "$tmpdir" "$report_out" "$save_out" "$start_out"' EXIT
 
 node bin/wsd-method.js install \
   --directory "$tmpdir" \
@@ -112,6 +113,9 @@ grep -q 'CONC-001' "$report_out"
 grep -q 'Concerns: 1 ativa(s), 1 ativa(s) no pipeline, 0 sem pipeline' "$report_out"
 grep -q 'Sugestão do agente:' "$report_out"
 grep -q 'Worktree: clean' "$report_out"
+
+"$tmpdir/+wsd/bin/wsd" start --brief >"$start_out"
+grep -q 'concerns_active: 1' "$start_out"
 
 "$tmpdir/+wsd/bin/wsd" relatorio --save >"$save_out"
 grep -q 'PASS: relatorio WSD salvo em +specs/RELATORIO.md' "$save_out"

@@ -53,7 +53,8 @@ otimizado_para_obsidian: true
 27. [[#27. 0.4.4 — 21/06/2026]]
 28. [[#28. 0.4.5 — 21/06/2026]]
 29. [[#29. 0.4.6 — 21/06/2026]]
-30. [[#30. 🕒 Registro de Alterações por Agentes]]
+30. [[#30. 0.4.7 — 21/06/2026]]
+31. [[#31. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -90,6 +91,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.4`** (patch — relatório WSD): `wsd relatorio` gera relatório operacional com estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente. Seção 27 adicionada, Registro renumerado para seção 28.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.5`** (patch — update/adherence preservador): `wsd update` passa a instalar novos atalhos de agente em projetos existentes sem sobrescrever customizações e `update --help` deixa de alterar o projeto. Seção 28 adicionada, Registro renumerado para seção 29.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.6`** (patch — relatório tolerante a acentos): `wsd relatorio` normaliza acentos ao localizar headings, cobrindo `Preocupações Ativas`. Seção 29 adicionada, Registro renumerado para seção 30.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.7`** (patch — contador de concerns no start brief): `wsd start --brief` corrige `concerns_active` para linhas `CONC-###`. Seção 30 adicionada, Registro renumerado para seção 31.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -1021,7 +1023,19 @@ Inclui:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 30. 🕒 Registro de Alterações por Agentes
+## 30. 0.4.7 — 21/06/2026
+
+**Patch — contador de concerns no start brief.** Corrige a contagem `concerns_active` emitida por `./+wsd/bin/wsd start --brief`.
+
+Inclui:
+
+- **Regex corrigida** — o contador passa a reconhecer linhas `| CONC-### ... |` no `CONCERNS_PIPELINE.md`.
+- **Cobertura de regressão** — `test:install-relatorio` agora valida `start --brief` com uma concern ativa.
+- **Validação real via WDB** — o caso foi detectado ao atualizar o WSD do WDB.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 31. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -1052,5 +1066,6 @@ Inclui:
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.4`** — `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.5`** — update preservador para aderência de agente em projetos existentes e teste `test:install-update-adherence`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.6`** — relatório tolerante a headings acentuados e teste de regressão. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.7`** — contador de concerns no `start --brief` e teste de regressão. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
