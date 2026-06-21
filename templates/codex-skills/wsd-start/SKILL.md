@@ -24,6 +24,8 @@ git remote show origin
 3. Load base context:
 
 - Read `+specs/project/STATE.md` — summarize active decisions and blockers
+- Read `+specs/project/CONCERNS.md` — summarize active concerns relevant to the requested task
+- Read `+specs/project/CONCERNS_PIPELINE.md` — summarize unresolved next steps and evidence needed
 - Read `+specs/HANDOFF.md` if it exists — summarize and ask "Continuar de onde parou?"
 - Read `AGENTS.md` if present
 - Read `+context.json` if present — identify write_paths, forbidden_paths, wsd.risk_default

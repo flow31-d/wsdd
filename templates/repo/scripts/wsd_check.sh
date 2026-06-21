@@ -81,13 +81,13 @@ fi
 [[ -d "+specs/project" ]] || fail "+specs/project directory missing"
 pass_step "WSD directories present"
 
-# L0: presença das 6 notas obrigatórias de +specs/project/ (WSD-004)
+# L0: presença das 7 notas obrigatórias de +specs/project/ (WSD-004 + concerns pipeline)
 # Antes só STATE.md era checada; WSD-001 escapou porque o gate não validava as outras.
-_project_notes=(PROJECT.md STATE.md ROADMAP.md IDEAS.md IDEAS_PIPELINE.md CONCERNS.md)
+_project_notes=(PROJECT.md STATE.md ROADMAP.md IDEAS.md IDEAS_PIPELINE.md CONCERNS.md CONCERNS_PIPELINE.md)
 for _note in "${_project_notes[@]}"; do
   [[ -f "+specs/project/$_note" ]] || fail "+specs/project/$_note missing (L0 required)"
 done
-pass_step "6 notas obrigatórias de +specs/project/ presentes (L0)"
+pass_step "7 notas obrigatórias de +specs/project/ presentes (L0)"
 
 grep -q '^## Features Ativas' +specs/project/ROADMAP.md || fail "ROADMAP.md missing 'Features Ativas' section"
 grep -q '^## Backlog' +specs/project/ROADMAP.md || fail "ROADMAP.md missing 'Backlog' section"

@@ -606,6 +606,7 @@ function installClaudeCommands(directory, settings, force) {
   for (const src of walkFiles(commandsSourceRoot)) {
     const rel = path.relative(commandsSourceRoot, src);
     if (path.basename(src) === 'wsd-idea.md') continue; // renamed below
+    if (path.basename(src) === 'wsd-concern.md') continue; // renamed below
     const dest = path.join(commandsTargetRoot, rel);
     if (fs.existsSync(dest) && !force) continue;
     ensureDir(path.dirname(dest));
@@ -618,6 +619,16 @@ function installClaudeCommands(directory, settings, force) {
     if (!fs.existsSync(ideaDest) || force) {
       ensureDir(path.dirname(ideaDest));
       fs.writeFileSync(ideaDest, render(fs.readFileSync(wsdIdeaSrc, 'utf8'), settings));
+    }
+  }
+
+  // wsd-concern.md → concern-{PROJECT_SLUG}.md (personalized per project)
+  const wsdConcernSrc = path.join(commandsSourceRoot, 'wsd-concern.md');
+  if (fs.existsSync(wsdConcernSrc)) {
+    const concernDest = path.join(commandsTargetRoot, `concern-${settings.PROJECT_SLUG || 'project'}.md`);
+    if (!fs.existsSync(concernDest) || force) {
+      ensureDir(path.dirname(concernDest));
+      fs.writeFileSync(concernDest, render(fs.readFileSync(wsdConcernSrc, 'utf8'), settings));
     }
   }
 

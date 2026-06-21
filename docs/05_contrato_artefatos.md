@@ -48,6 +48,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Marcação do bloco `git_governance` como implementado na `v0.1.10-alpha` e validado pelo schema canônico.
 - 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
+- 21/06/2026 — Codex: Adição de `CONCERNS_PIPELINE.md` à seção `+specs/project/` (v0.4.2), com regra de captura em par `CONCERNS.md` + pipeline.
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
 - 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
@@ -233,10 +234,13 @@ Notebook de captura fiel de ideias brutas. Cada ideia recebe um ID sequencial pe
 ### `+specs/project/IDEAS_PIPELINE.md` (v0.1.2)
 Índice de controle de progressão das ideias: `raw → detalhada → spec-criada → em-roadmap → implementada → descartada`. Atualizado sempre que uma ideia avança de etapa.
 
-### `+specs/project/CONCERNS.md` (v0.2.0)
-Componentes frágeis, dívidas técnicas, áreas L2 (que exigem aprovação humana) e riscos conhecidos do projeto. Sempre gerado pelo installer (greenfield e brownfield) — começa vazio e é populado conforme o projeto evolui. Antes do `v0.2.0`, esta nota era condicional a `--brownfield` e ficava em `+specs/codebase/CONCERNS.md`; o argumento para o move é que todo projeto eventualmente terá concerns, e fazer a nota parte do contrato padrão evita perda de memória de fragilidades.
+### `+specs/project/CONCERNS.md` (v0.2.0, reforçado em v0.4.2)
+Preocupações ativas, componentes frágeis, dívidas técnicas, áreas L2 (que exigem aprovação humana), riscos conhecidos e itens que precisam ser conferidos. Sempre gerado pelo installer (greenfield e brownfield). Desde `v0.4.2`, deve manter a seção `Preocupacoes Ativas` no topo com IDs permanentes `CONC-###`, categoria, severidade, status, área/arquivo, plano e owner. Antes do `v0.2.0`, esta nota era condicional a `--brownfield` e ficava em `+specs/codebase/CONCERNS.md`; o argumento para o move é que todo projeto eventualmente terá concerns, e fazer a nota parte do contrato padrão evita perda de memória de fragilidades.
 
-**Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia. Quando identificar concerns durante o trabalho (componente frágil tocado, dívida técnica descoberta, área que precisa de aprovação humana), atualizar `CONCERNS.md` na sessão em que a descoberta ocorreu.
+### `+specs/project/CONCERNS_PIPELINE.md` (v0.4.2)
+Pipeline de resolução das preocupações registradas em `CONCERNS.md`. Cada concern ativa deve ter uma linha com status (`active`, `triaged`, `mitigating`, `verifying`, `resolved`, `accepted-risk`, `obsolete`), etapa, plano, próximo passo, gate/evidência, owner e data de revisão. Fechamento `resolved` exige evidência verificável; fechamento `accepted-risk` exige decisão explícita do operador.
+
+**Regra de manutenção:** ao criar uma spec via `/wsd-specify`, o agente deve adicionar linha no ROADMAP.md com status `specified` e atualizar o IDEAS_PIPELINE.md se a spec originou de uma ideia. Quando identificar concerns durante o trabalho (componente frágil tocado, dívida técnica descoberta, área que precisa de aprovação humana, workaround, dependência instável ou item "precisa conferir"), atualizar `CONCERNS.md` e `CONCERNS_PIPELINE.md` na mesma sessão.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -276,7 +280,7 @@ Deve validar:
 
 - repo Git;
 - `+context.json` como JSON válido e, quando possível, contra `+wsd/schemas/context.schema.json`;
-- presença das 6 notas obrigatórias de `+specs/project/`: `PROJECT.md`, `STATE.md`, `ROADMAP.md`, `IDEAS.md`, `IDEAS_PIPELINE.md`, `CONCERNS.md`;
+- presença das 7 notas obrigatórias de `+specs/project/`: `PROJECT.md`, `STATE.md`, `ROADMAP.md`, `IDEAS.md`, `IDEAS_PIPELINE.md`, `CONCERNS.md`, `CONCERNS_PIPELINE.md`;
 - estrutura mínima de `ROADMAP.md` (`Features Ativas`, `Backlog`) e `STATE.md` (`Bloqueadores Ativos`);
 - geração e JSON válido de `+wsd/snapshot.json`;
 - spec exigida para L1/L2;
@@ -342,5 +346,6 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `wsd version` no contrato da vendor tree e explicitação do uso de `+wsd/config.json` como fonte de versão instalada. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `automation.loop`, prompts `+wsd/loop/` e ignores locais do WSD Loop `v0.4.0`. |
 | 17/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato de skills Codex em `.agents/skills/` e prompts opcionais `codex-shortcuts` (`v0.4.1`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `CONCERNS_PIPELINE.md` como artefato obrigatório e regra de manutenção em par com `CONCERNS.md` (`v0.4.2`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

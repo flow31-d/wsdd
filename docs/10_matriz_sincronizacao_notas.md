@@ -58,6 +58,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Inclusão de `docs/19_wsd_loop_automacao_inteligente.md`, `templates/local-wsd/loop/` e `automation.loop` na matriz de sincronização da v0.4.0.
 - 17/06/2026 — Codex: Inclusão de `templates/codex-prompts/`, `.agents/skills` e atalhos WSD Loop na matriz de sincronização da v0.4.1.
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack (`WSD Codex Bootstrap`, `codex-prompt`, `codex`, `start --brief`) na matriz de sincronização.
+- 21/06/2026 — Codex: Inclusão de `CONCERNS_PIPELINE.md`, `wsd-concern` e `/concern-{PROJECT_SLUG}` na matriz de sincronização da v0.4.2.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -132,6 +133,7 @@ Antes de finalizar, o agente deve responder:
 | publicação GitHub | docs/09, docs/15, README, CHANGELOG, package version, tags/releases |
 | estratégia público × privado (separação de conteúdo, perfis, workflow) | docs/15, STATE.md (decisão), docs/09 (link), esta matriz |
 | WSD Loop / automação iterativa | docs/19, docs/08, docs/05, README, wsd.md, ROADMAP, CHANGELOG, `+specs/features/wsd-loop/`, `+specs/project/IDEAS.md`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/loop/`, `bin/wsd-method.js`, `package.json`, scripts de validação |
+| Concerns / preocupações ativas | docs/05, docs/08, docs/10, README, wsd.md, ROADMAP, CHANGELOG, `+specs/project/CONCERNS.md`, `+specs/project/CONCERNS_PIPELINE.md`, `templates/repo/+specs/project/CONCERNS*.md.template`, `templates/codex-skills/wsd-concern/`, `templates/claude-commands/commands/wsd-concern.md`, `templates/repo/AGENTS.md.template`, `bin/wsd-method.js`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/bin/wsd-snapshot.cjs`, `package.json`, scripts de validação |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 

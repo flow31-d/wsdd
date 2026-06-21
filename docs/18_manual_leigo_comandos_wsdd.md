@@ -24,7 +24,7 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Versão coberta: **`v0.4.1`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt` e atalhos Codex/Claude/shell.
+> Versão coberta: **`v0.4.2`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell e pipeline de preocupações via `CONCERNS_PIPELINE.md`.
 
 ## 📑 Índice
 
@@ -101,7 +101,7 @@ Depois da instalação, o comando principal passa a ser:
 Entre na pasta do projeto e rode:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install --init-git
+npx github:flow31-d/wsdd#v0.4.2 install --init-git
 ```
 
 Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
@@ -111,7 +111,7 @@ Use essa forma quando você quer responder às perguntas na tela. Se aparecer um
 Use quando você quer instalar rápido com escolhas padrão:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install \
+npx github:flow31-d/wsdd#v0.4.2 install \
   --directory . \
   --init-git \
   --tools both \
@@ -136,7 +136,7 @@ O que isso faz:
 Use `--brownfield` quando o projeto já tem código:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install \
+npx github:flow31-d/wsdd#v0.4.2 install \
   --directory . \
   --tools both \
   --git-policy full \
@@ -152,7 +152,7 @@ npx github:flow31-d/wsdd#v0.4.1 install \
 Se você quiser menos arquivos dentro de `+wsd/`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install \
+npx github:flow31-d/wsdd#v0.4.2 install \
   --directory . \
   --init-git \
   --tools both \
@@ -387,6 +387,7 @@ Se você estiver usando Claude Code, os comandos aparecem como slash commands:
 /loop on
 /loop off
 /idea-NOME_DO_PROJETO
+/concern-NOME_DO_PROJETO
 ```
 
 Se você estiver usando Codex, peça em linguagem natural:
@@ -400,6 +401,7 @@ Finalize a sessão com wsd-finish.
 loop status
 loop auto on
 loop auto off
+Registre esta preocupação: preciso conferir ...
 ```
 
 Ou use um comando curto do WSD:
@@ -485,7 +487,7 @@ Esse comando atualiza a parte vendorizada do WSD no projeto. Ele preserva:
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install \
+npx github:flow31-d/wsdd#v0.4.2 install \
   --directory . \
   --force
 ```
@@ -493,13 +495,13 @@ npx github:flow31-d/wsdd#v0.4.1 install \
 ### 9.3 Ver opções do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 install --list-options
+npx github:flow31-d/wsdd#v0.4.2 install --list-options
 ```
 
 ### 9.4 Ver ajuda do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.1 help
+npx github:flow31-d/wsdd#v0.4.2 help
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -611,8 +613,8 @@ gh auth status
 ## 12. Cola Rápida
 
 ```bash
-# Instalar WSDD v0.4.1 na pasta atual
-npx github:flow31-d/wsdd#v0.4.1 install --init-git
+# Instalar WSDD v0.4.2 na pasta atual
+npx github:flow31-d/wsdd#v0.4.2 install --init-git
 
 # Ver se está tudo certo
 ./+wsd/bin/wsd doctor

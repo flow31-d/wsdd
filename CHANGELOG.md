@@ -48,7 +48,8 @@ otimizado_para_obsidian: true
 22. [[#22. 0.3.3 — 13/06/2026]]
 23. [[#23. 0.4.0 — 15/06/2026]]
 24. [[#24. 0.4.1 — 17/06/2026]]
-25. [[#25. 🕒 Registro de Alterações por Agentes]]
+25. [[#25. 0.4.2 — 21/06/2026]]
+26. [[#26. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -80,6 +81,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 13/06/2026 — Claude (Opus 4.8): Inclusão da versão **`0.3.3`** (patch — publicação pública): leva ao `wsdd` público a feature de `wsd_version` no snapshot (privada na `0.3.2`). Público estava em `0.3.1`; passa a receber o carimbo de versão e a detecção passiva de deriva. Seção 22 adicionada, Registro renumerado para seção 23.
 - 15/06/2026 — Codex: Inclusão da versão **`0.4.0`** (minor — WSD Loop + Codex Adherence Pack): `automation.loop`, `automation.loop.auto_use`, prompts vendorizados `+wsd/loop/`, subcomando `wsd loop plan|once|run|status|stop|auto`, `WSD Codex Bootstrap`, `start --brief`, `codex-prompt`, `codex`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop`/`test:install-codex-adherence`. Seção 23 adicionada, Registro renumerado para seção 24.
 - 17/06/2026 — Codex: Inclusão da versão **`0.4.1`** (patch — atalhos de agente): skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, CLI `codex-shortcuts`/`shortcuts` e gates cobrindo a ergonomia de WSD Loop. Seção 24 adicionada, Registro renumerado para seção 25.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.2`** (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, concerns ativas `CONC-###`, skill `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações. Seção 25 adicionada, Registro renumerado para seção 26.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -920,7 +922,27 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 25. 🕒 Registro de Alterações por Agentes
+## 25. 0.4.2 — 21/06/2026
+
+**Patch — pipeline de concerns e aderência de registro de preocupações.** Esta release transforma preocupações em fluxo rastreável, com foco em concerns ativas e plano de resolução até evidência.
+
+### Adicionado
+
+- **`CONCERNS_PIPELINE.md` obrigatório** — novo artefato em `+specs/project/` com status, etapa, plano, próximo passo, evidência, owner e data de revisão para cada concern.
+- **`CONCERNS.md` reestruturado** — seção `Preocupacoes Ativas` no topo, IDs `CONC-###`, categoria, severidade, status, área/arquivo e link para o pipeline.
+- **Skill Codex `wsd-concern`** — captura preocupação, risco, dívida técnica, workaround, dependência instável ou item "precisa conferir" em `CONCERNS.md` + `CONCERNS_PIPELINE.md`.
+- **Claude `/concern-{PROJECT_SLUG}`** — comando slash gerado pelo installer a partir de `templates/claude-commands/commands/wsd-concern.md`.
+- **Bootstrap obrigatório de concerns** — `AGENTS.md` passa a instruir leitura de `CONCERNS.md` e `CONCERNS_PIPELINE.md` antes de editar, com gatilhos explícitos de registro.
+- **Visibilidade operacional** — `wsd start --brief` mostra presença do pipeline e contagem de concerns ativas; `wsd-snapshot.cjs` inclui resumo `concerns`.
+
+### Alterado
+
+- `scripts/wsd_check.sh` e o template instalado agora validam 7 notas obrigatórias em `+specs/project/`, incluindo `CONCERNS_PIPELINE.md`.
+- Testes de instalação Codex/Claude/brownfield validam a nova nota, a skill `wsd-concern` e o comando `concern-{PROJECT_SLUG}`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 26. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -946,5 +968,6 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.3.1`** — subcomando `wsd version`, inventário multi-repo, saída JSON e gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22. |
 | 15/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.0`** — WSD Loop, Codex Adherence Pack, `automation.loop.auto_use`, prompts vendorizados, subcomandos `wsd loop`/`wsd loop auto`/`wsd codex-prompt`/`wsd codex` e gates `test:install-loop`/`test:install-codex-adherence`. |
 | 17/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.1`** — atalhos Codex/Claude/shell para WSD Loop, `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e gates de instalação. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.2`** — pipeline de concerns, `wsd-concern`, `/concern-{PROJECT_SLUG}`, `CONCERNS_PIPELINE.md` obrigatório e resumo de concerns em start/snapshot. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

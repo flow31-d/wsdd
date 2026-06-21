@@ -1,6 +1,6 @@
 ---
 name: wsd
-description: Govern development in repositories that use Wolff Spec Driven. Use when asked to operate, audit, bootstrap, customize, or enforce WSD artifacts such as AGENTS.md, +context.json, +specs, +specs/project/STATE.md, scripts/wsd_check.sh, Git branches, PRs, validation gates, host topology, or L0/L1/L2 classification.
+description: Govern development in repositories that use Wolff Spec Driven. Use when asked to operate, audit, bootstrap, customize, or enforce WSD artifacts such as AGENTS.md, +context.json, +specs, +specs/project/STATE.md, +specs/project/CONCERNS.md, +specs/project/CONCERNS_PIPELINE.md, scripts/wsd_check.sh, Git branches, PRs, validation gates, host topology, or L0/L1/L2 classification.
 ---
 
 # WSD Governance
@@ -36,6 +36,8 @@ bash scripts/wsd_check.sh --risk L0 .
 - Respect `AGENTS.md`.
 - Respect `+context.json`.
 - Treat the `WSD Codex Bootstrap` section in `AGENTS.md` as the default startup contract when present.
+- Read `+specs/project/CONCERNS.md` and `+specs/project/CONCERNS_PIPELINE.md` before editing; check active concerns touching the target area.
+- If a fragile component, risk, debt, workaround, unstable dependency, L2 area, or "needs verification" item appears, register it immediately in both concerns files.
 - Load `+specs/context/*.md` selectively.
 - If editing WSD documentation, templates, profiles, skills, installer, package version, or release notes, read `+wsd/docs/10_matriz_sincronizacao_notas.md` when present and update the related files listed there.
 - Require approved spec for L1/L2.

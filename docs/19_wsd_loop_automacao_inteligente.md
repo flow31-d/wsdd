@@ -170,3 +170,4 @@ As próximas features sugeridas ficam em `+specs/project/IDEAS.md`:
 | 15/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Criação da fonte de verdade do WSD Loop `v0.4.0`. |
 | 15/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Inclusão do Codex Adherence Pack na mesma entrega `v0.4.0`. |
 | 17/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Inclusão de atalhos de agente para WSD Loop em Codex/Claude/shell (`v0.4.1`). |
+| 21/06/2026 | Codex | `docs/19_wsd_loop_automacao_inteligente.md` | Nota de compatibilidade com `v0.4.2`: WSD Loop mantém contrato, e concerns passam a ter pipeline próprio antes de automações longas. |

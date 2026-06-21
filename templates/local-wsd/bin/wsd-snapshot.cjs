@@ -200,6 +200,32 @@ function parseIdeas() {
   return { total: Object.values(byStatus).reduce((s, v) => s + v, 0), by_status: byStatus, items };
 }
 
+// ── Concerns Pipeline ─────────────────────────────────────────────────────────
+function parseConcerns() {
+  const content = readFile('+specs/project/CONCERNS_PIPELINE.md');
+  if (!content) return { total: 0, active: 0, by_status: {}, items: [] };
+
+  const byStatus = {};
+  const items = [];
+  const activeStatuses = new Set(['active', 'triaged', 'mitigating', 'verifying']);
+
+  const pipeline = extractSection(content, 'Pipeline');
+  for (const cols of parseTableRows(pipeline)) {
+    const id = cols[0];
+    const title = (cols[1] || '').slice(0, 60);
+    const status = (cols[2] || '').replace(/`/g, '').trim();
+    const next = (cols[5] || '').slice(0, 120);
+    if (!id || id === '—' || id === 'ID') continue;
+    if (!status || status === '—' || status === 'Status') continue;
+    byStatus[status] = (byStatus[status] || 0) + 1;
+    items.push({ id, title, status, next_action: next });
+  }
+
+  const total = Object.values(byStatus).reduce((s, v) => s + v, 0);
+  const active = items.filter(i => activeStatuses.has(i.status)).length;
+  return { total, active, by_status: byStatus, items };
+}
+
 // ── State ─────────────────────────────────────────────────────────────────────
 function parseState() {
   const content = readFile('+specs/project/STATE.md');
@@ -247,6 +273,7 @@ function readHealth() {
 // ── Assemble ──────────────────────────────────────────────────────────────────
 const roadmap = parseRoadmap();
 const ideas   = parseIdeas();
+const concerns = parseConcerns();
 const state   = parseState();
 const health  = readHealth();
 const open_specs = roadmap.items.filter(i => i.status === 'in-progress').map(i => i.id);
@@ -276,6 +303,7 @@ const snapshot = {
   session: { handoff_exists, open_specs },
   roadmap,
   ideas,
+  concerns,
   state,
   health,
 };

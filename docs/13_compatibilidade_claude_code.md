@@ -156,13 +156,16 @@ Quando instalados em `.claude/commands/`, cada comando fica disponível como `/w
 > [!important] Esta é a diferença que mais impacta o WSD
 > O Codex suporta skills "sempre ativas" (governance). O Claude Code não tem esse conceito — skills são invocadas, não persistem.
 
-O WSD tem três skills para Codex:
+O WSD tem skills de governança, fase e captura para Codex:
 
 | Skill | Tipo no Codex | Equivalente em Claude Code |
 |-------|---------------|---------------------------|
 | `wsd` | Governance — sempre ativa no repo | **Não é um comando** → pertence ao `AGENTS.md` + hooks |
 | `wsd-start` | Procedural — invocada ao início | Comando slash Claude Code — funciona bem |
 | `wsd-finish` | Procedural — invocada ao final | Comando slash Claude Code — funciona bem |
+| `wsd-idea` | Captura de ideia | `idea-{PROJECT_SLUG}` |
+| `wsd-concern` | Captura de preocupação/risco | `concern-{PROJECT_SLUG}` |
+| `wsd-loop` | Atalhos WSD Loop | `loop` |
 
 ### Por que `wsd` não pode ser uma skill em Claude Code
 
@@ -239,6 +242,8 @@ Deve gerar:
   commands/
     wsd-start.md         ← comando slash do wsd-start
     wsd-finish.md        ← comando slash do wsd-finish
+    idea-{slug}.md       ← comando de captura de ideia
+    concern-{slug}.md    ← comando de captura de preocupação
 
 AGENTS.md                ← contém governança WSD (conteúdo da skill wsd)
 ```
@@ -251,10 +256,12 @@ A skill `wsd` não é gerada — seu conteúdo vai para AGENTS.md.
 Codex:
   .agents/skills/wsd/SKILL.md → carregada automaticamente → regras sempre ativas
   .agents/skills/wsd-loop/SKILL.md → atalhos como "loop status"
+  .agents/skills/wsd-concern/SKILL.md → captura semântica de preocupações
 
 Claude Code:
   AGENTS.md                   → lido pelo Claude ao iniciar sessão → regras sempre lidas
   .claude/settings.json       → hooks PreToolUse + PreCompact + SessionStart → regras sempre enforçadas
+  .claude/commands/concern-{slug}.md → captura explícita via slash command
 ```
 
 ---
@@ -506,10 +513,14 @@ Checklist do que `wsd install` deve gerar por agente:
 - [x] `.agents/skills/wsd/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.agents/skills/wsd-start/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.agents/skills/wsd-finish/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd-idea/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd-concern/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.agents/skills/wsd-loop/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.codex/skills/*` espelhado para compatibilidade legado.
 - [x] `.claude/commands/wsd-start.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/wsd-finish.md` quando `--tools claude-code` estiver ativo.
+- [x] `.claude/commands/idea-{PROJECT_SLUG}.md` quando `--tools claude-code` estiver ativo.
+- [x] `.claude/commands/concern-{PROJECT_SLUG}.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/loop.md` quando `--tools claude-code` estiver ativo (`/loop status`, `/loop on`, `/loop off`).
 - [x] `.claude/settings.json` com hooks quando `--tools claude-code` estiver ativo.
 - [x] `+wsd/hooks/pre-tool.sh` quando `--tools claude-code` estiver ativo.

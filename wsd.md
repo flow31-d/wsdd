@@ -64,6 +64,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1` com `wsd version`, inventário multi-repo e regra prática para agentes verificarem a versão WSD instalada em projetos.
 - 15/06/2026 — Codex: Atualização para `v0.4.0` com `wsd loop`, contrato `automation.loop`, Codex Adherence Pack e nota `19 — WSD Loop`.
 - 17/06/2026 — Codex: Atualização para `v0.4.1` com atalhos WSD Loop para Codex/Claude/shell e skills Codex no caminho `.agents/skills`.
+- 21/06/2026 — Codex: Atualização para `v0.4.2` com pipeline de concerns, skill/comando de captura de preocupação e `CONCERNS_PIPELINE.md` como nota obrigatória.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -96,7 +97,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.4.1`** (patch — atalhos de agente/terminal para WSD Loop em cima do Codex Adherence Pack).
+Versão atual do pacote: **`v0.4.2`** (patch — pipeline de concerns e aderência de registro de preocupações).
 
 O WSD já possui:
 
@@ -105,8 +106,8 @@ O WSD já possui:
 - `install.sh` como wrapper local;
 - instalação vendorizada em `+wsd/`;
 - `templates/local-wsd/bin/wsd` com `start`, `start --brief`, `check`, `finish`, `doctor`, `version`, `update`, `hooks`, `snapshot`, `lovable`, namespace `git doctor|preflight|pr-check`, namespace `party status|list-agents|when-to-use`, `loop plan|once|run|status|stop`, `codex-prompt` e `codex`;
-- 8 skills Codex em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-loop`), espelhadas em `.codex/skills/` para compatibilidade;
-- 8 comandos slash Claude Code em `.claude/commands/` (`loop`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`), `.claude/settings.json` com hooks e `+wsd/hooks/pre-tool.sh`;
+- 9 skills Codex em `.agents/skills/` (`wsd`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-idea`, `wsd-concern`, `wsd-loop`), espelhadas em `.codex/skills/` para compatibilidade;
+- 9 comandos slash Claude Code em `.claude/commands/` (`loop`, `wsd-start`, `wsd-finish`, `wsd-specify`, `wsd-design`, `wsd-tasks`, `wsd-party-mode`, `idea-{PROJECT_SLUG}`, `concern-{PROJECT_SLUG}`), `.claude/settings.json` com hooks e `+wsd/hooks/pre-tool.sh`;
 - atalhos WSD Loop para agentes: `codex-shortcuts` oferece `/prompts:loop status` no Codex e `/loop status` fica disponível no Claude Code;
 - `--tools both` gera os dois conjuntos sem conflito;
 - matriz e checker de sincronização documental (com 20+ assertions TLC);
@@ -135,8 +136,9 @@ O WSD já possui:
 - Release **`v0.3.3`** (13/06/2026): patch — publicação pública. Leva ao `wsdd` público a feature de `wsd_version` no snapshot (privada na v0.3.2). O público estava em v0.3.1; passa a ter o carimbo de versão e a detecção passiva de deriva.
 - Release **`v0.4.0`** (15/06/2026): minor — WSD Loop + Codex Adherence Pack. Adiciona `automation.loop` no `+context.json`, opção fixa `automation.loop.auto_use`, prompts vendorizados em `+wsd/loop/`, subcomando `wsd loop plan|once|run|status|stop|auto`, bloco `WSD Codex Bootstrap` no `AGENTS.md`, `wsd start --brief`, `wsd codex-prompt`, `wsd codex`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop` + `test:install-codex-adherence`.
 - Release **`v0.4.1`** (17/06/2026): patch — instala skills Codex em `.agents/skills/`, adiciona `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, atalhos shell `wsd()`/`wl()` via `wsd shortcuts shell` e reforça `wsd-idea`/`IDEAS_PIPELINE`.
+- Release **`v0.4.2`** (21/06/2026): patch — adiciona `CONCERNS_PIPELINE.md`, reestrutura `CONCERNS.md` com concerns ativas `CONC-###`, cria `wsd-concern`/`concern-{PROJECT_SLUG}` e inclui concerns em bootstrap, start brief e snapshot.
 
-Foco atual: **`v0.4.1` em preparação pública** (17/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
+Foco atual: **`v0.4.2` em preparação pública** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -208,5 +210,6 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.3.1`: estado atual, foco, mapa e regra para agentes passam a mencionar `wsd version` e inventário de versão por projeto. |
 | 15/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.0`: mapa inclui `docs/19`, estado atual menciona `wsd loop`, Codex Adherence Pack e regra de agentes inclui automação iterativa. |
 | 17/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.1`: atalhos WSD Loop para Codex/Claude/shell e `.agents/skills` como caminho atual do Codex. |
+| 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.2`: pipeline de concerns, skill/comando de captura e nota obrigatória `CONCERNS_PIPELINE.md`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -1329,6 +1329,13 @@ case "$command" in
       [[ -f AGENTS.md ]] && echo "agents: present" || echo "agents: missing"
       [[ -f +context.json ]] && echo "context: present" || echo "context: missing"
       [[ -f +specs/project/STATE.md ]] && echo "state: present" || echo "state: missing"
+      [[ -f +specs/project/CONCERNS.md ]] && echo "concerns: present" || echo "concerns: missing"
+      [[ -f +specs/project/CONCERNS_PIPELINE.md ]] && echo "concerns_pipeline: present" || echo "concerns_pipeline: missing"
+      if [[ -f +specs/project/CONCERNS_PIPELINE.md ]]; then
+        _concerns_active="$(grep -E '^\| \\[?CONC-[0-9][0-9][0-9]' +specs/project/CONCERNS_PIPELINE.md 2>/dev/null | grep -Ev '`(resolved|accepted-risk|obsolete)`' | wc -l | tr -d ' ' || true)"
+        [[ -n "$_concerns_active" ]] || _concerns_active=0
+        printf "concerns_active: %s\n" "$_concerns_active"
+      fi
       [[ -f +specs/HANDOFF.md ]] && echo "handoff: present" || echo "handoff: missing"
       _features_count="$(find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | wc -l | tr -d ' ' || true)"
       [[ -n "$_features_count" ]] || _features_count=0

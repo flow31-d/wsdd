@@ -38,11 +38,12 @@ Ao iniciar qualquer tarefa:
 1. Tratar `AGENTS.md` como contrato operacional.
 2. Ler `+context.json` antes de editar e respeitar `permissions.write_paths`, `permissions.forbidden_paths` e `secrets_policy`.
 3. Consultar `+specs/project/STATE.md`; se `+specs/HANDOFF.md` existir, considerar continuidade da sessão anterior.
-4. Rodar `./+wsd/bin/wsd start --brief` quando disponível para obter contexto operacional compacto.
-5. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
-6. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
-7. Verificar `automation.loop.auto_use` em `+context.json`.
-8. Antes de finalizar mudanças relevantes, rodar `git diff --check` e `./+wsd/bin/wsd check`.
+4. Consultar `+specs/project/CONCERNS.md` e `+specs/project/CONCERNS_PIPELINE.md` antes de editar; identificar concerns ativas que tocam a área da tarefa.
+5. Rodar `./+wsd/bin/wsd start --brief` quando disponível para obter contexto operacional compacto.
+6. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
+7. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
+8. Verificar `automation.loop.auto_use` em `+context.json`.
+9. Antes de finalizar mudanças relevantes, rodar `git diff --check` e `./+wsd/bin/wsd check`.
 
 Política Ralph/WSD Loop:
 
@@ -74,11 +75,12 @@ Ao iniciar qualquer sessão, carregar na ordem:
 
 1. `+specs/project/PROJECT.md` — visão, goals e regras do projeto
 2. `+specs/project/STATE.md` — decisões ativas, bloqueadores e lições
-3. `+specs/HANDOFF.md` — se existir, resumir e perguntar se quer continuar de onde parou
+3. `+specs/project/CONCERNS.md` — preocupações ativas, áreas frágeis, riscos e itens a conferir
+4. `+specs/project/CONCERNS_PIPELINE.md` — plano de resolução das preocupações ativas
+5. `+specs/HANDOFF.md` — se existir, resumir e perguntar se quer continuar de onde parou
 
 On-demand (carregar somente quando relevante à task):
 
-- `+specs/project/CONCERNS.md` — ao tocar componentes frágeis, dívidas técnicas, áreas L2 ou riscos conhecidos
 - `+specs/project/ROADMAP.md` — ao planejar features ou verificar backlog
 - `+specs/project/IDEAS_PIPELINE.md` — ao avançar uma ideia para spec ou ROADMAP
 - `+specs/features/[slug]/spec.md` — somente a spec da feature em execução (criado por `/wsd-specify`)
@@ -99,7 +101,8 @@ Este repositório usa WSD + TLC:
 - `+specs/project/ROADMAP.md`: visão consolidada de features — planejadas, em andamento, concluídas.
 - `+specs/project/IDEAS.md`: notebook de ideias brutas capturadas via `/idea-{{PROJECT_SLUG}}`.
 - `+specs/project/IDEAS_PIPELINE.md`: controle de progressão de ideias (raw → implementada).
-- `+specs/project/CONCERNS.md`: componentes frágeis, dívidas técnicas, áreas L2 e riscos conhecidos.
+- `+specs/project/CONCERNS.md`: preocupações ativas, componentes frágeis, dívidas técnicas, áreas L2 e riscos conhecidos.
+- `+specs/project/CONCERNS_PIPELINE.md`: plano, próximo passo e evidência para resolver cada concern.
 - `+specs/features/[slug]/spec.md`: contrato executável por feature, criado on-demand por `/wsd-specify` (WHEN/THEN/SHALL).
 - `+specs/features/[slug]/tasks.md`: plano atômico com gate checks por task, criado on-demand por `/wsd-tasks`.
 - `+specs/quick/NNN-slug/`: tasks L0 express, criadas on-demand.{{#if BROWNFIELD}}
@@ -110,6 +113,8 @@ Este repositório usa WSD + TLC:
 - Ao avançar ideia de IDEAS.md para spec: atualizar status em IDEAS_PIPELINE.md (`spec-criada`) e adicionar linha em ROADMAP.md.
 - Ao mudar status de feature: atualizar simultaneamente frontmatter da spec E linha em ROADMAP.md.
 - Ao capturar nova ideia: usar `/idea-{{PROJECT_SLUG}}` — nunca editar IDEAS.md diretamente sem o comando.
+- Ao identificar preocupação, risco, fragilidade, dívida técnica, workaround, dependência instável ou item "precisa conferir": registrar imediatamente em `CONCERNS.md` e `CONCERNS_PIPELINE.md` usando `/concern-{{PROJECT_SLUG}}` quando disponível.
+- Ao resolver preocupação: atualizar status e evidência em `CONCERNS_PIPELINE.md`; nunca apagar concern antiga.
 
 Comandos locais:
 

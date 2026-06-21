@@ -78,6 +78,7 @@
       "+specs/project/PROJECT.md",
       "+specs/project/STATE.md",
       "+specs/project/CONCERNS.md",
+      "+specs/project/CONCERNS_PIPELINE.md",
       "+specs/codebase/ARCHITECTURE.md"
     ],
     "local_checker": "scripts/wsd_check.sh",

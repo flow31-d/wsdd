@@ -87,7 +87,7 @@ npx github:flow31-d/wsdd install --tools claude-code --git-policy basic --yes
 npx github:flow31-d/wsdd install --tools both --git-policy full --brownfield --yes
 
 # Versão específica via tag Git
-npx github:flow31-d/wsdd#v0.4.1 install
+npx github:flow31-d/wsdd#v0.4.2 install
 ```
 
 ### 3.1 Pré-requisitos do usuário

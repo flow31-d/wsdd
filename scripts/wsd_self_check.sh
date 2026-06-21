@@ -38,6 +38,8 @@ required_files=(
   "templates/repo/+context.json.template"
   "templates/repo/+specs/project/PROJECT.md.template"
   "templates/repo/+specs/project/STATE.md.template"
+  "templates/repo/+specs/project/CONCERNS.md.template"
+  "templates/repo/+specs/project/CONCERNS_PIPELINE.md.template"
   "templates/repo/+specs/codebase/TESTING.md.template"
   "templates/repo/+specs/TASK-001-wsd-bootstrap.spec.yaml.template"
   "templates/specs/feature-spec.md.template"
@@ -52,10 +54,12 @@ required_files=(
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
   "templates/codex-skills/wsd-idea/SKILL.md"
+  "templates/codex-skills/wsd-concern/SKILL.md"
   "templates/codex-skills/wsd-loop/SKILL.md"
   "templates/claude-commands/commands/wsd-specify.md"
   "templates/claude-commands/commands/wsd-design.md"
   "templates/claude-commands/commands/wsd-tasks.md"
+  "templates/claude-commands/commands/wsd-concern.md"
   "templates/claude-commands/commands/loop.md"
   "templates/git-hooks/pre-commit"
   "templates/git-hooks/commit-msg"
@@ -209,9 +213,10 @@ grep -q 'INSTALL_EXAMPLES' bin/wsd-method.js || fail "bin/wsd-method.js missing 
 grep -q 'config.modules' bin/wsd-method.js || fail "bin/wsd-method.js missing config.modules (WSD-007)"
 ok "WSD-007 install opt-out wired (settings + config.modules)"
 
-# WSD-004 regression: wsd_check.sh template valida 6 notas project/ (L0) + ROADMAP coherence (L1)
+# WSD-004/WSD concerns regression: wsd_check.sh template valida 7 notas project/ (L0) + ROADMAP coherence (L1)
 grep -q '_project_notes' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing _project_notes L0 check (WSD-004)"
 grep -q 'CONCERNS.md' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing CONCERNS.md in L0 manifest (WSD-004)"
+grep -q 'CONCERNS_PIPELINE.md' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing CONCERNS_PIPELINE.md in L0 manifest"
 grep -q 'ROADMAP referencia specs válidas' templates/repo/scripts/wsd_check.sh || fail "templates/repo/scripts/wsd_check.sh missing L1 ROADMAP coherence check (WSD-004)"
 ok "WSD-004 L0+L1 gates present in wsd_check.sh template"
 

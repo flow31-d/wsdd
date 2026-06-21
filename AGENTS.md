@@ -64,11 +64,18 @@ Ao iniciar qualquer tarefa:
 1. Tratar `AGENTS.md` como contrato operacional.
 2. Ler `+context.json` antes de editar e respeitar paths permitidos/proibidos.
 3. Consultar `+specs/project/STATE.md` e `+specs/HANDOFF.md`, se existir.
-4. Rodar `./+wsd/bin/wsd start --brief` quando disponível.
-5. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
-6. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
-7. Verificar `automation.loop.auto_use` em `+context.json`.
-8. Antes de finalizar mudanças relevantes, rodar `git diff --check`, `bash scripts/wsd_docs_check.sh` e `bash scripts/wsd_self_check.sh`.
+4. Consultar `+specs/project/CONCERNS.md` e `+specs/project/CONCERNS_PIPELINE.md` antes de editar; identificar concerns ativas que tocam a área da tarefa.
+5. Rodar `./+wsd/bin/wsd start --brief` quando disponível.
+6. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
+7. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
+8. Verificar `automation.loop.auto_use` em `+context.json`.
+9. Antes de finalizar mudanças relevantes, rodar `git diff --check`, `bash scripts/wsd_docs_check.sh` e `bash scripts/wsd_self_check.sh`.
+
+Gatilhos obrigatórios de concern:
+
+- Registrar imediatamente em `+specs/project/CONCERNS.md` e `+specs/project/CONCERNS_PIPELINE.md` quando surgir fragilidade, risco, dívida técnica, workaround, dependência instável, área L2 ou item "precisa conferir".
+- Usar `/concern-wsd` quando disponível; se não estiver disponível, editar os dois arquivos diretamente mantendo ID `CONC-###`.
+- Não apagar concern antiga. Encerrar apenas mudando status e registrando evidência no pipeline.
 
 Política Ralph/WSD Loop:
 

@@ -1,9 +1,48 @@
-# Concerns — {{PROJECT_NAME}}
+---
+title: "CONCERNS — {{PROJECT_NAME}}"
+created: {{DATE}}
+modified: {{DATE}}
+tags:
+  - wsd
+  - concerns
+  - riscos
+status: ativo
+tipo: projeto
+wsd_artifact: concerns
+---
 
-Componentes frágeis, dívidas técnicas, áreas L2 e riscos conhecidos.
-Consultar antes de tocar áreas sinalizadas. Atualizar conforme o projeto evolui.
+# CONCERNS — {{PROJECT_NAME}}
+
+> [!abstract] O que é este arquivo
+> Registro de preocupacoes, riscos e coisas que precisam ser conferidas.
+> O foco principal e a secao **Preocupacoes Ativas**. O plano de resolucao fica em
+> `+specs/project/CONCERNS_PIPELINE.md`.
+
+> [!warning] Regra para agentes
+> Antes de editar, conferir se a area tocada aparece aqui ou no pipeline.
+> Ao descobrir fragilidade, duvida que precisa ser conferida, risco de regressao, workaround,
+> dependencia instavel, area L2 ou divida tecnica relevante, registrar uma nova concern.
+> Nao esperar o fim da tarefa.
 
 ---
+
+## Preocupacoes Ativas
+
+| ID | Preocupacao | Categoria | Severidade | Status | Area/Arquivo | Plano | Owner | Aberta em |
+|---|---|---|---|---|---|---|---|---|
+| — | — | — | — | — | — | — | — | — |
+
+## Gatilhos de Registro
+
+Registrar concern quando encontrar:
+
+- componente fragil, alto acoplamento ou comportamento dificil de testar;
+- divida tecnica que afeta uma decisao atual ou futura;
+- risco de regressao, perda de dados, seguranca, disponibilidade ou custo;
+- area L2 ou mudanca que exige aprovacao humana;
+- dependencia externa instavel, contrato incerto ou comportamento nao verificado;
+- workaround temporario;
+- item que "precisa conferir depois".
 
 ## Componentes Frágeis
 
@@ -35,3 +74,9 @@ Consultar antes de tocar áreas sinalizadas. Atualizar conforme o projeto evolui
 
 | Área/Feature | Razão | Spec necessária |
 |---|---|---|
+
+---
+
+> [!tip] Como fechar uma concern
+> Atualizar o status em `Preocupacoes Ativas` e em `CONCERNS_PIPELINE.md`.
+> Fechar apenas com evidencia: teste, build, diff, link para spec/PR, decisao do operador ou rationale de risco aceito.

@@ -1,0 +1,62 @@
+---
+title: "CONCERNS PIPELINE — {{PROJECT_NAME}}"
+created: {{DATE}}
+modified: {{DATE}}
+tags:
+  - wsd
+  - concerns
+  - pipeline
+  - riscos
+status: ativo
+tipo: projeto
+wsd_artifact: concerns-pipeline
+---
+
+# CONCERNS PIPELINE — {{PROJECT_NAME}}
+
+> [!abstract] O que é este arquivo
+> Plano de resolucao das preocupacoes registradas em `+specs/project/CONCERNS.md`.
+> Cada concern ativa deve ter uma linha aqui ate ser resolvida, aceita como risco ou marcada obsoleta.
+
+---
+
+## Status
+
+| Status | Significado |
+|---|---|
+| `active` | Concern registrada, ainda sem triagem suficiente |
+| `triaged` | Escopo entendido e plano inicial definido |
+| `mitigating` | Mitigacao em andamento |
+| `verifying` | Correcao/mitigacao feita, aguardando evidencia |
+| `resolved` | Resolvida com evidencia registrada |
+| `accepted-risk` | Risco aceito explicitamente pelo operador |
+| `obsolete` | Nao se aplica mais |
+
+## Etapas
+
+| Etapa | Uso |
+|---|---|
+| `triage` | Entender impacto, severidade e area afetada |
+| `spec-needed` | Criar spec antes de tocar codigo ou operacao |
+| `mitigation-plan` | Definir plano de reducao de risco |
+| `implementation` | Executar mudanca mitigadora |
+| `verification` | Rodar gates/evidencias |
+| `monitoring` | Acompanhar sem tocar agora |
+| `closed` | Encerrada |
+
+---
+
+## Pipeline
+
+| ID | Concern | Status | Etapa | Plano | Proximo passo | Gate/Evidencia | Owner | Revisar em |
+|---|---|---|---|---|---|---|---|---|
+| — | — | — | — | — | — | — | — | — |
+
+---
+
+> [!warning] Instrucoes para Agentes
+> - Nova concern registrada em `CONCERNS.md` deve criar linha aqui com status `active`.
+> - Toda concern `active`, `triaged`, `mitigating` ou `verifying` deve ter `Proximo passo` claro.
+> - Para fechar como `resolved`, registrar evidencia verificavel em `Gate/Evidencia`.
+> - Para fechar como `accepted-risk`, registrar quem aceitou e por que no `Plano` ou `Gate/Evidencia`.
+> - Nunca apagar concerns antigas; mudar status para `resolved`, `accepted-risk` ou `obsolete`.

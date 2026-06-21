@@ -48,6 +48,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` na rotina de início quando for necessário confirmar a versão WSD aplicada no projeto.
 - 15/06/2026 — Codex: Inclusão do `wsd loop` como rotina opcional para automatizar execução L0/L1 com gates e poucas aprovações.
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt` e `codex`.
+- 21/06/2026 — Codex: Inclusão de concerns como leitura base de sessão e fluxo `/concern-{PROJECT_SLUG}` / `wsd-concern`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -65,7 +66,7 @@ Contexto compacto para agentes ou wrappers:
 ./+wsd/bin/wsd start --brief
 ```
 
-No Codex, o fluxo normal continua sendo abrir a sessão já na pasta do projeto e pedir a tarefa. O `AGENTS.md` gerado pelo WSD contém a seção `WSD Codex Bootstrap`, que instrui o agente a ler `+context.json`, `STATE.md`, `HANDOFF.md` e classificar risco sem o operador precisar listar esses arquivos.
+No Codex, o fluxo normal continua sendo abrir a sessão já na pasta do projeto e pedir a tarefa. O `AGENTS.md` gerado pelo WSD contém a seção `WSD Codex Bootstrap`, que instrui o agente a ler `+context.json`, `STATE.md`, `CONCERNS.md`, `CONCERNS_PIPELINE.md`, `HANDOFF.md` e classificar risco sem o operador precisar listar esses arquivos.
 
 Quando houver dúvida sobre qual WSD está aplicado no repo, rodar antes ou logo após o start:
 
@@ -79,11 +80,13 @@ O agente deve:
 2. confirmar a versão WSD instalada quando isso afetar a tarefa;
 3. rodar checks Git;
 4. detectar `+context.json`;
-5. carregar `+specs/project/STATE.md` (decisões ativas, bloqueadores) e `+specs/HANDOFF.md` se existir (perguntar "continuar de onde parou?");
-6. rodar checker L0;
-7. listar specs ativas em `+specs/features/`;
-8. **auto-sizing**: classificar a tarefa do usuário como L0/L1/L2 e propor fluxo (Quick / Specify+Execute / 4 fases);
-9. indicar próximo passo seguro.
+5. carregar `+specs/project/STATE.md` (decisões ativas, bloqueadores);
+6. carregar `+specs/project/CONCERNS.md` e `+specs/project/CONCERNS_PIPELINE.md` para identificar preocupações ativas na área da tarefa;
+7. carregar `+specs/HANDOFF.md` se existir (perguntar "continuar de onde parou?");
+8. rodar checker L0;
+9. listar specs ativas em `+specs/features/`;
+10. **auto-sizing**: classificar a tarefa do usuário como L0/L1/L2 e propor fluxo (Quick / Specify+Execute / 4 fases);
+11. indicar próximo passo seguro.
 
 Quando o módulo Git/GitHub Governance estiver instalado em modo `basic` ou `full`, o início de sessão também deve rodar `./+wsd/bin/wsd git preflight` e, para tarefas L1/L2, `./+wsd/bin/wsd git doctor`.
 
@@ -98,6 +101,8 @@ Worktree:
 WSD version:
 Context:
 STATE.md:
+CONCERNS.md:
+CONCERNS_PIPELINE.md:
 HANDOFF.md:
 Specs:
 Risco/auto-size:
@@ -224,11 +229,12 @@ O instalador também espelha essas skills em `.codex/skills/` para compatibilida
 
 Uso prático:
 
-- `wsd-start`: rotina de abertura sem implementar mudanças (carrega STATE.md/HANDOFF.md, auto-sizing);
+- `wsd-start`: rotina de abertura sem implementar mudanças (carrega STATE.md/CONCERNS.md/CONCERNS_PIPELINE.md/HANDOFF.md, auto-sizing);
 - `wsd`: governança durante execução, classificação L0/L1/L2 e enforcement de spec (sempre ativa);
 - `wsd-specify`: fase Specify — clarificação + WHEN/THEN/SHALL em `+specs/features/<slug>/spec.md` (HARD-GATE);
 - `wsd-design`: fase Design — abordagens e arquitetura em `+specs/features/<slug>/design.md` (pode pular para casos simples);
 - `wsd-tasks`: fase Tasks — quebra em `+specs/features/<slug>/tasks.md` atômico com gate level por task;
+- `wsd-concern`: captura preocupação, risco, fragilidade ou item "precisa conferir" em `CONCERNS.md` + `CONCERNS_PIPELINE.md`;
 - `wsd-loop`: atalhos de Ralph/WSD Loop como `loop status`, `loop auto on`, `loop auto off`, `loop plan <feature>`;
 - `wsd-finish`: relatório de fechamento, atualização de STATE.md, geração de HANDOFF.md.
 
@@ -308,5 +314,6 @@ bash scripts/wsd_docs_check.sh
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do `wsd version` como checagem opcional de início de sessão para rastrear a versão WSD aplicada no repo. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do fluxo opcional `wsd loop plan|once|run` para automação L0/L1 governada por gates. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do Codex Adherence Pack: `start --brief`, `codex-prompt`, `codex` e bootstrap via `AGENTS.md`. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de concerns como leitura base de sessão e fluxo `wsd-concern`/`concern-{PROJECT_SLUG}`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
