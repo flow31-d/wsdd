@@ -71,6 +71,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.2` com `CONCERNS_PIPELINE.md`, skill `wsd-concern`, comando `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns e snapshot com resumo de preocupações ativas.
 - 21/06/2026 — Codex: Atualização para `v0.4.3` com `wsd finish` limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree final limpo.
 - 21/06/2026 — Codex: Atualização para `v0.4.4` com `wsd relatorio`: relatório operacional consolidando estado atual, implementações em andamento, plano, ideias, concerns e sugestão do agente.
+- 21/06/2026 — Codex: Atualização para `v0.4.5` com `wsd update` preservador instalando novos atalhos de agente e teste `test:install-update-adherence`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -206,7 +207,7 @@ Dentro do projeto após o install, rotina diária:
 Após qualquer mudança em código WSD:
 
 ```bash
-npm test                              # 15 gates de instalação
+npm test                              # 16 gates de instalação
 bash scripts/wsd_docs_check.sh        # sincronização documental
 bash scripts/wsd_self_check.sh        # consistência interna
 ```
@@ -227,7 +228,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.4.4`** (patch — relatório operacional WSD). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo; `v0.4.4` adiciona `wsd relatorio`.
+Este diretório está publicado como repositório GitHub público em versão **`v0.4.5`** (patch — update/adherence preservador). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo; `v0.4.4` adiciona `wsd relatorio`; `v0.4.5` faz `wsd update` garantir novos atalhos de agente sem sobrescrever customizações.
 
 Histórico de entregas (alpha + estável):
 
@@ -258,6 +259,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.4.2`** (patch — pipeline de concerns): adiciona `CONCERNS_PIPELINE.md` como nota obrigatória, reestrutura `CONCERNS.md` com preocupações ativas `CONC-###`, adiciona skill Codex `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` com contagem de concerns e snapshot com resumo de preocupações.
 - **`v0.4.3`** (patch — finish limpo): `./+wsd/bin/wsd finish` roda gates, auditoria documental WSD quando disponível, gera `HANDOFF.md`, atualiza snapshot, cria commit de fechamento por padrão e só passa com `git status --short` limpo. Adiciona `test:install-finish-clean`.
 - **`v0.4.4`** (patch — relatório WSD): `./+wsd/bin/wsd relatorio` gera Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão do agente. Adiciona `wsd-relatorio`, `/wsd-relatorio` e `test:install-relatorio`.
+- **`v0.4.5`** (patch — update/adherence preservador): `./+wsd/bin/wsd update` passa a responder `--help` sem efeitos colaterais e, ao atualizar projetos existentes, garante novos arquivos em `.agents/skills`, `.codex/skills`, `.claude/commands` e `+wsd/hooks` sem sobrescrever arquivos existentes. Adiciona `test:install-update-adherence`.
 
 Não contém segredos.
 
@@ -417,5 +419,6 @@ Regra prática:
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.2`: pipeline de concerns, skill/comando de captura de preocupação, nota obrigatória `CONCERNS_PIPELINE.md` e contagem no snapshot/start brief. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.3`: `wsd finish` limpo com gates, docs audit, HANDOFF, snapshot, commit automático e teste de regressão. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.4`: `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
+| 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.5`: `wsd update` preservador instala novos atalhos de agente e `update --help` não altera o projeto. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

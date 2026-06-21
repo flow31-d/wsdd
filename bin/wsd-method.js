@@ -41,6 +41,26 @@ const PROFILE_PRESETS = {
     test_build: 'ruff check app tests && pytest && docker compose config',
     l2_areas: ['migracao de banco', 'auth/autorizacao', 'secrets', 'producao', 'dados sensiveis']
   },
+  koomplet_office: {
+    project_name: 'Koomplet Office',
+    repo_name: 'flow31-d/koomplet-office',
+    github_remote: 'https://github.com/flow31-d/koomplet-office.git',
+    canonical_host: 'DLP',
+    canonical_path: '/srv/CLI/x/dev_cli/koomplet-office',
+    default_branch: 'master',
+    project_type: 'node_frontend_multiplayer_workspace',
+    primary_language: 'TypeScript',
+    environment_policy_summary: 'DLP e o desenvolvimento canonico. GitHub e o historico compartilhado. Oct e publicacao/proxy/frontend servido, nao ambiente de desenvolvimento.',
+    clone_topology_markdown: '- DLP: desenvolvimento canonico.\\n- GitHub: historico compartilhado.\\n- Oct: publicacao/proxy/frontend servido.',
+    lint: [],
+    test: ['npm test'],
+    build: ['npm run build'],
+    smoke: ['validar asset publico servido em https://work.koomplet.com/office/'],
+    test_quick: 'npm test -- --findRelatedTests',
+    test_full: 'npm test',
+    test_build: 'npm test && npm run build',
+    l2_areas: ['deploy publico', 'rsync para Oct', 'proxy/SSL', 'base path /office/', 'assets publicados']
+  },
   lovable_tanstack_start: {
     project_type: 'lovable_tanstack_start',
     primary_language: 'TypeScript',
@@ -69,6 +89,26 @@ const PROFILE_PRESETS = {
       auto_delete_branch_on_merge: false,
       collaboration_model: 'owner_plus_fork_pr'
     }
+  },
+  prescreve_mais: {
+    project_name: 'Prescreve Mais',
+    repo_name: 'GitKoomplet/prescreve_mais',
+    github_remote: 'https://github.com/GitKoomplet/prescreve_mais.git',
+    canonical_host: 'Oct',
+    canonical_path: '/srv/oct/prescreve_mais',
+    default_branch: 'main',
+    project_type: 'python_api_and_frontend',
+    primary_language: 'Python/TypeScript',
+    environment_policy_summary: 'GitHub e o historico compartilhado. Oct e o plano operacional. DLP e auditoria/laboratorio.',
+    clone_topology_markdown: '- GitHub: historico compartilhado.\\n- Oct: plano operacional.\\n- DLP: auditoria/laboratorio.',
+    lint: ['poetry run ruff check app tests', 'cd frontend && npm run lint'],
+    test: ['bash scripts/run_epic1_pr_gate.sh', 'cd frontend && npm run test:run'],
+    build: ['cd frontend && npm run build', 'docker compose config'],
+    smoke: [],
+    test_quick: 'cd frontend && npm run test:run',
+    test_full: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run test:run',
+    test_build: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run build && docker compose config',
+    l2_areas: ['Vidaas/IntegraICP', 'dados sensiveis', 'auth', 'banco', 'producao']
   }
 };
 
@@ -267,6 +307,7 @@ async function update(args) {
   const prevVersion = config.version || 'unknown';
   const vendor = path.join(directory, '+wsd');
   const modules = config.modules || { docs: true, party_mode: true, examples: true };
+  const settings = buildUpdateSettings(config, directory);
 
   const dirs = ['templates', 'profiles', 'scripts', 'schemas'];
   if (modules.docs !== false) dirs.push('docs');
@@ -311,6 +352,8 @@ async function update(args) {
   config.wsd_source = WSD_ROOT;
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
   appendSnapshotGitignore(directory);
+  installCodexSkills(directory, settings, false);
+  installClaudeCommands(directory, settings, false);
 
   // Lista dinâmica reflete o que foi efetivamente copiado (respeita config.modules).
   const refreshed = ['bin', 'templates', 'profiles', 'scripts', 'schemas'];
@@ -318,12 +361,98 @@ async function update(args) {
   if (modules.examples !== false) refreshed.push('examples');
   if (modules.party_mode !== false) refreshed.push('party-mode');
   refreshed.push('loop');
+  const ensured = [];
+  if (settings.TOOLS.includes('codex') || settings.TOOLS.includes('both')) ensured.push('.agents/skills', '.codex/skills');
+  if (settings.TOOLS.includes('claude-code') || settings.TOOLS.includes('both')) ensured.push('.claude/commands', '+wsd/hooks');
   console.log('');
   console.log(`WSD updated: ${prevVersion} -> ${VERSION}`);
   console.log(`Refreshed: +wsd/{${refreshed.sort().join(',')}}`);
+  if (ensured.length > 0) console.log(`Ensured: ${ensured.join(', ')} (new files only)`);
   console.log('Preserved: +context.json, AGENTS.md, +specs/, scripts/wsd_check.sh, scripts/git-hooks/');
   console.log('');
   console.log('Run: ./+wsd/bin/wsd doctor');
+}
+
+function buildUpdateSettings(config, directory) {
+  const context = readJsonIfExists(path.join(directory, '+context.json'));
+  const detected = detectProject(directory);
+  const cfgContext = config.context || {};
+  const modules = config.modules || {};
+  const tools = Array.isArray(config.tools)
+    ? config.tools
+    : splitCsv(String(config.tools || 'codex'));
+  const settings = {
+    DATE: new Date().toISOString().slice(0, 10),
+    PROJECT_NAME: String(config.project_name || getNested(context, ['project', 'name']) || titleize(path.basename(directory))),
+    PROJECT_OWNER: String(getNested(context, ['project', 'owner']) || 'private'),
+    PROJECT_STATUS: String(getNested(context, ['project', 'status']) || 'active'),
+    PROJECT_TYPE: String(getNested(context, ['project', 'type']) || 'generic'),
+    PRIMARY_LANGUAGE: String(getNested(context, ['project', 'primary_language']) || 'unknown'),
+    REPO_NAME: String(config.repo_name || getNested(context, ['repository', 'name']) || detected.repoName || ''),
+    GITHUB_REMOTE: String(getNested(context, ['repository', 'remote']) || detected.remote || ''),
+    CANONICAL_HOST: String(cfgContext.canonical_host || getNested(context, ['environment', 'canonical_host']) || os.hostname()),
+    CANONICAL_PATH: String(cfgContext.canonical_path || getNested(context, ['environment', 'canonical_path']) || directory),
+    DEFAULT_BRANCH: String(cfgContext.default_branch || getNested(context, ['git_governance', 'default_branch']) || getNested(context, ['repository', 'default_branch']) || detected.branch || 'main'),
+    ENVIRONMENT_NAME: String(getNested(context, ['environment', 'environment']) || 'development'),
+    NETWORK_MODE: String(getNested(context, ['environment', 'network_mode']) || 'local_or_vps'),
+    REPO_TYPE: String(getNested(context, ['repository', 'repo_type']) || 'private'),
+    OPERATIONAL_CLONE: String(getNested(context, ['repository', 'clone_policy', 'operational_clone']) || directory),
+    AUDIT_LAB_CLONE: String(getNested(context, ['repository', 'clone_policy', 'audit_lab_clone']) || ''),
+    DEPLOY_CLONE: String(getNested(context, ['repository', 'clone_policy', 'deploy_clone']) || ''),
+    PROMOTION_FLOW: String(getNested(context, ['repository', 'clone_policy', 'promotion_flow']) || 'branch_push_pr_merge'),
+    GITHUB_MODE: String(cfgContext.github_mode || 'skip'),
+    GIT_POLICY: normalizeGitPolicy(config.git_policy || cfgContext.git_policy || getNested(context, ['git_governance', 'mode']) || 'basic'),
+    REMOTE_PROTOCOL: String(getNested(context, ['git_governance', 'remote_protocol']) || 'https'),
+    GITHUB_CLI_REQUIRED: String(getNested(context, ['git_governance', 'github_cli_required']) || 'false'),
+    LEGACY_BRANCH_ALLOWED: String(getNested(context, ['git_governance', 'legacy_branch_allowed']) || 'false'),
+    ISSUE_POLICY: String(getNested(context, ['git_governance', 'issue_policy']) || 'required_for_l1_l2'),
+    PR_POLICY: String(getNested(context, ['git_governance', 'pr_policy']) || 'required_for_relevant_changes'),
+    SYNC_POLICY: String(getNested(context, ['git_governance', 'sync_policy']) || 'pull_ff_only'),
+    DIRTY_WORKTREE_POLICY: String(getNested(context, ['git_governance', 'dirty_worktree_policy']) || 'declare_and_halt_for_risky_ops'),
+    BRANCH_NAMING: String(getNested(context, ['git_governance', 'branch_naming']) || 'issue-<number>-<slug>'),
+    COMMIT_STYLE: String(getNested(context, ['git_governance', 'commit_style']) || 'conventional_commits'),
+    TOOLS: tools,
+    WRITE_PATHS: getNested(context, ['permissions', 'write_paths']) || ['./src', './tests', './docs', './scripts', './+specs', './+logs', './AGENTS.md', './+context.json'],
+    FORBIDDEN_PATHS: getNested(context, ['permissions', 'forbidden_paths']) || ['./.git', './.env', './secrets', './keys', './certs'],
+    TOOL_ALLOWLIST: getNested(context, ['permissions', 'tool_allowlist']) || ['bash', 'git', 'gh', 'python3'],
+    LINT_COMMANDS: getNested(context, ['ci', 'lint_commands']) || [],
+    TEST_COMMANDS: getNested(context, ['ci', 'test_commands']) || [],
+    BUILD_COMMANDS: getNested(context, ['ci', 'build_commands']) || [],
+    SMOKE_COMMANDS: getNested(context, ['ci', 'smoke_commands']) || [],
+    L2_AREAS: [],
+    TEST_QUICK_COMMAND: '',
+    TEST_FULL_COMMAND: '',
+    TEST_BUILD_COMMAND: '',
+    BROWNFIELD: fs.existsSync(path.join(directory, '+specs', 'codebase')),
+    LOVABLE: Boolean(getNested(context, ['lovable_integration', 'enabled'])),
+    LOVABLE_INTEGRATION_JSON: '',
+    INSTALL_DOCS: modules.docs !== false,
+    INSTALL_PARTY_MODE: modules.party_mode !== false,
+    INSTALL_EXAMPLES: modules.examples !== false,
+    ENVIRONMENT_POLICY_SUMMARY: 'GitHub e o historico compartilhado. O host canonico declarado neste arquivo e a fonte operacional do projeto.',
+    ENVIRONMENT_POLICY_DETAILS: 'Trabalhar sempre a partir do host canonico, em branch dedicada, com validacao proporcional ao risco.',
+    CLONE_TOPOLOGY_MARKDOWN: '- GitHub: historico compartilhado.\\n- Host canonico: desenvolvimento e validacao local.',
+    PROJECT_RULES_MARKDOWN: '- Seguir WSD para tarefas L1/L2.\\n- Usar branch dedicada para mudancas relevantes.\\n- Nao registrar secrets.',
+    TECHNICAL_DECISIONS_MARKDOWN: '- Decisoes tecnicas relevantes devem ser registradas em spec ou ADR.',
+    AGENT_AVOID_MARKDOWN: '- Nao usar `git add .`.\\n- Nao esconder worktree suja.\\n- Nao inventar comandos de validacao.',
+    VALIDATION_POLICY_MARKDOWN: '- Usar somente comandos reais do projeto.\\n- Registrar comandos nao executados e motivo.',
+    PRODUCT_SUMMARY: 'Resumo do produto a ser preenchido pelo operador.',
+    USER_CONTEXT: 'Usuarios/publico a serem descritos pelo operador.',
+    STACK_SUMMARY: 'Stack tecnica a ser preenchida pelo operador.',
+    MODULES_MARKDOWN: '- Preencher modulos principais.',
+    CRITICAL_FLOWS_MARKDOWN: '- Preencher fluxos criticos.',
+    INTEGRATIONS_MARKDOWN: '- Preencher integracoes.',
+    ENVIRONMENTS_MARKDOWN: '- Preencher ambientes.',
+    TECHNICAL_DEBTS_MARKDOWN: '- Preencher dividas tecnicas.',
+    PRODUCT_DEBTS_MARKDOWN: '- Preencher dividas de produto.',
+    KNOWN_RISKS_MARKDOWN: '- Preencher riscos conhecidos.',
+    DEFERRED_WITHOUT_SPEC_MARKDOWN: '- Preencher itens que exigem spec.'
+  };
+  settings.TEST_QUICK_COMMAND = settings.TEST_COMMANDS.join(' && ') || 'echo "no quick gate configured"';
+  settings.TEST_FULL_COMMAND = [...settings.LINT_COMMANDS, ...settings.TEST_COMMANDS].join(' && ') || 'echo "no full gate configured"';
+  settings.TEST_BUILD_COMMAND = [...settings.LINT_COMMANDS, ...settings.TEST_COMMANDS, ...settings.BUILD_COMMANDS].join(' && ') || 'echo "no build gate configured"';
+  normalizeSettings(settings);
+  return settings;
 }
 
 function buildSettings(profile, detected, args, directory) {
@@ -755,6 +884,24 @@ function githubRepoName(remote) {
 
 function hasRemote(directory) {
   return Boolean(tryRun('git', ['remote', 'get-url', 'origin'], directory).trim());
+}
+
+function readJsonIfExists(filePath) {
+  if (!fs.existsSync(filePath)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (_error) {
+    return {};
+  }
+}
+
+function getNested(obj, keys) {
+  let current = obj;
+  for (const key of keys) {
+    if (!current || typeof current !== 'object' || !Object.prototype.hasOwnProperty.call(current, key)) return undefined;
+    current = current[key];
+  }
+  return current;
 }
 
 function render(text, settings) {

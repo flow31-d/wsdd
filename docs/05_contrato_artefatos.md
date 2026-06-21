@@ -51,6 +51,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Adição de `CONCERNS_PIPELINE.md` à seção `+specs/project/` (v0.4.2), com regra de captura em par `CONCERNS.md` + pipeline.
 - 21/06/2026 — Codex: `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo (`v0.4.3`).
 - 21/06/2026 — Codex: `wsd relatorio` passa a gerar relatório operacional opcional em `+specs/RELATORIO.md` (`v0.4.4`).
+- 21/06/2026 — Codex: `wsd update` passa a garantir novos arquivos de agente em modo preservador (`v0.4.5`).
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
 - 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
@@ -320,7 +321,7 @@ Estrutura principal:
 
 **Versão instalada:** via `wsd version` — lê `version`, `installed_at` e `wsd_source` de `+wsd/config.json`; quando possível, compara com `wsd_source/package.json`.
 
-**Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json` e atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/` sem tocar em artefatos do projeto.
+**Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json`, atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/`, `+wsd/docs/` quando habilitado e garante novos arquivos de aderência em `.agents/skills/`, `.codex/skills/`, `.claude/commands/` e `+wsd/hooks/` sem sobrescrever arquivos existentes.
 
 ### Contrato `wsd finish` (v0.4.3)
 
@@ -378,5 +379,6 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `CONCERNS_PIPELINE.md` como artefato obrigatório e regra de manutenção em par com `CONCERNS.md` (`v0.4.2`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd finish` limpo com gates, docs audit e commit de fechamento (`v0.4.3`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd relatorio` e do artefato opcional `+specs/RELATORIO.md` (`v0.4.4`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Atualização do contrato `wsd update` para incluir novos arquivos de agente em modo preservador (`v0.4.5`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

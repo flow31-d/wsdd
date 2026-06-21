@@ -67,6 +67,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.2` com pipeline de concerns, skill/comando de captura de preocupação e `CONCERNS_PIPELINE.md` como nota obrigatória.
 - 21/06/2026 — Codex: Atualização para `v0.4.3` com `wsd finish` limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree final limpo.
 - 21/06/2026 — Codex: Atualização para `v0.4.4` com `wsd relatorio`: relatório operacional de estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente.
+- 21/06/2026 — Codex: Atualização para `v0.4.5` com `wsd update` preservador, aderência de agente para projetos já instalados e teste de regressão.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -99,11 +100,11 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.4.4`** (patch — relatório operacional WSD).
+Versão atual do pacote: **`v0.4.5`** (patch — update/adherence preservador).
 
 O WSD já possui:
 
-- `package.json` com binário `wsd-method` e `npm test` (15 gates);
+- `package.json` com binário `wsd-method` e `npm test` (16 gates);
 - `bin/wsd-method.js` com `install`, `doctor`, `help`, `update`, `--list-options`, flag `--brownfield` e `--git-policy none|basic|full`;
 - `install.sh` como wrapper local;
 - instalação vendorizada em `+wsd/`;
@@ -124,7 +125,7 @@ O WSD já possui:
 - `wsd finish` automatizado: roda gates, auditoria documental quando disponível, gera `+specs/HANDOFF.md`, atualiza snapshot, captura prompts de STATE.md quando interativo, cria commit de fechamento e termina com worktree limpo (`v0.4.3`);
 - `wsd relatorio`: gera visão geral em Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão do agente (`v0.4.4`);
 - instalação interativa rica: linguagem principal, path canônico, comandos test/build/lint, forbidden_paths (v0.1.8);
-- `wsd update` real: atualiza `+wsd/` vendor tree via `wsd_source` em `+wsd/config.json` sem tocar em arquivos do projeto (v0.1.8);
+- `wsd update` real: atualiza `+wsd/` vendor tree via `wsd_source` em `+wsd/config.json` e garante novos arquivos de aderência de agente em modo preservador, sem sobrescrever arquivos existentes do projeto (v0.1.8, reforçado em v0.4.5);
 - validação WHEN+THEN+SHALL completa: todos os três keywords obrigatórios em ghost scan e L1/L2 (v0.1.8).
 - saneamento documental operacional: `docs/00` e `docs/12` alinhados ao estado real; `wsd_philo/` preservado como histórico/pesquisa (v0.1.9).
 - MVP Git/GitHub Governance implementado: `--git-policy none|basic|full`, bloco `git_governance` no `+context.json`, seção Git/GitHub no `AGENTS.md`, templates `.github/` no modo `full` e testes de instalação para `none`, `basic` e `full` (v0.1.10).
@@ -142,8 +143,9 @@ O WSD já possui:
 - Release **`v0.4.2`** (21/06/2026): patch — adiciona `CONCERNS_PIPELINE.md`, reestrutura `CONCERNS.md` com concerns ativas `CONC-###`, cria `wsd-concern`/`concern-{PROJECT_SLUG}` e inclui concerns em bootstrap, start brief e snapshot.
 - Release **`v0.4.3`** (21/06/2026): patch — `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo; teste `test:install-finish-clean` cobre a regressão.
 - Release **`v0.4.4`** (21/06/2026): patch — `wsd relatorio` consolida estado atual, implementações em andamento, plano, ideias, concerns e sugestão; adiciona `wsd-relatorio`, `/wsd-relatorio` e `test:install-relatorio`.
+- Release **`v0.4.5`** (21/06/2026): patch — `wsd update` responde `--help` sem efeitos colaterais e atualiza projetos existentes com novos arquivos de agente (`.agents`, `.codex`, `.claude`, hooks) em modo new-files-only; adiciona `test:install-update-adherence`.
 
-Foco atual: **`v0.4.4` em preparação pública** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
+Foco atual: **`v0.4.5` publicado como patch de atualização** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -218,5 +220,6 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.2`: pipeline de concerns, skill/comando de captura e nota obrigatória `CONCERNS_PIPELINE.md`. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.3`: `wsd finish` limpo com gates, docs audit, HANDOFF, snapshot, commit automático e teste de regressão. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.4`: `wsd relatorio`, artefatos de agente e teste de instalação. |
+| 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.5`: `wsd update` preservador, aderência de agente em projetos já instalados e gate de regressão. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

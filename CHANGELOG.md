@@ -51,7 +51,8 @@ otimizado_para_obsidian: true
 25. [[#25. 0.4.2 — 21/06/2026]]
 26. [[#26. 0.4.3 — 21/06/2026]]
 27. [[#27. 0.4.4 — 21/06/2026]]
-28. [[#28. 🕒 Registro de Alterações por Agentes]]
+28. [[#28. 0.4.5 — 21/06/2026]]
+29. [[#29. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -86,6 +87,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.2`** (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, concerns ativas `CONC-###`, skill `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações. Seção 25 adicionada, Registro renumerado para seção 26.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.3`** (patch — finish limpo): `wsd finish` passa a rodar gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e verificação final de worktree limpa. Seção 26 adicionada, Registro renumerado para seção 27.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.4`** (patch — relatório WSD): `wsd relatorio` gera relatório operacional com estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente. Seção 27 adicionada, Registro renumerado para seção 28.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.5`** (patch — update/adherence preservador): `wsd update` passa a instalar novos atalhos de agente em projetos existentes sem sobrescrever customizações e `update --help` deixa de alterar o projeto. Seção 28 adicionada, Registro renumerado para seção 29.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -988,7 +990,24 @@ Documentação:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 28. 🕒 Registro de Alterações por Agentes
+## 28. 0.4.5 — 21/06/2026
+
+**Patch — update/adherence preservador.** Esta release corrige a atualização de projetos já instalados para que novas skills e comandos de agente cheguem aos repositórios sem reinstalação destrutiva.
+
+Inclui:
+
+- **`wsd update --help` sem efeitos colaterais** — pedir ajuda não executa mais update nem altera `+wsd/config.json`.
+- **Update de aderência de agente** — `wsd-method update` garante arquivos novos em `.agents/skills`, `.codex/skills`, `.claude/commands` e `+wsd/hooks` de acordo com `+wsd/config.json#tools`.
+- **Preservação de customizações** — arquivos existentes nesses destinos não são sobrescritos no update normal.
+- **`test:install-update-adherence`** — simula um projeto antigo, remove artefatos novos, valida `update --help`, roda `wsd update` e confirma que os atalhos novos aparecem preservando arquivo customizado.
+
+Documentação:
+
+- README, wsd.md, docs/05, docs/09, docs/10, docs/15, docs/18, docs/19 e ROADMAP atualizados para `v0.4.5`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 29. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -1017,5 +1036,6 @@ Documentação:
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.2`** — pipeline de concerns, `wsd-concern`, `/concern-{PROJECT_SLUG}`, `CONCERNS_PIPELINE.md` obrigatório e resumo de concerns em start/snapshot. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.3`** — finish limpo, docs audit, HANDOFF, snapshot, commit automático e teste `test:install-finish-clean`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.4`** — `wsd relatorio`, skill/comando de relatório e teste `test:install-relatorio`. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.5`** — update preservador para aderência de agente em projetos existentes e teste `test:install-update-adherence`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

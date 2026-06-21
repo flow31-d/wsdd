@@ -2124,16 +2124,26 @@ case "$command" in
     fi
     ;;
   update)
-    if [[ ! -f +wsd/config.json ]]; then
-      echo "FAIL: +wsd/config.json not found — run wsd-method install first" >&2
+    if [[ "${1:-}" == "help" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+      echo "Usage: ./+wsd/bin/wsd update"
+      echo "Refreshes +wsd vendor files and adds new agent adherence files from wsd_source."
+      echo "Preserves existing project files and existing custom agent files."
+    elif [[ $# -gt 0 ]]; then
+      echo "FAIL: argumento desconhecido em update: $1" >&2
+      echo "Hint: use ./+wsd/bin/wsd update --help" >&2
       exit 1
-    fi
-    _wsd_src="$(python3 -c "import json; print(json.load(open('+wsd/config.json')).get('wsd_source',''))" 2>/dev/null || echo '')"
-    if [[ -n "$_wsd_src" && -f "$_wsd_src/bin/wsd-method.js" ]]; then
-      node "$_wsd_src/bin/wsd-method.js" update --directory .
     else
-      echo "warn: wsd_source ausente ou invalido em +wsd/config.json"
-      echo "Execute: node /caminho/para/wsd/bin/wsd-method.js update --directory ."
+      if [[ ! -f +wsd/config.json ]]; then
+        echo "FAIL: +wsd/config.json not found — run wsd-method install first" >&2
+        exit 1
+      fi
+      _wsd_src="$(python3 -c "import json; print(json.load(open('+wsd/config.json')).get('wsd_source',''))" 2>/dev/null || echo '')"
+      if [[ -n "$_wsd_src" && -f "$_wsd_src/bin/wsd-method.js" ]]; then
+        node "$_wsd_src/bin/wsd-method.js" update --directory .
+      else
+        echo "warn: wsd_source ausente ou invalido em +wsd/config.json"
+        echo "Execute: node /caminho/para/wsd/bin/wsd-method.js update --directory ."
+      fi
     fi
     ;;
   git)

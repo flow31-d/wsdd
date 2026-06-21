@@ -69,6 +69,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.2` (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, `CONC-###`, skill `wsd-concern`, comando `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns e snapshot/start brief com resumo de preocupações.
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.3` (patch — finish limpo): `wsd finish` roda gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e valida worktree limpo.
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.4` (patch — relatório WSD): `wsd relatorio` consolida estado atual, implementação em andamento, plano, ideias, concerns e sugestão do agente.
+- 21/06/2026 — Codex: Consolidação da entrega `v0.4.5` (patch — update/adherence): `wsd update` preservador garante novos atalhos de agente em projetos já instalados e `update --help` não altera o projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -113,7 +114,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - [x] HANDOFF.md gerado automaticamente por `wsd finish` — branch, último commit, últimos 5 commits, arquivos em andamento, specs abertas (`v0.1.7-alpha`).
 - [x] Prompts interativos no `wsd finish` para STATE.md: lições aprendidas, decisões, bloqueadores (`v0.1.7-alpha`).
 - [x] Instalação interativa rica: linguagem principal, path canônico, test/build/lint commands, forbidden_paths (`v0.1.8-alpha`).
-- [x] `wsd update` real: atualiza `+wsd/` vendor tree sem tocar em arquivos do projeto (`v0.1.8-alpha`).
+- [x] `wsd update` real: atualiza `+wsd/` vendor tree sem sobrescrever arquivos do projeto; desde `v0.4.5`, também garante novos atalhos de agente em modo preservador (`v0.1.8-alpha`, reforçado em `v0.4.5`).
 - [x] Validação WHEN+THEN+SHALL completa: todos os três keywords obrigatórios em ghost scan e L1/L2 (`v0.1.8-alpha`).
 - [x] Saneamento documental pós-v0.1.8: checklists operacionais atualizados e `wsd_philo/` classificado como referência histórica/pesquisa (`v0.1.9-alpha`).
 - [x] Implementar MVP Git/GitHub Governance (`v0.1.10-alpha`): `--git-policy none|basic|full`, `wsd git doctor`, `wsd git preflight`, `wsd git pr-check`, templates PR/Issue e campos `git_governance` no `+context.json`.
@@ -164,6 +165,7 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.4.2` — **Concerns Pipeline**: `CONCERNS_PIPELINE.md` obrigatório, `CONCERNS.md` com preocupações ativas `CONC-###`, skill Codex `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações.
 - [x] `v0.4.3` — **Finish Clean Close**: `wsd finish` passa a fechar sessão com gates, auditoria documental WSD quando disponível, HANDOFF.md sem estado final sujo, snapshot, commit automático e teste `test:install-finish-clean`.
 - [x] `v0.4.4` — **WSD Relatorio**: `wsd relatorio` gera visão geral em Markdown com estado atual, implementação em andamento, plano programado, ideias, concerns e sugestão; adiciona `wsd-relatorio`, `/wsd-relatorio` e teste `test:install-relatorio`.
+- [x] `v0.4.5` — **Update Adherence Preservation**: `wsd update --help` deixa de atualizar por acidente; `wsd update` instala novos arquivos de agente em `.agents/skills`, `.codex/skills`, `.claude/commands` e `+wsd/hooks` sem sobrescrever customizações. Gate `test:install-update-adherence`.
 - [ ] `v0.4.x` / `v0.5.0` — **Próximas frentes**: auto-PR/Issues, dashboard de runs, sandbox forte, adapters multi-agente e checkpoints L2 assistidos. Ver `+specs/project/IDEAS.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -236,5 +238,6 @@ Regra de acompanhamento:
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.2`: pipeline de concerns, skill/comando de preocupação e `CONCERNS_PIPELINE.md` como nota obrigatória. |
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.3`: fechamento limpo do `wsd finish` com gates, docs audit e commit automático. |
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.4`: relatório WSD operacional com estado, plano, ideias, concerns e sugestão. |
+| 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.5`: update preservador cobre aderência de agente em projetos já instalados. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
