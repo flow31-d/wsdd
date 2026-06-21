@@ -41,7 +41,7 @@ bash scripts/wsd_check.sh --risk L0 .
 - Load `+specs/context/*.md` selectively.
 - If editing WSD documentation, templates, profiles, skills, installer, package version, or release notes, read `+wsd/docs/10_matriz_sincronizacao_notas.md` when present and update the related files listed there.
 - Require approved spec for L1/L2.
-- Do not use `git add .`.
+- Do not use `git add .` manually. Exception: `./+wsd/bin/wsd finish` may stage and commit after gates.
 - Do not hide dirty worktree.
 - Do not store secrets.
 - Report validation commands and results.

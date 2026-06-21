@@ -49,6 +49,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
 - 21/06/2026 — Codex: Adição de `CONCERNS_PIPELINE.md` à seção `+specs/project/` (v0.4.2), com regra de captura em par `CONCERNS.md` + pipeline.
+- 21/06/2026 — Codex: `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo (`v0.4.3`).
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
 - 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
@@ -220,7 +221,7 @@ O objetivo é evitar que agentes carreguem documentação inteira, BMad completo
 Artefatos criados automaticamente pelo installer em todos os projetos (greenfield e brownfield):
 
 ### `+specs/project/STATE.md`
-Memória operacional: decisões, lições, bloqueadores, ideias adiadas, todos ativos. Atualizado por `wsd finish` com prompts interativos.
+Memória operacional: decisões, lições, bloqueadores, ideias adiadas, todos ativos. Atualizado por `wsd finish` com prompts interativos quando stdin é TTY.
 
 ### `+specs/project/PROJECT.md`
 Definição imutável do projeto: nome, tipo, objetivos, contexto de negócio.
@@ -317,6 +318,20 @@ Estrutura principal:
 
 **Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json` e atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/` sem tocar em artefatos do projeto.
 
+### Contrato `wsd finish` (v0.4.3)
+
+`./+wsd/bin/wsd finish` é o fechamento aprovado de sessão. O comando deve:
+
+- rodar `git diff --check`;
+- rodar `scripts/wsd_check.sh --risk L0 .` quando disponível;
+- rodar `scripts/wsd_docs_check.sh` quando o auditor documental do WSD estiver disponível na raiz do método;
+- gerar `+specs/HANDOFF.md` com gates, alterações capturadas e próximos passos;
+- atualizar snapshot quando possível;
+- criar commit de fechamento por padrão;
+- terminar com `git status --short` vazio.
+
+O comando não deve usar `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge. Se gate, hook ou path sensível falhar, o fechamento não está aprovado.
+
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 10. Sincronização de Artefatos
@@ -347,5 +362,6 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 15/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `automation.loop`, prompts `+wsd/loop/` e ignores locais do WSD Loop `v0.4.0`. |
 | 17/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato de skills Codex em `.agents/skills/` e prompts opcionais `codex-shortcuts` (`v0.4.1`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `CONCERNS_PIPELINE.md` como artefato obrigatório e regra de manutenção em par com `CONCERNS.md` (`v0.4.2`). |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd finish` limpo com gates, docs audit e commit de fechamento (`v0.4.3`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

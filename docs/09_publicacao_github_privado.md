@@ -54,6 +54,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Atualização para `v0.4.0` (minor — WSD Loop + Codex Adherence Pack): versão atual e release estável adicionadas com `automation.loop`, subcomando `wsd loop`, `WSD Codex Bootstrap`, `wsd codex-prompt`/`wsd codex` e gates `test:install-loop`/`test:install-codex-adherence`.
 - 17/06/2026 — Codex: Atualização para `v0.4.1` (patch — atalhos de agente): versão atual e release estável adicionadas com `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e `shortcuts`.
 - 21/06/2026 — Codex: Atualização para `v0.4.2` (patch — pipeline de concerns): versão atual e release estável adicionadas com `CONCERNS_PIPELINE.md`, `wsd-concern`, `/concern-{PROJECT_SLUG}` e snapshot/start brief de concerns.
+- 21/06/2026 — Codex: Atualização para `v0.4.3` (patch — finish limpo): versão atual e release estável adicionadas com gates, docs audit, HANDOFF, snapshot, commit automático e worktree limpo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -95,7 +96,7 @@ main
 Versão atual do pacote:
 
 ```text
-v0.4.2
+v0.4.3
 ```
 
 Tags alpha já usadas:
@@ -124,6 +125,7 @@ Release estável:
 - **`v0.4.0`** (15/06/2026): minor — WSD Loop + Codex Adherence Pack. `+context.json` declara `automation.loop` e `automation.loop.auto_use`; o vendor tree inclui `+wsd/loop/PROMPT_plan.md` e `PROMPT_build.md`; `./+wsd/bin/wsd loop plan|once|run|status|stop|auto` prepara e executa ciclos curtos com gates de risco, paths e CI antes de auto-commit. O `AGENTS.md` inclui `WSD Codex Bootstrap`; o CLI local inclui `start --brief`, `codex-prompt` e `codex`. `npm test` inclui `test:install-loop` e `test:install-codex-adherence`.
 - **`v0.4.1`** (17/06/2026): patch — atalhos de agente para WSD Loop. `install --tools codex` gera `.agents/skills/*` e espelha `.codex/skills/*`; `wsd-loop` mapeia pedidos curtos; `codex-shortcuts install` habilita `/prompts:loop`; Claude Code recebe `/loop`; `shortcuts shell` imprime funções `wsd()`/`wl()`.
 - **`v0.4.2`** (21/06/2026): patch — pipeline de concerns. `CONCERNS_PIPELINE.md` vira nota obrigatória; `CONCERNS.md` ganha concerns ativas `CONC-###`; Codex recebe `wsd-concern`; Claude Code recebe `/concern-{PROJECT_SLUG}`; `start --brief` e snapshot passam a expor resumo de preocupações.
+- **`v0.4.3`** (21/06/2026): patch — finish limpo. `wsd finish` roda gates, auditoria documental WSD quando disponível, gera `HANDOFF.md`, atualiza snapshot, cria commit automático e só passa com worktree limpo. `npm test` inclui `test:install-finish-clean`.
 - **`v0.3.2`** (13/06/2026): patch — versão carimbada no snapshot. `templates/local-wsd/bin/wsd-snapshot.cjs` grava `wsd_version` em cada `+wsd/snapshot.json`, lido de `+wsd/config.json`. Consumidores que já leem snapshots (ex.: Zelador) detectam deriva de versão sem abrir o `config.json` por repo. Complementa o `wsd version` ativo da v0.3.1.
 - **`v0.3.3`** (13/06/2026): patch — publicação pública. Leva ao `wsdd` público a feature da v0.3.2 (público estava em v0.3.1). Entrega o carimbo `wsd_version` no snapshot e a detecção passiva de deriva ao repositório público.
 

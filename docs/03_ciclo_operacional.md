@@ -138,7 +138,7 @@ Durante execução:
 - editar apenas escopo permitido;
 - evitar refatorações não solicitadas;
 - preservar mudanças preexistentes;
-- não usar `git add .`;
+- não usar `git add .` manualmente; fechar com `./+wsd/bin/wsd finish` quando a sessão estiver pronta;
 - não registrar secrets;
 - manter validação coerente com a spec.
 

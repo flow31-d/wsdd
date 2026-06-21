@@ -27,8 +27,7 @@ git switch -c <branch-da-tarefa>
 
 - Não editar branch principal diretamente.
 - Não tratar clones paralelos como fontes independentes.
-- Não usar `git add .`.
+- Não usar `git add .` manualmente. Exceção: `./+wsd/bin/wsd finish` pode fazer staging/commit automático depois dos gates.
 - Não fazer `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para esconder worktree suja.
 - Não registrar secrets em Git, specs, issues, Obsidian, logs, prompts ou PRs.
 - Não executar mutação de produção por conta própria.
-

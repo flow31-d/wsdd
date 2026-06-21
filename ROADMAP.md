@@ -67,6 +67,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Consolidação da entrega `v0.4.0` (minor — WSD Loop + Codex Adherence Pack): `automation.loop`, prompts vendorizados, subcomando `wsd loop`, comandos `wsd codex-prompt`/`wsd codex`, `start --brief`, gates de iteração e ideias futuras registradas em `+specs/project/IDEAS.md`.
 - 17/06/2026 — Codex: Consolidação da entrega `v0.4.1` (patch — atalhos de agente): `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` no Claude Code e atalhos shell para reduzir digitação manual.
 - 21/06/2026 — Codex: Consolidação da entrega `v0.4.2` (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, `CONC-###`, skill `wsd-concern`, comando `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns e snapshot/start brief com resumo de preocupações.
+- 21/06/2026 — Codex: Consolidação da entrega `v0.4.3` (patch — finish limpo): `wsd finish` roda gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e valida worktree limpo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -160,6 +161,7 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.4.0` — **WSD Loop Automation + Codex Adherence Pack**: `automation.loop` no `+context.json`, prompts `+wsd/loop/PROMPT_plan.md` e `PROMPT_build.md`, subcomando `wsd loop plan|once|run|status|stop`, `WSD Codex Bootstrap` no `AGENTS.md`, comandos `wsd codex-prompt`/`wsd codex`, `start --brief`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop` + `test:install-codex-adherence`.
 - [x] `v0.4.1` — **Atalhos de agente para WSD Loop**: skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop status`, e `wsd shortcuts shell` para funções `wsd()`/`wl()`.
 - [x] `v0.4.2` — **Concerns Pipeline**: `CONCERNS_PIPELINE.md` obrigatório, `CONCERNS.md` com preocupações ativas `CONC-###`, skill Codex `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações.
+- [x] `v0.4.3` — **Finish Clean Close**: `wsd finish` passa a fechar sessão com gates, auditoria documental WSD quando disponível, HANDOFF.md sem estado final sujo, snapshot, commit automático e teste `test:install-finish-clean`.
 - [ ] `v0.4.x` / `v0.5.0` — **Próximas frentes**: auto-PR/Issues, dashboard de runs, sandbox forte, adapters multi-agente e checkpoints L2 assistidos. Ver `+specs/project/IDEAS.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -230,5 +232,6 @@ Regra de acompanhamento:
 | 15/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.0`: WSD Loop implementado e próximas automações movidas para `+specs/project/IDEAS.md`. |
 | 17/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.1`: atalhos Codex/Claude/shell para WSD Loop e alinhamento de skills Codex em `.agents/skills`. |
 | 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.2`: pipeline de concerns, skill/comando de preocupação e `CONCERNS_PIPELINE.md` como nota obrigatória. |
+| 21/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.3`: fechamento limpo do `wsd finish` com gates, docs audit e commit automático. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

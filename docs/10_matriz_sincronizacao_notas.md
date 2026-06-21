@@ -59,6 +59,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 17/06/2026 — Codex: Inclusão de `templates/codex-prompts/`, `.agents/skills` e atalhos WSD Loop na matriz de sincronização da v0.4.1.
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack (`WSD Codex Bootstrap`, `codex-prompt`, `codex`, `start --brief`) na matriz de sincronização.
 - 21/06/2026 — Codex: Inclusão de `CONCERNS_PIPELINE.md`, `wsd-concern` e `/concern-{PROJECT_SLUG}` na matriz de sincronização da v0.4.2.
+- 21/06/2026 — Codex: Inclusão do contrato de finish limpo (`wsd finish`) na matriz de sincronização da v0.4.3.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -134,6 +135,7 @@ Antes de finalizar, o agente deve responder:
 | estratégia público × privado (separação de conteúdo, perfis, workflow) | docs/15, STATE.md (decisão), docs/09 (link), esta matriz |
 | WSD Loop / automação iterativa | docs/19, docs/08, docs/05, README, wsd.md, ROADMAP, CHANGELOG, `+specs/features/wsd-loop/`, `+specs/project/IDEAS.md`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/loop/`, `bin/wsd-method.js`, `package.json`, scripts de validação |
 | Concerns / preocupações ativas | docs/05, docs/08, docs/10, README, wsd.md, ROADMAP, CHANGELOG, `+specs/project/CONCERNS.md`, `+specs/project/CONCERNS_PIPELINE.md`, `templates/repo/+specs/project/CONCERNS*.md.template`, `templates/codex-skills/wsd-concern/`, `templates/claude-commands/commands/wsd-concern.md`, `templates/repo/AGENTS.md.template`, `bin/wsd-method.js`, `templates/local-wsd/bin/wsd`, `templates/local-wsd/bin/wsd-snapshot.cjs`, `package.json`, scripts de validação |
+| `wsd finish` / fechamento limpo | docs/05, docs/08, docs/10, docs/13, docs/18, README, wsd.md, ROADMAP, CHANGELOG, `templates/local-wsd/bin/wsd`, `templates/codex-skills/wsd-finish/SKILL.md`, `templates/claude-commands/commands/wsd-finish.md`, `templates/repo/AGENTS.md.template`, `package.json`, `scripts/test_install_finish_clean.sh`, `scripts/wsd_self_check.sh`, `scripts/wsd_docs_check.sh` |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -147,7 +149,7 @@ Quando a mudança for de versão ou release, atualizar no mínimo:
 - `ROADMAP.md`;
 - `docs/09_publicacao_github_privado.md`.
 
-Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 13 gates de `npm test`, verificação de perfis privados e gate de secrets.
+Quando for push para o repositório público, executar o checklist de `docs/15_repositorio_publico_e_quick_start.md` seção 8 — inclui os 14 gates de `npm test`, verificação de perfis privados e gate de secrets.
 
 Quando a mudança for de instalação ou uso, atualizar no mínimo:
 

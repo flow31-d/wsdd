@@ -24,7 +24,7 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Versão coberta: **`v0.4.2`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell e pipeline de preocupações via `CONCERNS_PIPELINE.md`.
+> Versão coberta: **`v0.4.3`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, pipeline de preocupações via `CONCERNS_PIPELINE.md` e fechamento limpo via `wsd finish`.
 
 ## 📑 Índice
 
@@ -101,7 +101,7 @@ Depois da instalação, o comando principal passa a ser:
 Entre na pasta do projeto e rode:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install --init-git
+npx github:flow31-d/wsdd#v0.4.3 install --init-git
 ```
 
 Use essa forma quando você quer responder às perguntas na tela. Se aparecer um valor entre colchetes, apertar Enter aceita o padrão.
@@ -111,7 +111,7 @@ Use essa forma quando você quer responder às perguntas na tela. Se aparecer um
 Use quando você quer instalar rápido com escolhas padrão:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install \
+npx github:flow31-d/wsdd#v0.4.3 install \
   --directory . \
   --init-git \
   --tools both \
@@ -136,7 +136,7 @@ O que isso faz:
 Use `--brownfield` quando o projeto já tem código:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install \
+npx github:flow31-d/wsdd#v0.4.3 install \
   --directory . \
   --tools both \
   --git-policy full \
@@ -152,7 +152,7 @@ npx github:flow31-d/wsdd#v0.4.2 install \
 Se você quiser menos arquivos dentro de `+wsd/`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install \
+npx github:flow31-d/wsdd#v0.4.3 install \
   --directory . \
   --init-git \
   --tools both \
@@ -257,12 +257,17 @@ Regra simples:
 Ele:
 
 - mostra estado final;
-- roda validação básica;
+- roda validações e gates de aprovação;
+- revisa documentação WSD quando o auditor documental está disponível;
 - gera `+specs/HANDOFF.md`;
 - pode perguntar lições, decisões e bloqueadores;
 - atualiza `+wsd/snapshot.json` quando possível.
+- cria commit de fechamento por padrão;
+- só termina aprovado se o `git status` ficar limpo.
 
 Use antes de parar o trabalho ou trocar de agente.
+
+Se algum gate falhar, o comando para e mostra o motivo. Ele não usa `git reset`, `git stash`, `git clean`, `--no-verify`, auto-push ou auto-merge.
 
 ### 5.6 Gerar snapshot para dashboard
 
@@ -487,7 +492,7 @@ Esse comando atualiza a parte vendorizada do WSD no projeto. Ele preserva:
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install \
+npx github:flow31-d/wsdd#v0.4.3 install \
   --directory . \
   --force
 ```
@@ -495,13 +500,13 @@ npx github:flow31-d/wsdd#v0.4.2 install \
 ### 9.3 Ver opções do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 install --list-options
+npx github:flow31-d/wsdd#v0.4.3 install --list-options
 ```
 
 ### 9.4 Ver ajuda do instalador
 
 ```bash
-npx github:flow31-d/wsdd#v0.4.2 help
+npx github:flow31-d/wsdd#v0.4.3 help
 ```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
@@ -613,8 +618,8 @@ gh auth status
 ## 12. Cola Rápida
 
 ```bash
-# Instalar WSDD v0.4.2 na pasta atual
-npx github:flow31-d/wsdd#v0.4.2 install --init-git
+# Instalar WSDD v0.4.3 na pasta atual
+npx github:flow31-d/wsdd#v0.4.3 install --init-git
 
 # Ver se está tudo certo
 ./+wsd/bin/wsd doctor

@@ -49,7 +49,8 @@ otimizado_para_obsidian: true
 23. [[#23. 0.4.0 — 15/06/2026]]
 24. [[#24. 0.4.1 — 17/06/2026]]
 25. [[#25. 0.4.2 — 21/06/2026]]
-26. [[#26. 🕒 Registro de Alterações por Agentes]]
+26. [[#26. 0.4.3 — 21/06/2026]]
+27. [[#27. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -82,6 +83,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Inclusão da versão **`0.4.0`** (minor — WSD Loop + Codex Adherence Pack): `automation.loop`, `automation.loop.auto_use`, prompts vendorizados `+wsd/loop/`, subcomando `wsd loop plan|once|run|status|stop|auto`, `WSD Codex Bootstrap`, `start --brief`, `codex-prompt`, `codex`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop`/`test:install-codex-adherence`. Seção 23 adicionada, Registro renumerado para seção 24.
 - 17/06/2026 — Codex: Inclusão da versão **`0.4.1`** (patch — atalhos de agente): skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, CLI `codex-shortcuts`/`shortcuts` e gates cobrindo a ergonomia de WSD Loop. Seção 24 adicionada, Registro renumerado para seção 25.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.2`** (patch — pipeline de concerns): `CONCERNS_PIPELINE.md`, concerns ativas `CONC-###`, skill `wsd-concern`, comando Claude `/concern-{PROJECT_SLUG}`, bootstrap obrigatório de concerns, `start --brief` e snapshot com resumo de preocupações. Seção 25 adicionada, Registro renumerado para seção 26.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.3`** (patch — finish limpo): `wsd finish` passa a rodar gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e verificação final de worktree limpa. Seção 26 adicionada, Registro renumerado para seção 27.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -942,7 +944,30 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 26. 🕒 Registro de Alterações por Agentes
+## 26. 0.4.3 — 21/06/2026
+
+**Patch — fechamento limpo do `wsd finish`.** Esta release transforma o encerramento de sessão em uma aprovação operacional: o comando valida, registra, commita e só passa com worktree limpo.
+
+### Alterado
+
+- **`wsd finish` com commit automático** — o comando cria commit `chore(wsd): finish session` por padrão depois dos gates.
+- **Handoff sem estado final sujo** — `+specs/HANDOFF.md` registra alterações capturadas pelo fechamento e estado final esperado limpo após o commit.
+- **Auditoria documental WSD** — `finish` roda `scripts/wsd_docs_check.sh` quando o auditor documental está disponível na raiz do método.
+- **Bloqueio de caminhos sensíveis** — paths como `.env`, `secrets`, `keys`, `certs`, `id_rsa` e `id_ed25519` impedem o commit automático.
+- **Sem atalhos destrutivos** — o comando não usa `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge.
+
+### Adicionado
+
+- **`test:install-finish-clean`** — instala WSD em repo temporário, cria alteração pendente, roda `./+wsd/bin/wsd finish` e exige commit de fechamento + `git status` limpo.
+- **Spec `finish-clean-close`** — contrato da mudança em `+specs/features/finish-clean-close/`.
+
+### Documentação
+
+- README, wsd.md, docs/05, docs/08, docs/10, docs/13, docs/18, docs/19 e comandos/skills `wsd-finish` atualizados para o novo contrato.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 27. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -969,5 +994,6 @@ No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`
 | 15/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.0`** — WSD Loop, Codex Adherence Pack, `automation.loop.auto_use`, prompts vendorizados, subcomandos `wsd loop`/`wsd loop auto`/`wsd codex-prompt`/`wsd codex` e gates `test:install-loop`/`test:install-codex-adherence`. |
 | 17/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.1`** — atalhos Codex/Claude/shell para WSD Loop, `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e gates de instalação. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.2`** — pipeline de concerns, `wsd-concern`, `/concern-{PROJECT_SLUG}`, `CONCERNS_PIPELINE.md` obrigatório e resumo de concerns em start/snapshot. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.3`** — finish limpo, docs audit, HANDOFF, snapshot, commit automático e teste `test:install-finish-clean`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

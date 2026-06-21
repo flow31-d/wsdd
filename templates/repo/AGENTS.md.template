@@ -27,7 +27,7 @@ git remote -v
 git remote show origin
 ```
 
-Se a worktree estiver suja, identificar mudanças preexistentes antes de editar. Não usar `git add .`, `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para contornar sujeira local sem decisão explícita.
+Se a worktree estiver suja, identificar mudanças preexistentes antes de editar. Não usar `git add .`, `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para contornar sujeira local sem decisão explícita. Exceção: `./+wsd/bin/wsd finish` pode fazer staging/commit automático depois dos gates.
 
 ## WSD Codex Bootstrap
 
@@ -121,7 +121,7 @@ Comandos locais:
 ```bash
 ./+wsd/bin/wsd start    # abre sessão: git state, contexto, specs, risco
 ./+wsd/bin/wsd check    # valida contrato WSD do repo
-./+wsd/bin/wsd finish   # fecha sessão: STATE.md, HANDOFF.md, relatório
+./+wsd/bin/wsd finish   # fecha sessão: gates, docs audit, HANDOFF.md, commit e worktree limpo
 ./+wsd/bin/wsd doctor   # diagnóstico de dependências e hooks
 ./+wsd/bin/wsd hooks    # reinstala git hooks em .git/hooks/
 ./+wsd/bin/wsd version  # checa versão do WSD instalada no repo ou inventário em lote
@@ -209,7 +209,7 @@ Comandos de sessão (Claude Code):
 
 ```
 /wsd-start       — abre sessão: git state, STATE.md, HANDOFF.md, risco e auto-sizing
-/wsd-finish      — fecha sessão: atualiza STATE.md, gera HANDOFF.md, relatório final
+/wsd-finish      — fecha sessão: gates, HANDOFF.md, commit de fechamento e worktree limpo
 /wsd-specify     — fase Specify: clarifica requirements, escreve spec.md WHEN/THEN/SHALL
 /wsd-design      — fase Design: arquitetura, componentes, design.md
 /wsd-tasks       — fase Tasks: tasks.md atômico com gate checks e dependências

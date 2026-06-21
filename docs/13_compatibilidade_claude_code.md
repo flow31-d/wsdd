@@ -396,7 +396,7 @@ Se sim, adicionar entrada em `+logs/error_vault.json` com os campos:
 
 - repo e host
 - branch e upstream
-- estado limpo/sujo
+- estado final limpo ou bloqueio explícito
 - arquivos alterados
 - commits criados
 - links PR/spec usados
@@ -407,7 +407,7 @@ Se sim, adicionar entrada em `+logs/error_vault.json` com os campos:
 
 ## Limite
 
-Não esconder estado sujo. Não executar `git add .`, `git stash`, `git reset`, `git clean` ou trocar branch apenas para deixar o relatório limpo.
+No `wsd finish`, deixar o CLI criar o commit de fechamento aprovado pelos gates. Não usar `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge para simular fechamento limpo.
 ```
 
 ---
@@ -428,8 +428,8 @@ Este repositório usa WSD (Wolff Spec Driven). Antes de qualquer edição:
 
 **Regras operacionais:**
 - Ler `+context.json` para `write_paths` e `forbidden_paths` antes de editar
-- Não usar `git add .`
-- Não esconder worktree suja (proibido: stash, reset, clean sem decisão explícita)
+- Não usar `git reset`, `git stash`, `git clean` ou `git commit --no-verify` para mascarar estado Git
+- Fechar sessão com `./+wsd/bin/wsd finish`, que commita por padrão somente após gates
 - Não registrar secrets em nenhum artefato (Git, spec, log, prompt)
 - Não executar mutação em produção sem contexto L2 aprovado
 - Validação deve ser executável — não inventar comandos de teste

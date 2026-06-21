@@ -93,7 +93,7 @@ O core do WSD deve continuar instalável em projetos simples, inclusive sem GitH
 Regras mínimas que permanecem no core:
 
 - checar `git status --short --branch` antes de editar;
-- não usar `git add .`;
+- não usar `git add .` manualmente; `./+wsd/bin/wsd finish` é a via aprovada para staging/commit após gates;
 - não esconder worktree suja;
 - exigir spec aprovada para L1/L2;
 - registrar validação executada;

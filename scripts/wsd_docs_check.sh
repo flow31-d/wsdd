@@ -93,8 +93,10 @@ tlc_required=(
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
   "templates/codex-skills/wsd-idea/SKILL.md"
+  "templates/codex-skills/wsd-finish/SKILL.md"
   "templates/codex-skills/wsd-concern/SKILL.md"
   "templates/codex-skills/wsd-loop/SKILL.md"
+  "templates/claude-commands/commands/wsd-finish.md"
   "templates/claude-commands/commands/wsd-specify.md"
   "templates/claude-commands/commands/wsd-design.md"
   "templates/claude-commands/commands/wsd-tasks.md"
@@ -106,6 +108,14 @@ for file in "${tlc_required[@]}"; do
   [[ -f "$file" ]] || fail "missing TLC integration artifact: $file"
 done
 ok "TLC integration artifacts present"
+
+grep -q '_wsd_finish' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_finish"
+grep -q '_finish_docs_check' templates/local-wsd/bin/wsd || fail "wsd finish missing docs audit hook"
+grep -q 'chore(wsd): finish session' templates/local-wsd/bin/wsd || fail "wsd finish missing default closing commit message"
+grep -q 'test:install-finish-clean' package.json || fail "package.json missing finish clean regression test"
+grep -q 'finish limpo' docs/10_matriz_sincronizacao_notas.md || fail "sync matrix missing finish clean contract"
+grep -q 'worktree limpo' docs/08_rotinas_sessao.md || fail "docs/08 missing clean finish contract"
+ok "WSD finish clean-close artifacts documented"
 
 # legacy paths must not appear in new templates / installer / scripts
 if grep -rnE '\.specs/|\.logs/error_vault' bin/ scripts/ templates/repo/+specs/ templates/repo/+logs/ templates/local-wsd/ templates/codex-skills/ templates/claude-commands/ profiles/ 2>/dev/null \

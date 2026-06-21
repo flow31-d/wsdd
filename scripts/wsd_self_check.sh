@@ -73,6 +73,7 @@ required_files=(
   "scripts/wsd_docs_check.sh"
   "scripts/wsd_check.sh"
   "scripts/test_install_codex_adherence.sh"
+  "scripts/test_install_finish_clean.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -232,6 +233,13 @@ ok "wsd CLI finish generates HANDOFF.md"
 grep -q '_state_insert' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing STATE.md prompts in finish"
 ok "wsd CLI finish has STATE.md prompts"
 
+grep -q '_wsd_finish' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_finish clean-close function"
+grep -q '_finish_docs_check' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing docs audit"
+grep -q 'chore(wsd): finish session' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing default commit message"
+grep -q 'git commit -m' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing closing commit"
+grep -q 'test:install-finish-clean' package.json || fail "package.json missing test:install-finish-clean"
+ok "wsd CLI finish clean-close contract present"
+
 # git-hooks templates are executable
 for hook in templates/git-hooks/pre-commit templates/git-hooks/commit-msg templates/git-hooks/pre-push; do
   [[ -x "$hook" ]] || fail "git hook template not executable: $hook"
@@ -269,11 +277,15 @@ ok "Codex adherence artifacts present"
 bash scripts/wsd_docs_check.sh
 ok "documentation sync passed"
 
-if grep -q '^## IDEA-[0-9][0-9][0-9]' +specs/project/IDEAS.md \
-  && grep -q '^| — | — | — | — | — | — |$' +specs/project/IDEAS_PIPELINE.md; then
-  fail "+specs/project/IDEAS_PIPELINE.md still has placeholder row while IDEAS.md has ideas"
+if [[ -f +specs/project/IDEAS.md && -f +specs/project/IDEAS_PIPELINE.md ]]; then
+  if grep -q '^## IDEA-[0-9][0-9][0-9]' +specs/project/IDEAS.md \
+    && grep -q '^| — | — | — | — | — | — |$' +specs/project/IDEAS_PIPELINE.md; then
+    fail "+specs/project/IDEAS_PIPELINE.md still has placeholder row while IDEAS.md has ideas"
+  fi
+  ok "WSD ideas pipeline is populated when ideas exist"
+else
+  ok "WSD ideas pipeline check not applicable without project idea notes"
 fi
-ok "WSD ideas pipeline is populated when ideas exist"
 
 if find . -type f \( -name "*.md" -o -name "*.md.template" \) -print0 | xargs -0 grep -L '^---$' >/tmp/wsd-md-without-frontmatter.$$ 2>/dev/null; then
   if [[ -s /tmp/wsd-md-without-frontmatter.$$ ]]; then

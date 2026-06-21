@@ -103,6 +103,8 @@ Proibido usar estes comandos para esconder ou contornar sujeira local sem decis�
 - `git merge` ou `git rebase` com escopo incerto
 - force push
 
+Exceção operacional: `./+wsd/bin/wsd finish` pode fazer staging e commit automático depois dos gates para encerrar a sessão com worktree limpo. Essa exceção não autoriza staging manual fora do comando.
+
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 6. Regra 5 — Validação Deve Ser Real

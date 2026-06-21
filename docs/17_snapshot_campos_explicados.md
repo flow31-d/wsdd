@@ -233,7 +233,7 @@ Este bloco responde à pergunta: *existe trabalho em andamento que precisa ser r
 
 `true` se existe um arquivo `+specs/HANDOFF.md` no projeto. `false` se não existe.
 
-**O que é o HANDOFF.md:** quando um agente termina uma sessão de trabalho rodando `wsd finish`, ele gera automaticamente um arquivo de "passagem de bastão". Esse arquivo registra: em qual branch o trabalho parou, quais foram os últimos commits, quais arquivos ainda estavam modificados e quais specs estavam abertas. É como um bilhete deixado para o próximo agente (ou para você mesmo no dia seguinte) dizendo "é aqui que paramos".
+**O que é o HANDOFF.md:** quando um agente termina uma sessão de trabalho rodando `wsd finish`, ele gera automaticamente um arquivo de "passagem de bastão". Desde `v0.4.3`, o finish também fecha a sessão com commit automático quando os gates passam; por isso o HANDOFF registra a branch, os gates, as alterações capturadas pelo fechamento, os commits recentes e as specs abertas, mas o estado final aprovado deve ser worktree limpo. É como um bilhete deixado para o próximo agente (ou para você mesmo no dia seguinte) dizendo "é aqui que paramos".
 
 **Por que o snapshot só diz se existe ou não:** o conteúdo do HANDOFF é rico demais para ser embutido no snapshot. O snapshot apenas avisa que o bilhete existe — cabe ao agente lê-lo por conta própria antes de começar a trabalhar.
 

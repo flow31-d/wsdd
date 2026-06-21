@@ -49,6 +49,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 15/06/2026 — Codex: Inclusão do `wsd loop` como rotina opcional para automatizar execução L0/L1 com gates e poucas aprovações.
 - 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt` e `codex`.
 - 21/06/2026 — Codex: Inclusão de concerns como leitura base de sessão e fluxo `/concern-{PROJECT_SLUG}` / `wsd-concern`.
+- 21/06/2026 — Codex: `wsd finish` passa a ser fechamento limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot e commit automático aprovado.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -185,27 +186,35 @@ Comando curto recomendado dentro do projeto:
 ./+wsd/bin/wsd finish
 ```
 
-A partir da `v0.1.7-alpha`, o CLI executa automaticamente:
+A partir da `v0.4.3`, o CLI executa automaticamente:
 
 1. Estado Git: `git status`, `git diff --stat`, `git diff --check`, `git log -1`.
 2. Checker L0 (se `scripts/wsd_check.sh` presente).
-3. Gera `+specs/HANDOFF.md` com: branch atual, último commit, últimos 5 commits, arquivos uncommitted e specs abertas.
-4. Prompts interativos em terminal (se `python3` disponível e stdin interativo):
+3. Auditoria documental WSD quando `scripts/wsd_docs_check.sh` está disponível na raiz do método.
+4. Gera `+specs/HANDOFF.md` com branch atual, último commit, gates de aprovação, alterações capturadas e specs abertas.
+5. Prompts interativos em terminal (se `python3` disponível e stdin interativo):
    - **Lições aprendidas** → tabela `## Lições Aprendidas` em `STATE.md`;
    - **Decisões arquiteturais ou de método** → tabela `## Decisões`;
    - **Bloqueadores ativos** → tabela `## Bloqueadores Ativos`.
+6. Atualiza snapshot quando possível.
+7. Cria commit de fechamento (`chore(wsd): finish session`) por padrão.
+8. Só termina com sucesso se `git status --short` ficar vazio.
 
-Após o CLI, o agente/operador deve:
+O comando não usa `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge. Se gate, hook ou path sensível falhar, ele para e mostra o bloqueio.
 
-- Revisar `+specs/HANDOFF.md` e preencher a seção **Próximos Passos**.
-- Confirmar status de PR se houver (`gh pr status`).
-- **Não** executar `git add .`, `git stash`, `git reset` ou trocar branch apenas para deixar relatório limpo.
+Opções úteis:
+
+```bash
+./+wsd/bin/wsd finish -m "chore(wsd): finish auth session"
+./+wsd/bin/wsd finish --skip-docs-check
+./+wsd/bin/wsd finish --no-commit   # diagnóstico; não garante worktree limpo
+```
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 5. Regra de Continuidade
 
-Se a sessão terminar com worktree suja, isso deve ficar explícito. Não limpar, stashear ou trocar branch apenas para produzir relatório bonito.
+Se `wsd finish` falhar, a sessão não está aprovada. Corrigir o gate, hook ou path sensível e rodar `./+wsd/bin/wsd finish` novamente. Um fechamento aprovado precisa terminar com worktree limpo.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -236,7 +245,7 @@ Uso prático:
 - `wsd-tasks`: fase Tasks — quebra em `+specs/features/<slug>/tasks.md` atômico com gate level por task;
 - `wsd-concern`: captura preocupação, risco, fragilidade ou item "precisa conferir" em `CONCERNS.md` + `CONCERNS_PIPELINE.md`;
 - `wsd-loop`: atalhos de Ralph/WSD Loop como `loop status`, `loop auto on`, `loop auto off`, `loop plan <feature>`;
-- `wsd-finish`: relatório de fechamento, atualização de STATE.md, geração de HANDOFF.md.
+- `wsd-finish`: fechamento limpo com gates, docs audit quando disponível, HANDOFF.md, snapshot e commit de fechamento.
 
 ### 6.2 Claude Code (`--tools claude-code`)
 
@@ -260,7 +269,7 @@ Uso prático:
 - `/wsd-design`: cria `+specs/features/<slug>/design.md` (pode pular em casos simples);
 - `/wsd-tasks`: cria `+specs/features/<slug>/tasks.md` atômico;
 - `/loop status`: consulta estado do Ralph/WSD Loop; `/loop on` e `/loop off` alternam `automation.loop.auto_use`;
-- `/wsd-finish`: fecha sessão, atualiza STATE.md, gera HANDOFF.md.
+- `/wsd-finish`: fecha sessão com gates, HANDOFF.md, snapshot e commit de fechamento.
 
 A governança (conteúdo da skill `wsd` do Codex) vive no `AGENTS.md` gerado + hooks — não em comando persistente, porque Claude Code usa comandos slash sob demanda.
 
@@ -315,5 +324,6 @@ bash scripts/wsd_docs_check.sh
 | 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do fluxo opcional `wsd loop plan|once|run` para automação L0/L1 governada por gates. |
 | 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do Codex Adherence Pack: `start --brief`, `codex-prompt`, `codex` e bootstrap via `AGENTS.md`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de concerns como leitura base de sessão e fluxo `wsd-concern`/`concern-{PROJECT_SLUG}`. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Atualização do contrato `wsd finish`: fechamento limpo com gates, docs audit, HANDOFF, snapshot e commit automático (`v0.4.3`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -1,5 +1,5 @@
 ---
-description: Encerra sessão de desenvolvimento WSD com relatório padronizado. Use quando o usuário diz "wsd-finish", "finalizar WSD", "encerrar sessão", "fechar trabalho", "fim WSD", "finish WSD".
+description: Encerra sessão WSD com gates, auditoria documental quando disponível, HANDOFF.md, snapshot, commit de fechamento e worktree limpo.
 allowed-tools:
   - Bash
   - Read
@@ -10,23 +10,27 @@ allowed-tools:
 
 ## Objetivo
 
-Encerrar sessão com relatório padronizado Git e WSD, e registrar lições aprendidas se houver.
+Encerrar sessão com gates aprovados, relatório Git/WSD, memória operacional e worktree limpo.
 
 ## Procedimento
 
-**1. Executar estado final:**
+**1. Preferir o comando local:**
+
+```bash
+./+wsd/bin/wsd finish
+```
+
+Ele executa gates, gera `HANDOFF.md`, atualiza snapshot e cria commit de fechamento por padrão.
+
+**2. Gates esperados:**
 
 ```bash
 git status --short --branch
 git diff --stat
 git diff --check
 git log -1 --date=short --pretty='last=%ad | %h | %s'
-```
-
-**2. Se WSD presente:**
-
-```bash
 bash scripts/wsd_check.sh --risk L0 .
+bash scripts/wsd_docs_check.sh
 ```
 
 **3. Se PR pode existir:**
@@ -50,16 +54,22 @@ Se sim, atualizar `+specs/project/STATE.md`:
 - Data e hora ISO
 - Feature/task atual e status resumido
 - Lista: itens concluídos nessa sessão
-- Lista: itens em andamento (arquivo:linha se aplicável)
+- Lista: alterações capturadas pelo finish
 - Lista: próximos passos imediatos
-- Branch atual e arquivos com uncommitted changes
+- Branch atual e gates de aprovação
 - Referências relevantes ao STATE.md
+
+**6. Garantir fechamento limpo:**
+
+- `wsd finish` deve commitar por padrão com `chore(wsd): finish session`.
+- O comando só é considerado concluído quando `git status --short` fica vazio.
+- Se hook, gate ou path sensível falhar, parar e reportar o bloqueio.
 
 **7. Relatório final:**
 
 - repo e host
 - branch e upstream
-- estado limpo/sujo
+- estado final limpo
 - arquivos alterados
 - commits criados
 - links PR/spec usados
@@ -70,4 +80,4 @@ Se sim, atualizar `+specs/project/STATE.md`:
 
 ## Limite
 
-Não esconder estado sujo. Não executar `git add .`, `git stash`, `git reset`, `git clean` ou trocar branch apenas para deixar o relatório limpo.
+Não usar `git reset`, `git stash`, `git clean`, `git commit --no-verify`, auto-push ou auto-merge para simular fechamento limpo.

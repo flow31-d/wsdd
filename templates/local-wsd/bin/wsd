@@ -1048,7 +1048,7 @@ Bootstrap obrigatorio:
 - Politica Ralph/WSD Loop: ${auto_use_hint}
 - Para ideias fora do escopo, registre em +specs/project/STATE.md ou +specs/project/IDEAS.md em vez de implementar.
 - Antes de finalizar mudancas relevantes, rode git diff --check e ./+wsd/bin/wsd check ou bash scripts/wsd_check.sh --risk L0 .
-- Nunca use git add ., reset, clean, stash, merge, rebase, pull ou troca de branch para esconder estado local sem instrucao explicita.
+- Nunca use git add ., reset, clean, stash, merge, rebase, pull ou troca de branch para esconder estado local sem instrucao explicita. Excecao: ./+wsd/bin/wsd finish pode fazer staging/commit automatico depois dos gates.
 
 Modo solicitado: ${mode}
 Feature alvo: ${feature:-n/a}
@@ -1295,6 +1295,319 @@ SHELL
   esac
 }
 
+_finish_usage() {
+  cat <<'USAGE'
+Usage: ./+wsd/bin/wsd finish [options]
+
+Purpose:
+  Fecha a sessao WSD com gates, auditoria documental quando disponivel,
+  HANDOFF.md, snapshot e commit automatico de fechamento.
+
+Options:
+  -m, --message <msg>   mensagem do commit de fechamento
+  --skip-docs-check     pula auditoria documental WSD
+  --no-commit           diagnostico: gera relatorio, mas nao fecha o worktree
+  --help, -h            ajuda
+
+Default:
+  O finish commita as alteracoes aprovadas para terminar com git status limpo.
+USAGE
+}
+
+_finish_docs_check() {
+  if [[ -f scripts/wsd_docs_check.sh && -d docs ]]; then
+    bash scripts/wsd_docs_check.sh
+    return 0
+  fi
+
+  if [[ -f +wsd/scripts/wsd_docs_check.sh && -d +wsd/docs && -f +wsd/README.md && -f +wsd/package.json ]]; then
+    (cd +wsd && bash scripts/wsd_docs_check.sh)
+    return 0
+  fi
+
+  return 2
+}
+
+_finish_sensitive_dirty_check() {
+  local status_text="${1:-}"
+  local blocked
+
+  blocked="$(printf "%s\n" "$status_text" | grep -E '(^|[[:space:]])(\.env($|[./])|.*[./](\.env|secrets?|keys?|certs?)(/|$)|.*[./](id_rsa|id_ed25519)(\.pub)?$)' || true)"
+  if [[ -n "$blocked" ]]; then
+    echo "FAIL: wsd finish encontrou paths sensiveis no estado Git; revise manualmente antes de aprovar commit." >&2
+    printf "%s\n" "$blocked" >&2
+    return 1
+  fi
+}
+
+_finish_state_prompts() {
+  local today="$1"
+
+  [[ -f +specs/project/STATE.md ]] || return 0
+
+  if ! command -v python3 >/dev/null; then
+    echo "info: python3 ausente -- STATE.md prompts pulados; preencher manualmente"
+    return 0
+  fi
+  if [[ ! -t 0 ]]; then
+    echo "info: STATE.md prompts pulados (stdin nao-interativo)"
+    return 0
+  fi
+
+  _state_insert() {
+    WSD_FILE="$1" WSD_SECTION="$2" WSD_ROW="$3" python3 -c "
+import os
+f = os.environ['WSD_FILE']
+sec = os.environ['WSD_SECTION']
+row = os.environ['WSD_ROW']
+lines = open(f).readlines()
+out = []
+in_sec = False
+done = False
+for l in lines:
+    out.append(l)
+    if sec in l:
+        in_sec = True
+    elif in_sec and not done and l.startswith('|---'):
+        out.append(row + '\n')
+        done = True
+        in_sec = False
+open(f, 'w').writelines(out)
+"
+  }
+
+  echo ""
+  echo "== Captura de Memoria Operacional =="
+
+  printf "Houve licoes aprendidas nesta sessao? [s/N] "
+  read -r _resp
+  if [[ "$_resp" =~ ^[Ss]$ ]]; then
+    printf "  Licao (1 linha): "
+    read -r _licao
+    if [[ -n "$_licao" ]]; then
+      printf "  Como prevenir? (1 linha): "
+      read -r _prevencao
+      _state_insert "+specs/project/STATE.md" "Aprendidas" "| $today | $_licao | $_prevencao |"
+      echo "  ok: licao registrada em STATE.md"
+    fi
+  fi
+
+  printf "Houve decisoes arquiteturais ou de metodo? [s/N] "
+  read -r _resp
+  if [[ "$_resp" =~ ^[Ss]$ ]]; then
+    printf "  Decisao (1 linha): "
+    read -r _decisao
+    if [[ -n "$_decisao" ]]; then
+      printf "  Racional (1 linha): "
+      read -r _racional
+      _state_insert "+specs/project/STATE.md" "## Decis" "| $today | $_decisao | $_racional |"
+      echo "  ok: decisao registrada em STATE.md"
+    fi
+  fi
+
+  printf "Ha bloqueadores ativos? [s/N] "
+  read -r _resp
+  if [[ "$_resp" =~ ^[Ss]$ ]]; then
+    printf "  Bloqueador (1 linha): "
+    read -r _bloqueador
+    if [[ -n "$_bloqueador" ]]; then
+      printf "  Impacto (1 linha): "
+      read -r _impacto
+      _state_insert "+specs/project/STATE.md" "## Bloqueadores Ativos" "| $today | $_bloqueador | $_impacto | Em analise |"
+      echo "  ok: bloqueador registrado em STATE.md"
+    fi
+  fi
+}
+
+_finish_write_handoff() {
+  local status_before="$1"
+  local gate_wsd="$2"
+  local gate_docs="$3"
+  local gate_pr="$4"
+  local auto_commit="$5"
+  local today now branch last_commit recent pending specs_list final_mode
+
+  today="$(date '+%Y-%m-%d')"
+  now="$(date '+%Y-%m-%d %H:%M')"
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+  last_commit="$(git log -1 --pretty='%h - %s (%ad)' --date=short 2>/dev/null || echo '(no commits)')"
+  recent="$(git log --oneline -5 2>/dev/null | sed 's/^/- /' || echo '- (none)')"
+  specs_list="$(find +specs/features -maxdepth 2 -name 'spec.md' 2>/dev/null | sed 's/^/- /' || true)"
+  [[ -n "$specs_list" ]] || specs_list="- (nenhuma)"
+
+  if [[ -n "$status_before" ]]; then
+    pending="$(printf "%s\n" "$status_before" | sed 's/^/- /')"
+  else
+    pending="- nenhuma alteracao pendente antes do fechamento"
+  fi
+
+  if [[ "$auto_commit" == "1" ]]; then
+    final_mode="limpo apos commit automatico do wsd finish"
+  else
+    final_mode="nao garantido porque --no-commit foi usado"
+  fi
+
+  mkdir -p +specs
+  {
+    printf "# HANDOFF -- %s\n\n" "$now"
+    printf "## Sessao\n\n"
+    printf -- "- Branch: %s\n" "$branch"
+    printf -- "- Ultimo commit antes do fechamento: %s\n" "$last_commit"
+    if [[ -n "$status_before" ]]; then
+      printf -- "- Estado antes do finish: alteracoes pendentes capturadas para fechamento\n"
+    else
+      printf -- "- Estado antes do finish: limpo\n"
+    fi
+    printf -- "- Estado final esperado: %s\n" "$final_mode"
+    printf -- "- Data de fechamento: %s\n" "$today"
+
+    printf "\n## Gates de Aprovacao\n\n"
+    printf -- "- git diff --check: PASS\n"
+    printf -- "- WSD check L0: %s\n" "$gate_wsd"
+    printf -- "- WSD docs check: %s\n" "$gate_docs"
+    printf -- "- PR status: %s\n" "$gate_pr"
+
+    printf "\n## Concluido nesta sessao\n\n"
+    printf "(ultimos 5 commits antes do fechamento)\n"
+    printf "%s\n" "$recent"
+
+    printf "\n## Alteracoes Capturadas Pelo Finish\n\n"
+    printf "%s\n" "$pending"
+
+    printf "\n## Proximos Passos\n\n"
+    printf -- "- [ ] Abrir proxima sessao com ./+wsd/bin/wsd start --brief e confirmar estado limpo.\n"
+
+    printf "\n## Referencias\n\n"
+    printf -- "- STATE: +specs/project/STATE.md\n"
+    printf -- "- CONCERNS: +specs/project/CONCERNS.md\n"
+    printf -- "- CONCERNS_PIPELINE: +specs/project/CONCERNS_PIPELINE.md\n"
+    printf -- "- Specs:\n"
+    printf "%s\n" "$specs_list"
+  } > "+specs/HANDOFF.md"
+}
+
+_wsd_finish() {
+  local auto_commit=1
+  local docs_check=1
+  local commit_message="chore(wsd): finish session"
+  local today status_before status_after gate_wsd gate_docs gate_pr
+
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      -m|--message)
+        [[ -n "${2-}" ]] || { echo "FAIL: $1 precisa de valor" >&2; return 1; }
+        commit_message="$2"
+        shift 2
+        ;;
+      --skip-docs-check)
+        docs_check=0
+        shift
+        ;;
+      --no-commit)
+        auto_commit=0
+        shift
+        ;;
+      help|--help|-h)
+        _finish_usage
+        return 0
+        ;;
+      *)
+        echo "FAIL: argumento desconhecido em finish: $1" >&2
+        _finish_usage >&2
+        return 1
+        ;;
+    esac
+  done
+
+  echo "== WSD Finish =="
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "FAIL: wsd finish exige repositorio Git" >&2; return 1; }
+
+  today="$(date '+%Y-%m-%d')"
+  status_before="$(git status --short --untracked-files=all 2>/dev/null || true)"
+  git status --short --branch
+  git diff --stat
+  git log -1 --date=short --pretty='last=%ad | %h | %s' 2>/dev/null || true
+  _finish_sensitive_dirty_check "$status_before"
+
+  echo ""
+  echo "== WSD Finish Gates =="
+  git diff --check
+  echo "ok: git diff --check"
+
+  if [[ -f scripts/wsd_check.sh ]]; then
+    bash scripts/wsd_check.sh --risk L0 .
+    gate_wsd="PASS"
+  else
+    gate_wsd="SKIPPED (scripts/wsd_check.sh ausente)"
+    echo "info: $gate_wsd"
+  fi
+
+  if [[ "$docs_check" == "1" ]]; then
+    if _finish_docs_check; then
+      gate_docs="PASS"
+      echo "ok: WSD docs check"
+    else
+      _docs_rc=$?
+      if [[ "$_docs_rc" == "2" ]]; then
+        gate_docs="SKIPPED (auditor documental WSD ausente ou docs nao instalados)"
+        echo "info: $gate_docs"
+      else
+        return "$_docs_rc"
+      fi
+    fi
+  else
+    gate_docs="SKIPPED (--skip-docs-check)"
+    echo "info: $gate_docs"
+  fi
+
+  if command -v gh >/dev/null; then
+    gh pr status 2>/dev/null || true
+    gate_pr="INSPECTED"
+  else
+    gate_pr="SKIPPED (gh ausente)"
+  fi
+
+  _finish_state_prompts "$today"
+
+  if [[ -f +wsd/bin/wsd-snapshot.cjs ]]; then
+    node +wsd/bin/wsd-snapshot.cjs 2>/dev/null && echo ">> +wsd/snapshot.json atualizado" || true
+  fi
+
+  _finish_write_handoff "$status_before" "$gate_wsd" "$gate_docs" "$gate_pr" "$auto_commit"
+  echo ">> +specs/HANDOFF.md gerado"
+
+  git diff --check
+  echo "ok: git diff --check apos HANDOFF"
+
+  if [[ "$auto_commit" == "1" ]]; then
+    status_after="$(git status --short --untracked-files=all 2>/dev/null || true)"
+    _finish_sensitive_dirty_check "$status_after"
+    if [[ -n "$status_after" ]]; then
+      git add -A
+      GIT_AUTHOR_NAME="${GIT_AUTHOR_NAME:-WSD Finish}" \
+      GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL:-wsd-finish@example.invalid}" \
+      GIT_COMMITTER_NAME="${GIT_COMMITTER_NAME:-WSD Finish}" \
+      GIT_COMMITTER_EMAIL="${GIT_COMMITTER_EMAIL:-wsd-finish@example.invalid}" \
+        git commit -m "$commit_message"
+      echo ">> commit de fechamento criado"
+    else
+      echo ">> nada para commitar"
+    fi
+
+    status_after="$(git status --short --untracked-files=all 2>/dev/null || true)"
+    if [[ -n "$status_after" ]]; then
+      echo "FAIL: wsd finish terminou com worktree pendente:" >&2
+      printf "%s\n" "$status_after" >&2
+      return 1
+    fi
+    echo "PASS: WSD Finish completo - worktree limpo e gates aprovados"
+    git log -1 --date=short --pretty='finish_commit=%ad | %h | %s'
+  else
+    echo "WARN: --no-commit usado; worktree pode permanecer pendente"
+    git status --short --branch
+  fi
+}
+
 case "$command" in
   start)
     _start_brief=0
@@ -1367,132 +1680,7 @@ case "$command" in
     fi
     ;;
   finish)
-    echo "== WSD Finish =="
-    git status --short --branch
-    git diff --stat
-    git diff --check
-    git log -1 --date=short --pretty='last=%ad | %h | %s'
-    if [[ -f scripts/wsd_check.sh ]]; then
-      bash scripts/wsd_check.sh --risk L0 .
-    fi
-    gh pr status 2>/dev/null || true
-
-    # --- Generate HANDOFF.md ---
-    _today="$(date '+%Y-%m-%d')"
-    _now="$(date '+%Y-%m-%d %H:%M')"
-    _branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
-    _last_commit="$(git log -1 --pretty='%h - %s (%ad)' --date=short 2>/dev/null || echo '(no commits)')"
-    _git_state_short="$(git status --short 2>/dev/null)"
-    _recent="$(git log --oneline -5 2>/dev/null | sed 's/^/- /' || echo '- (none)')"
-    _dirty="$(git status --short 2>/dev/null | grep -v '^??' | sed 's/^/- /' || true)"
-    [[ -z "$_dirty" ]] && _dirty="(working tree clean)"
-    _specs_list="$(find +specs/features -maxdepth 2 -name 'spec.md' 2>/dev/null | sed 's/^/- /' || true)"
-    [[ -z "$_specs_list" ]] && _specs_list="- (nenhuma)"
-
-    mkdir -p +specs
-    {
-      printf "# HANDOFF -- %s\n\n" "$_now"
-      printf "## Sessao\n\n"
-      printf -- "- Branch: %s\n" "$_branch"
-      printf -- "- Ultimo commit: %s\n" "$_last_commit"
-      if [[ -z "$_git_state_short" ]]; then
-        printf -- "- Estado: limpo\n"
-      else
-        printf -- "- Estado: sujo (uncommitted changes -- ver abaixo)\n"
-      fi
-      printf "\n## Concluido nesta sessao\n\n"
-      printf "(ultimos 5 commits -- editar conforme necessario)\n"
-      printf "%s\n" "$_recent"
-      printf "\n## Em andamento\n\n"
-      printf "%s\n" "$_dirty"
-      printf "\n## Proximos Passos\n\n"
-      printf -- "- [ ] (preencher)\n"
-      printf "\n## Referencias\n\n"
-      printf -- "- STATE: +specs/project/STATE.md\n"
-      printf -- "- Specs:\n"
-      printf "%s\n" "$_specs_list"
-    } > "+specs/HANDOFF.md"
-
-    echo ""
-    echo ">> +specs/HANDOFF.md gerado"
-
-    # --- Prompts STATE.md (somente em terminal interativo) ---
-    if [[ -f +specs/project/STATE.md ]]; then
-      if ! command -v python3 >/dev/null; then
-        echo "info: python3 ausente -- STATE.md prompts pulados; preencher manualmente"
-      elif [[ ! -t 0 ]]; then
-        echo "info: STATE.md prompts pulados (stdin nao-interativo)"
-      else
-        _state_insert() {
-          WSD_FILE="$1" WSD_SECTION="$2" WSD_ROW="$3" python3 -c "
-import os
-f = os.environ['WSD_FILE']
-sec = os.environ['WSD_SECTION']
-row = os.environ['WSD_ROW']
-lines = open(f).readlines()
-out = []
-in_sec = False
-done = False
-for l in lines:
-    out.append(l)
-    if sec in l:
-        in_sec = True
-    elif in_sec and not done and l.startswith('|---'):
-        out.append(row + '\n')
-        done = True
-        in_sec = False
-open(f, 'w').writelines(out)
-"
-        }
-
-        echo ""
-        echo "== Captura de Memoria Operacional =="
-
-        printf "Houve licoes aprendidas nesta sessao? [s/N] "
-        read -r _resp
-        if [[ "$_resp" =~ ^[Ss]$ ]]; then
-          printf "  Licao (1 linha): "
-          read -r _licao
-          if [[ -n "$_licao" ]]; then
-            printf "  Como prevenir? (1 linha): "
-            read -r _prevencao
-            _state_insert "+specs/project/STATE.md" "Aprendidas" "| $_today | $_licao | $_prevencao |"
-            echo "  ok: licao registrada em STATE.md"
-          fi
-        fi
-
-        printf "Houve decisoes arquiteturais ou de metodo? [s/N] "
-        read -r _resp
-        if [[ "$_resp" =~ ^[Ss]$ ]]; then
-          printf "  Decisao (1 linha): "
-          read -r _decisao
-          if [[ -n "$_decisao" ]]; then
-            printf "  Racional (1 linha): "
-            read -r _racional
-            _state_insert "+specs/project/STATE.md" "## Decis" "| $_today | $_decisao | $_racional |"
-            echo "  ok: decisao registrada em STATE.md"
-          fi
-        fi
-
-        printf "Ha bloqueadores ativos? [s/N] "
-        read -r _resp
-        if [[ "$_resp" =~ ^[Ss]$ ]]; then
-          printf "  Bloqueador (1 linha): "
-          read -r _bloqueador
-          if [[ -n "$_bloqueador" ]]; then
-            printf "  Impacto (1 linha): "
-            read -r _impacto
-            _state_insert "+specs/project/STATE.md" "## Bloqueadores Ativos" "| $_today | $_bloqueador | $_impacto | Em analise |"
-            echo "  ok: bloqueador registrado em STATE.md"
-          fi
-        fi
-      fi
-    fi
-
-    # --- Generate snapshot ---
-    if [[ -f +wsd/bin/wsd-snapshot.cjs ]]; then
-      node +wsd/bin/wsd-snapshot.cjs 2>/dev/null && echo ">> +wsd/snapshot.json atualizado" || true
-    fi
+    _wsd_finish "$@"
     ;;
   doctor)
     echo "== WSD Doctor =="
