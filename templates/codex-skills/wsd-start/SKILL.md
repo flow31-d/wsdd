@@ -31,6 +31,7 @@ git remote show origin
 4. If WSD exists, run:
 
 ```bash
+./+wsd/bin/wsd start --brief 2>/dev/null || true
 ./+wsd/bin/wsd version 2>/dev/null || true
 bash scripts/wsd_check.sh --risk L0 .
 ```

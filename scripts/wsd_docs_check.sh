@@ -24,6 +24,7 @@ required_files=(
   "AGENTS.md"
   "docs/10_matriz_sincronizacao_notas.md"
   "docs/11_modulo_git_governance.md"
+  "docs/19_wsd_loop_automacao_inteligente.md"
   "scripts/wsd_docs_check.sh"
 )
 
@@ -36,6 +37,9 @@ for file in README.md wsd.md ROADMAP.md CHANGELOG.md docs/09_publicacao_github_p
   grep -qE "$version|$tag" "$file" || fail "current version $version is not referenced in $file"
 done
 ok "current version referenced in central notes"
+
+grep -qE "$version|$tag" docs/19_wsd_loop_automacao_inteligente.md || fail "current version $version is not referenced in docs/19_wsd_loop_automacao_inteligente.md"
+ok "current version referenced in WSD Loop doc"
 
 for file in README.md wsd.md ROADMAP.md AGENTS.md; do
   grep -qE "docs/10_matriz_sincronizacao_notas|Matriz de Sincronização" "$file" || fail "sync matrix not referenced in $file"
@@ -83,12 +87,16 @@ tlc_required=(
   "templates/specs/feature-tasks.md.template"
   "templates/specs/quick-task.md.template"
   "templates/specs/quick-summary.md.template"
+  "templates/codex-prompts/loop.md"
   "templates/codex-skills/wsd-specify/SKILL.md"
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
+  "templates/codex-skills/wsd-idea/SKILL.md"
+  "templates/codex-skills/wsd-loop/SKILL.md"
   "templates/claude-commands/commands/wsd-specify.md"
   "templates/claude-commands/commands/wsd-design.md"
   "templates/claude-commands/commands/wsd-tasks.md"
+  "templates/claude-commands/commands/loop.md"
   "docs/14_qualidade_desenvolvimento.md"
 )
 for file in "${tlc_required[@]}"; do
@@ -140,5 +148,28 @@ grep -q -- '--git-policy' bin/wsd-method.js || fail "bin/wsd-method.js missing -
 grep -q 'git_governance' templates/repo/+context.json.template || fail "+context.json.template missing git_governance"
 grep -q 'wsd git doctor' README.md docs/00_planejamento_instalacao_wsd.md docs/11_modulo_git_governance.md || fail "wsd git commands not documented"
 ok "Git/GitHub Governance MVP artifacts present and documented"
+
+# v0.4.0: WSD Loop automation
+[[ -f templates/local-wsd/loop/PROMPT_plan.md ]] || fail "WSD Loop plan prompt missing"
+[[ -f templates/local-wsd/loop/PROMPT_build.md ]] || fail "WSD Loop build prompt missing"
+grep -q 'automation' templates/repo/+context.json.template || fail "+context.json.template missing automation block"
+grep -q 'automation' schemas/context.schema.json || fail "context schema missing automation block"
+grep -q 'loop)' templates/local-wsd/bin/wsd || fail "wsd CLI missing loop command"
+grep -q 'test:install-loop' package.json || fail "package.json missing test:install-loop"
+grep -q 'auto_use' templates/repo/+context.json.template schemas/context.schema.json || fail "automation.loop.auto_use not wired in template/schema"
+grep -q 'wsd loop' README.md wsd.md docs/08_rotinas_sessao.md docs/19_wsd_loop_automacao_inteligente.md || fail "WSD Loop commands not documented"
+grep -q 'loop auto' README.md docs/08_rotinas_sessao.md docs/18_manual_leigo_comandos_wsdd.md docs/19_wsd_loop_automacao_inteligente.md || fail "loop auto toggle not documented"
+grep -q 'automation.loop' docs/05_contrato_artefatos.md docs/10_matriz_sincronizacao_notas.md docs/19_wsd_loop_automacao_inteligente.md || fail "automation.loop contract not documented"
+ok "WSD Loop artifacts present and documented"
+
+grep -q 'test:install-codex-adherence' package.json || fail "package.json missing test:install-codex-adherence"
+grep -q 'WSD Codex Bootstrap' AGENTS.md templates/repo/AGENTS.md.template || fail "WSD Codex Bootstrap not documented in AGENTS files"
+grep -q 'codex-prompt' README.md wsd.md docs/08_rotinas_sessao.md docs/18_manual_leigo_comandos_wsdd.md docs/19_wsd_loop_automacao_inteligente.md || fail "codex-prompt not documented"
+grep -q '.agents/skills' README.md docs/08_rotinas_sessao.md docs/13_compatibilidade_claude_code.md || fail "current Codex .agents/skills path not documented"
+grep -q 'codex-shortcuts' README.md docs/18_manual_leigo_comandos_wsdd.md docs/19_wsd_loop_automacao_inteligente.md || fail "codex-shortcuts not documented"
+grep -q '/prompts:loop' README.md docs/18_manual_leigo_comandos_wsdd.md docs/19_wsd_loop_automacao_inteligente.md || fail "Codex prompt shortcut not documented"
+grep -q '/loop status' README.md docs/13_compatibilidade_claude_code.md docs/18_manual_leigo_comandos_wsdd.md || fail "Claude /loop shortcut not documented"
+grep -q 'Codex Adherence Pack' README.md wsd.md CHANGELOG.md docs/10_matriz_sincronizacao_notas.md docs/19_wsd_loop_automacao_inteligente.md || fail "Codex Adherence Pack not documented in central docs"
+ok "Codex Adherence Pack artifacts present and documented"
 
 echo "PASS: WSD docs sync check completed"

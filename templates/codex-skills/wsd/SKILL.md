@@ -21,6 +21,7 @@ git remote show origin
 If `+context.json` exists:
 
 ```bash
+./+wsd/bin/wsd start --brief 2>/dev/null || true
 bash scripts/wsd_check.sh --risk L0 .
 ```
 
@@ -34,6 +35,7 @@ bash scripts/wsd_check.sh --risk L0 .
 
 - Respect `AGENTS.md`.
 - Respect `+context.json`.
+- Treat the `WSD Codex Bootstrap` section in `AGENTS.md` as the default startup contract when present.
 - Load `+specs/context/*.md` selectively.
 - If editing WSD documentation, templates, profiles, skills, installer, package version, or release notes, read `+wsd/docs/10_matriz_sincronizacao_notas.md` when present and update the related files listed there.
 - Require approved spec for L1/L2.

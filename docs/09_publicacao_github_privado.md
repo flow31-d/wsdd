@@ -1,7 +1,7 @@
 ---
 title: "09 — Publicação do WSD em GitHub Privado"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -51,6 +51,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 13/05/2026 — Claude (Opus 4.7): Atualização para `v0.3.0` (minor — reforço do contrato operacional WSD): versão atual atualizada para `v0.3.0`; nova entrada na lista de Release estável (`v0.3.0` minor com `wsd_check.sh` reescrito, `+context.json` com blocos formais, artefatos `+specs/project/` preenchidos, `REVIEW_PRE_V1.md` + `docs/18` manual leigo).
 - 11/05/2026 — Claude: Adição de link para `docs/15_repositorio_publico_e_quick_start.md` — novo documento de estratégia privado × público e quick start via GitHub.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1` (patch — inventário de versão WSD por projeto): versão atual atualizada e release estável adicionada com `wsd version`, inventário multi-repo e saída JSON.
+- 15/06/2026 — Codex: Atualização para `v0.4.0` (minor — WSD Loop + Codex Adherence Pack): versão atual e release estável adicionadas com `automation.loop`, subcomando `wsd loop`, `WSD Codex Bootstrap`, `wsd codex-prompt`/`wsd codex` e gates `test:install-loop`/`test:install-codex-adherence`.
+- 17/06/2026 — Codex: Atualização para `v0.4.1` (patch — atalhos de agente): versão atual e release estável adicionadas com `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e `shortcuts`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -92,7 +94,7 @@ main
 Versão atual do pacote:
 
 ```text
-v0.3.1
+v0.4.1
 ```
 
 Tags alpha já usadas:
@@ -118,6 +120,8 @@ Release estável:
 - **`v0.2.1`** (13/05/2026): patch cosmético — `wsd update` agora monta a lista "Refreshed: +wsd/{...}" dinamicamente a partir de `config.modules`, refletindo módulos efetivamente copiados. Sem mudança de comportamento. Detectado durante validação do piloto worc logo após v0.2.0.
 - **`v0.3.0`** (13/05/2026): minor — reforço do contrato operacional WSD. `scripts/wsd_check.sh` reescrito (185 linhas) valida as 6 notas obrigatórias de `+specs/project/` como L0-required (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS) — antes só `STATE.md` era checada, gap que permitiu WSD-001 escapar. `+context.json` ganha blocos formais (`environment`, `repository` com `clone_policy` canônico, `permissions` com write/forbidden paths/tool_allowlist/secrets_policy/limites, `workflow` com approval_mode/branch_policy/incident_mode/issue_policy/production_mutation_policy). Artefatos `+specs/project/` preenchidos com conteúdo real do WSD. Templates instaláveis (`templates/local-wsd/bin/wsd-snapshot.cjs` +81, `templates/repo/scripts/wsd_check.sh` +45) propagam mudanças para projetos cliente. Inclui `REVIEW_PRE_V1.md` (1131 linhas, tracker formal pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (568 linhas, manual leigo dos comandos `wsdd`). Path rename `+Apps/WSD` → `+Apps/wsd` consolidado (PR #33). 9/9 npm test PASS.
 - **`v0.3.1`** (30/05/2026): patch — inventário de versão WSD por projeto. `./+wsd/bin/wsd version` lê `+wsd/config.json`, mostra versão instalada, data, fonte, versão da fonte e status de alinhamento. `--inventory --path <dir>` varre múltiplos projetos com WSD aplicado; `--json` expõe saída estruturada para automações. `npm test` inclui `test:install-version`.
+- **`v0.4.0`** (15/06/2026): minor — WSD Loop + Codex Adherence Pack. `+context.json` declara `automation.loop` e `automation.loop.auto_use`; o vendor tree inclui `+wsd/loop/PROMPT_plan.md` e `PROMPT_build.md`; `./+wsd/bin/wsd loop plan|once|run|status|stop|auto` prepara e executa ciclos curtos com gates de risco, paths e CI antes de auto-commit. O `AGENTS.md` inclui `WSD Codex Bootstrap`; o CLI local inclui `start --brief`, `codex-prompt` e `codex`. `npm test` inclui `test:install-loop` e `test:install-codex-adherence`.
+- **`v0.4.1`** (17/06/2026): patch — atalhos de agente para WSD Loop. `install --tools codex` gera `.agents/skills/*` e espelha `.codex/skills/*`; `wsd-loop` mapeia pedidos curtos; `codex-shortcuts install` habilita `/prompts:loop`; Claude Code recebe `/loop`; `shortcuts shell` imprime funções `wsd()`/`wl()`.
 - **`v0.3.2`** (13/06/2026): patch — versão carimbada no snapshot. `templates/local-wsd/bin/wsd-snapshot.cjs` grava `wsd_version` em cada `+wsd/snapshot.json`, lido de `+wsd/config.json`. Consumidores que já leem snapshots (ex.: Zelador) detectam deriva de versão sem abrir o `config.json` por repo. Complementa o `wsd version` ativo da v0.3.1.
 - **`v0.3.3`** (13/06/2026): patch — publicação pública. Leva ao `wsdd` público a feature da v0.3.2 (público estava em v0.3.1). Entrega o carimbo `wsd_version` no snapshot e a detecção passiva de deriva ao repositório público.
 

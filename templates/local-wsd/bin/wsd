@@ -147,7 +147,7 @@ _wsd_version_record() {
   local source_path
   local source_version="n/a"
   local status="not-installed"
-  local source_match_raw
+  local source_match_raw="n/a"
   local cfg_exists=0
   local cmp
 
@@ -360,23 +360,996 @@ USAGE
   fi
 }
 
+_loop_usage() {
+  cat <<USAGE
+Usage: ./+wsd/bin/wsd loop <subcommand> [options]
+  plan --feature <slug> [--agent-cmd <cmd>] [--allow-dirty]
+  once --feature <slug> [--agent-cmd <cmd>] [--skip-ci] [--no-commit] [--human-approved]
+  run  --feature <slug> --agent-cmd <cmd> [--max-iterations <n>] [--skip-ci] [--no-commit]
+  auto status|on|off
+  status
+  stop
+
+Options:
+  --feature <slug>       feature directory under +specs/features/
+  --agent-cmd <cmd>      command that reads WSD_LOOP_PROMPT and performs the agent step
+  --max-iterations <n>   cap for run mode; defaults to automation.loop.default_max_iterations
+  --dry-run              create the prompt and state only
+  --skip-ci              skip ci.* commands from +context.json after the WSD gates
+  --no-commit            do not auto-commit even when automation.loop.auto_commit=true
+  --human-approved       allow an L2 loop run when automation.loop.require_human_for_l2=true
+  --allow-dirty          bypass the clean-worktree preflight
+
+Auto-use:
+  loop auto on            sets automation.loop.auto_use=true in +context.json
+  loop auto off           sets automation.loop.auto_use=false in +context.json
+  loop auto status        shows current auto-use policy
+USAGE
+}
+
+_loop_context_value() {
+  local key="$1"
+  local default_value="${2:-}"
+  local value
+  value="$(_json_get +context.json "$key" || true)"
+  if [[ -n "$value" ]]; then
+    printf "%s" "$value"
+  else
+    printf "%s" "$default_value"
+  fi
+}
+
+_loop_fail() {
+  echo "FAIL: $*" >&2
+  return 1
+}
+
+_loop_auto_use_value() {
+  _loop_context_value automation.loop.auto_use false
+}
+
+_loop_auto_use_status() {
+  local value
+  value="$(_loop_auto_use_value)"
+  echo "automation.loop.auto_use=${value}"
+  if [[ "$value" == "true" ]]; then
+    echo "WSD Loop auto-use: enabled for eligible L0/L1 work when AGENTS.md/codex-prompt are followed"
+  else
+    echo "WSD Loop auto-use: disabled; loop runs only when explicitly requested"
+  fi
+}
+
+_loop_set_auto_use() {
+  local value="$1"
+  [[ -f +context.json ]] || { _loop_fail "+context.json nao encontrado"; return 1; }
+  command -v node >/dev/null 2>&1 || { _loop_fail "node nao encontrado"; return 1; }
+  node - "$value" <<'NODE'
+const fs = require('fs');
+const value = process.argv[2] === 'true';
+const file = '+context.json';
+const ctx = JSON.parse(fs.readFileSync(file, 'utf8'));
+ctx.automation = ctx.automation || {};
+ctx.automation.loop = ctx.automation.loop || {};
+ctx.automation.loop.auto_use = value;
+fs.writeFileSync(file, JSON.stringify(ctx, null, 2) + '\n');
+NODE
+  echo "PASS: automation.loop.auto_use=${value}"
+}
+
+_loop_feature_spec() {
+  local feature="$1"
+  local spec="+specs/features/${feature}/spec.md"
+  [[ -n "$feature" ]] || { _loop_fail "--feature e obrigatorio"; return 1; }
+  [[ -f "$spec" ]] || { _loop_fail "spec nao encontrada: $spec"; return 1; }
+  printf "%s" "$spec"
+}
+
+_loop_feature_tasks() {
+  local feature="$1"
+  printf "+specs/features/%s/tasks.md" "$feature"
+}
+
+_loop_feature_risk() {
+  local spec="$1"
+  local risk
+  risk="$(grep -im1 -E '^(risk|severity):' "$spec" 2>/dev/null | sed -E 's/^[^:]+:[[:space:]]*"?([^"#[:space:]]+).*/\1/' | tr '[:lower:]' '[:upper:]' || true)"
+  case "$risk" in
+    L0|L1|L2) printf "%s" "$risk" ;;
+    *) printf "L1" ;;
+  esac
+}
+
+_loop_risk_allowed() {
+  local risk="$1"
+  node - "$risk" <<'NODE'
+const fs = require('fs');
+const risk = process.argv[2];
+let ctx = {};
+try {
+  ctx = JSON.parse(fs.readFileSync('+context.json', 'utf8'));
+} catch (_error) {
+  process.exit(1);
+}
+const allowed = (((ctx.automation || {}).loop || {}).allowed_risks) || ['L0', 'L1'];
+process.exit(allowed.includes(risk) ? 0 : 1);
+NODE
+}
+
+_loop_check_risk() {
+  local risk="$1"
+  local human_approved="$2"
+  local require_human_for_l2
+
+  if ! _loop_risk_allowed "$risk"; then
+    _loop_fail "risk $risk nao esta em automation.loop.allowed_risks"
+    return 1
+  fi
+
+  require_human_for_l2="$(_loop_context_value automation.loop.require_human_for_l2 true)"
+  if [[ "$risk" == "L2" && "$require_human_for_l2" == "true" && "$human_approved" != "1" ]]; then
+    _loop_fail "risk L2 exige --human-approved"
+    return 1
+  fi
+}
+
+_loop_preflight() {
+  local allow_dirty="$1"
+  local enabled
+  local require_clean
+
+  command -v git >/dev/null 2>&1 || { _loop_fail "git nao encontrado"; return 1; }
+  command -v node >/dev/null 2>&1 || { _loop_fail "node nao encontrado"; return 1; }
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { _loop_fail "nao e um repositorio Git"; return 1; }
+  [[ -f +context.json ]] || { _loop_fail "+context.json nao encontrado"; return 1; }
+  [[ -f scripts/wsd_check.sh ]] || { _loop_fail "scripts/wsd_check.sh nao encontrado"; return 1; }
+
+  enabled="$(_loop_context_value automation.loop.enabled true)"
+  [[ "$enabled" != "false" ]] || { _loop_fail "automation.loop.enabled=false"; return 1; }
+
+  require_clean="$(_loop_context_value automation.loop.require_clean_worktree true)"
+  if [[ "$allow_dirty" != "1" && "$require_clean" == "true" && -n "$(git status --porcelain)" ]]; then
+    git status --short >&2
+    _loop_fail "worktree suja; commit/stash antes do loop ou use --allow-dirty conscientemente"
+    return 1
+  fi
+}
+
+_loop_acquire_lock() {
+  mkdir -p +wsd/loop
+  if [[ -f +wsd/loop/lock ]]; then
+    _loop_fail "loop lock ativo em +wsd/loop/lock"
+    return 1
+  fi
+  printf "%s\n" "$$" > +wsd/loop/lock
+  trap '_loop_release_lock' EXIT
+}
+
+_loop_release_lock() {
+  rm -f +wsd/loop/lock
+  trap - EXIT
+}
+
+_loop_write_state() {
+  local mode="$1"
+  local feature="$2"
+  local status="$3"
+  local prompt="$4"
+  local iteration="${5:-0}"
+  local message="${6:-}"
+  mkdir -p +wsd/loop
+  node - "$mode" "$feature" "$status" "$prompt" "$iteration" "$message" > +wsd/loop/state.json <<'NODE'
+const [mode, feature, status, prompt, iteration, message] = process.argv.slice(2);
+const state = {
+  schema: 'wsd/loop-state/v1',
+  updated_at: new Date().toISOString(),
+  mode,
+  feature,
+  status,
+  prompt,
+  iteration: Number(iteration || 0),
+  message,
+};
+process.stdout.write(JSON.stringify(state, null, 2) + '\n');
+NODE
+}
+
+_loop_make_prompt() {
+  local mode="$1"
+  local feature="$2"
+  local risk="$3"
+  local spec="$4"
+  local tasks="$5"
+  local iteration="${6:-0}"
+  local run_id
+  local log_dir
+  local prompt_file
+  local template
+
+  run_id="$(date '+%Y%m%d-%H%M%S')-$$"
+  log_dir="+logs/wsd-loop/${run_id}"
+  prompt_file="${log_dir}/prompt-${mode}.md"
+  template="+wsd/loop/PROMPT_${mode}.md"
+  [[ "$mode" == "build" ]] && template="+wsd/loop/PROMPT_build.md"
+
+  mkdir -p "$log_dir"
+  {
+    printf "# WSD Loop %s\n\n" "$mode"
+    printf -- "- feature: %s\n" "$feature"
+    printf -- "- risk: %s\n" "$risk"
+    printf -- "- spec: %s\n" "$spec"
+    printf -- "- tasks: %s\n" "$tasks"
+    printf -- "- iteration: %s\n\n" "$iteration"
+    printf "## Runtime Contract\n\n"
+    printf "Use these environment variables if an agent command is provided:\n\n"
+    printf -- "- WSD_LOOP_PROMPT: this prompt file\n"
+    printf -- "- WSD_LOOP_FEATURE: %s\n" "$feature"
+    printf -- "- WSD_LOOP_MODE: %s\n" "$mode"
+    printf -- "- WSD_LOOP_RISK: %s\n\n" "$risk"
+    printf "## Base Instructions\n\n"
+    if [[ -f "$template" ]]; then
+      cat "$template"
+    else
+      printf "Follow AGENTS.md, +context.json and the target spec.\n"
+    fi
+  } > "$prompt_file"
+
+  printf "%s" "$prompt_file"
+}
+
+_loop_validate_changed_paths() {
+  node <<'NODE'
+const fs = require('fs');
+const cp = require('child_process');
+
+let ctx = {};
+try {
+  ctx = JSON.parse(fs.readFileSync('+context.json', 'utf8'));
+} catch (error) {
+  console.error('FAIL: cannot read +context.json');
+  process.exit(1);
+}
+
+function norm(path) {
+  return String(path || '')
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/\/+$/, '') || '.';
+}
+
+function within(file, root) {
+  if (root === '.') return true;
+  return file === root || file.startsWith(root + '/');
+}
+
+const permissions = ctx.permissions || {};
+const writePaths = (permissions.write_paths || []).map(norm);
+const forbiddenPaths = (permissions.forbidden_paths || []).map(norm);
+const raw = cp.execFileSync('git', ['status', '--porcelain=v1', '-z'], { encoding: 'buffer' }).toString('utf8');
+const parts = raw.split('\0').filter(Boolean);
+const files = [];
+
+for (let i = 0; i < parts.length; i += 1) {
+  const entry = parts[i];
+  const status = entry.slice(0, 2);
+  const file = norm(entry.slice(3));
+  files.push(file);
+  if (status[0] === 'R' || status[0] === 'C') i += 1;
+}
+
+const violations = files.filter((file) => {
+  if (forbiddenPaths.some((root) => within(file, root))) return true;
+  if (writePaths.length > 0 && !writePaths.some((root) => within(file, root))) return true;
+  return false;
+});
+
+if (violations.length > 0) {
+  console.error('FAIL: changed paths outside +context.json permissions:');
+  for (const file of violations) console.error(`  - ${file}`);
+  process.exit(1);
+}
+NODE
+}
+
+_loop_ci_commands() {
+  node <<'NODE'
+const fs = require('fs');
+let ctx = {};
+try {
+  ctx = JSON.parse(fs.readFileSync('+context.json', 'utf8'));
+} catch (_error) {
+  process.exit(0);
+}
+const ci = ctx.ci || {};
+const commands = []
+  .concat(ci.lint_commands || [])
+  .concat(ci.test_commands || [])
+  .concat(ci.build_commands || []);
+for (const command of commands) {
+  if (typeof command === 'string' && command.trim()) console.log(command.trim());
+}
+NODE
+}
+
+_loop_run_wsd_gates() {
+  local risk="$1"
+  local spec="$2"
+
+  bash scripts/wsd_check.sh --risk L0 .
+  if [[ "$risk" == "L1" || "$risk" == "L2" ]]; then
+    bash scripts/wsd_check.sh --risk "$risk" --spec "$spec" .
+  fi
+}
+
+_loop_run_ci_gates() {
+  local skip_ci="$1"
+  local cmd
+
+  [[ "$skip_ci" != "1" ]] || { echo "info: ci gates skipped by --skip-ci"; return 0; }
+  while IFS= read -r cmd; do
+    [[ -n "$cmd" ]] || continue
+    echo "== ci: $cmd"
+    bash -lc "$cmd"
+  done < <(_loop_ci_commands)
+}
+
+_loop_auto_commit_if_needed() {
+  local feature="$1"
+  local iteration="$2"
+  local no_commit="$3"
+  local auto_commit
+
+  [[ -n "$(git status --porcelain)" ]] || return 0
+
+  auto_commit="$(_loop_context_value automation.loop.auto_commit true)"
+  if [[ "$no_commit" == "1" || "$auto_commit" != "true" ]]; then
+    echo "info: changes left uncommitted"
+    return 0
+  fi
+
+  git add -A
+  git commit -m "chore(wsd-loop): ${feature} iteration ${iteration}"
+
+  if [[ "$(_loop_context_value automation.loop.auto_push false)" == "true" ]]; then
+    git push
+  fi
+}
+
+_loop_plan() {
+  local feature="$1"
+  local agent_cmd="$2"
+  local dry_run="$3"
+  local human_approved="$4"
+  local allow_dirty="$5"
+  local spec
+  local tasks
+  local risk
+  local prompt_file
+
+  _loop_preflight "$allow_dirty"
+  spec="$(_loop_feature_spec "$feature")"
+  tasks="$(_loop_feature_tasks "$feature")"
+  risk="$(_loop_feature_risk "$spec")"
+  _loop_check_risk "$risk" "$human_approved"
+  prompt_file="$(_loop_make_prompt plan "$feature" "$risk" "$spec" "$tasks" 0)"
+  _loop_write_state plan "$feature" "prompt-ready" "$prompt_file" 0 "plan prompt ready"
+
+  if [[ "$dry_run" == "1" || -z "$agent_cmd" ]]; then
+    echo "prompt: $prompt_file"
+    echo "PASS: WSD loop plan prompt ready"
+    return 0
+  fi
+
+  _loop_acquire_lock
+  WSD_LOOP_PROMPT="$prompt_file" WSD_LOOP_FEATURE="$feature" WSD_LOOP_MODE="plan" WSD_LOOP_RISK="$risk" bash -lc "$agent_cmd"
+  _loop_release_lock
+  _loop_write_state plan "$feature" "completed" "$prompt_file" 0 "plan agent completed"
+  echo "PASS: WSD loop plan completed"
+}
+
+_loop_once() {
+  local feature="$1"
+  local agent_cmd="$2"
+  local iteration="$3"
+  local dry_run="$4"
+  local skip_ci="$5"
+  local no_commit="$6"
+  local human_approved="$7"
+  local allow_dirty="$8"
+  local spec
+  local tasks
+  local risk
+  local prompt_file
+
+  _loop_preflight "$allow_dirty"
+  spec="$(_loop_feature_spec "$feature")"
+  tasks="$(_loop_feature_tasks "$feature")"
+  [[ -f "$tasks" ]] || { _loop_fail "tasks nao encontrado: $tasks; rode wsd loop plan primeiro"; return 1; }
+  risk="$(_loop_feature_risk "$spec")"
+  _loop_check_risk "$risk" "$human_approved"
+  prompt_file="$(_loop_make_prompt build "$feature" "$risk" "$spec" "$tasks" "$iteration")"
+  _loop_write_state build "$feature" "prompt-ready" "$prompt_file" "$iteration" "build prompt ready"
+
+  if [[ "$dry_run" == "1" || -z "$agent_cmd" ]]; then
+    echo "prompt: $prompt_file"
+    echo "PASS: WSD loop build prompt ready"
+    return 0
+  fi
+
+  _loop_acquire_lock
+  WSD_LOOP_PROMPT="$prompt_file" WSD_LOOP_FEATURE="$feature" WSD_LOOP_MODE="build" WSD_LOOP_RISK="$risk" bash -lc "$agent_cmd"
+  _loop_validate_changed_paths
+  git diff --check
+  _loop_run_wsd_gates "$risk" "$spec"
+  _loop_run_ci_gates "$skip_ci"
+  _loop_auto_commit_if_needed "$feature" "$iteration" "$no_commit"
+  _loop_release_lock
+  _loop_write_state build "$feature" "completed" "$prompt_file" "$iteration" "iteration completed"
+  echo "PASS: WSD loop iteration completed"
+}
+
+_wsd_loop() {
+  local subcommand="${1:-help}"
+  shift || true
+
+  local feature=""
+  local agent_cmd=""
+  local max_iterations=""
+  local dry_run=0
+  local skip_ci=0
+  local no_commit=0
+  local human_approved=0
+  local allow_dirty=0
+  local arg
+
+  case "$subcommand" in
+    help|--help|-h)
+      _loop_usage
+      return 0
+      ;;
+    status)
+      if [[ -f +wsd/loop/state.json ]]; then
+        cat +wsd/loop/state.json
+      else
+        echo "WSD Loop: no state"
+      fi
+      return 0
+      ;;
+    stop)
+      mkdir -p +wsd/loop
+      rm -f +wsd/loop/lock
+      _loop_write_state stop "" "stopped" "" 0 "stopped by operator"
+      echo "PASS: WSD loop stopped"
+      return 0
+      ;;
+    auto)
+      local action="${1:-status}"
+      case "$action" in
+        status)
+          _loop_auto_use_status
+          ;;
+        on|enable|enabled|true)
+          _loop_set_auto_use true
+          ;;
+        off|disable|disabled|false)
+          _loop_set_auto_use false
+          ;;
+        help|--help|-h)
+          echo "Usage: ./+wsd/bin/wsd loop auto status|on|off"
+          ;;
+        *)
+          echo "FAIL: argumento desconhecido em loop auto: $action" >&2
+          echo "Usage: ./+wsd/bin/wsd loop auto status|on|off" >&2
+          return 1
+          ;;
+      esac
+      return
+      ;;
+    plan|once|run)
+      ;;
+    *)
+      echo "Unknown WSD loop command: $subcommand" >&2
+      _loop_usage >&2
+      return 1
+      ;;
+  esac
+
+  while [[ "$#" -gt 0 ]]; do
+    arg="$1"
+    case "$arg" in
+      --feature)
+        [[ -n "${2-}" ]] || { _loop_fail "--feature precisa de valor"; return 1; }
+        feature="$2"
+        shift 2
+        ;;
+      --agent-cmd)
+        [[ -n "${2-}" ]] || { _loop_fail "--agent-cmd precisa de valor"; return 1; }
+        agent_cmd="$2"
+        shift 2
+        ;;
+      --max-iterations)
+        [[ -n "${2-}" ]] || { _loop_fail "--max-iterations precisa de valor"; return 1; }
+        max_iterations="$2"
+        shift 2
+        ;;
+      --dry-run)
+        dry_run=1
+        shift
+        ;;
+      --skip-ci)
+        skip_ci=1
+        shift
+        ;;
+      --no-commit)
+        no_commit=1
+        shift
+        ;;
+      --human-approved)
+        human_approved=1
+        shift
+        ;;
+      --allow-dirty)
+        allow_dirty=1
+        shift
+        ;;
+      --help|-h)
+        _loop_usage
+        return 0
+        ;;
+      *)
+        echo "FAIL: argumento desconhecido em loop: $arg" >&2
+        _loop_usage >&2
+        return 1
+        ;;
+    esac
+  done
+
+  case "$subcommand" in
+    plan)
+      _loop_plan "$feature" "$agent_cmd" "$dry_run" "$human_approved" "$allow_dirty"
+      ;;
+    once)
+      _loop_once "$feature" "$agent_cmd" 1 "$dry_run" "$skip_ci" "$no_commit" "$human_approved" "$allow_dirty"
+      ;;
+    run)
+      [[ -n "$agent_cmd" ]] || { _loop_fail "loop run exige --agent-cmd"; return 1; }
+      [[ -n "$max_iterations" ]] || max_iterations="$(_loop_context_value automation.loop.default_max_iterations 3)"
+      [[ "$max_iterations" =~ ^[1-9][0-9]*$ ]] || { _loop_fail "--max-iterations deve ser inteiro positivo"; return 1; }
+      local i
+      for ((i = 1; i <= max_iterations; i += 1)); do
+        echo "== WSD Loop iteration $i/$max_iterations =="
+        _loop_once "$feature" "$agent_cmd" "$i" "$dry_run" "$skip_ci" "$no_commit" "$human_approved" "$allow_dirty"
+      done
+      echo "PASS: WSD loop run completed"
+      ;;
+  esac
+}
+
+_codex_usage() {
+  cat <<'USAGE'
+Usage:
+  ./+wsd/bin/wsd codex-prompt [--mode start|execute|plan|loop] [--feature <slug>] [--task <text>] [--brief] [text...]
+  ./+wsd/bin/wsd codex [--exec] [--dry-run] [--mode start|execute|plan|loop] [--feature <slug>] [--task <text>] [text...]
+
+Purpose:
+  Gera ou executa um prompt curto para Codex seguir WSDD sem o operador listar arquivos manualmente.
+
+Examples:
+  ./+wsd/bin/wsd codex-prompt --task "planeje e implemente login"
+  ./+wsd/bin/wsd codex --task "corrija o bug do checkout"
+  ./+wsd/bin/wsd codex --exec --feature checkout-loop
+USAGE
+}
+
+_codex_parse_args() {
+  _codex_mode="execute"
+  _codex_feature=""
+  _codex_task=""
+  _codex_brief=0
+  _codex_exec=0
+  _codex_dry_run=0
+
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      --mode)
+        [[ -n "${2:-}" ]] || { echo "FAIL: --mode precisa de valor" >&2; return 1; }
+        _codex_mode="$2"
+        shift 2
+        ;;
+      --feature)
+        [[ -n "${2:-}" ]] || { echo "FAIL: --feature precisa de valor" >&2; return 1; }
+        _codex_feature="$2"
+        shift 2
+        ;;
+      --task)
+        [[ -n "${2:-}" ]] || { echo "FAIL: --task precisa de valor" >&2; return 1; }
+        _codex_task="${_codex_task}${_codex_task:+ }$2"
+        shift 2
+        ;;
+      --brief)
+        _codex_brief=1
+        shift
+        ;;
+      --exec)
+        _codex_exec=1
+        shift
+        ;;
+      --dry-run)
+        _codex_dry_run=1
+        shift
+        ;;
+      help|--help|-h)
+        _codex_usage
+        return 2
+        ;;
+      --)
+        shift
+        if [[ "$#" -gt 0 ]]; then
+          _codex_task="${_codex_task}${_codex_task:+ }$*"
+        fi
+        break
+        ;;
+      --*)
+        echo "FAIL: argumento desconhecido para codex: $1" >&2
+        _codex_usage >&2
+        return 1
+        ;;
+      *)
+        _codex_task="${_codex_task}${_codex_task:+ }$1"
+        shift
+        ;;
+    esac
+  done
+
+  case "$_codex_mode" in
+    start|execute|plan|loop) ;;
+    *)
+      echo "FAIL: --mode deve ser start, execute, plan ou loop" >&2
+      return 1
+      ;;
+  esac
+}
+
+_codex_make_prompt() {
+  local mode="$1"
+  local feature="$2"
+  local task="$3"
+  local brief="$4"
+  local auto_use
+  local auto_use_hint
+
+  auto_use="$(_loop_auto_use_value)"
+  if [[ "$auto_use" == "true" ]]; then
+    auto_use_hint="automation.loop.auto_use=true. Para tarefa L0/L1 elegivel, com spec aprovada e worktree limpa, use WSD Loop automaticamente: rode ./+wsd/bin/wsd loop plan --feature <slug> quando precisar planejar, e ./+wsd/bin/wsd loop once --feature <slug> para gerar o prompt de iteracao antes de executar. Se este comando foi chamado com --exec e --feature, o launcher pode usar loop run com Codex exec."
+  else
+    auto_use_hint="automation.loop.auto_use=false. Use WSD Loop apenas quando o operador pedir ou quando voce propuser explicitamente."
+  fi
+
+  if [[ "$brief" == "1" ]]; then
+    cat <<PROMPT
+Use WSDD neste repositorio. Siga AGENTS.md, leia +context.json e +specs/project/STATE.md, classifique risco L0/L1/L2, use spec/tasks quando necessario, edite apenas paths permitidos e valide antes de finalizar.
+${auto_use_hint}
+Modo: ${mode}
+Feature: ${feature:-n/a}
+Tarefa: ${task:-ler o projeto, diagnosticar estado WSD e propor proximo passo seguro}
+PROMPT
+    return
+  fi
+
+  cat <<PROMPT
+Use WSDD neste repositorio.
+
+Bootstrap obrigatorio:
+- Siga AGENTS.md. O Codex normalmente carrega AGENTS.md ao iniciar na pasta; trate-o como contrato ativo.
+- Antes de editar, leia +context.json e respeite permissions.write_paths, permissions.forbidden_paths e secrets_policy.
+- Consulte +specs/project/STATE.md. Se +specs/HANDOFF.md existir, considere a continuidade da sessao anterior.
+- Se existir, rode ./+wsd/bin/wsd start --brief para obter estado operacional compacto.
+- Classifique a tarefa como L0, L1 ou L2 antes de executar.
+- L1/L2 exigem spec aprovada em +specs/features/<slug>/spec.md; L2 exige aprovacao humana explicita e plano de rollback.
+- Politica Ralph/WSD Loop: ${auto_use_hint}
+- Para ideias fora do escopo, registre em +specs/project/STATE.md ou +specs/project/IDEAS.md em vez de implementar.
+- Antes de finalizar mudancas relevantes, rode git diff --check e ./+wsd/bin/wsd check ou bash scripts/wsd_check.sh --risk L0 .
+- Nunca use git add ., reset, clean, stash, merge, rebase, pull ou troca de branch para esconder estado local sem instrucao explicita.
+
+Modo solicitado: ${mode}
+Feature alvo: ${feature:-n/a}
+
+Tarefa:
+${task:-Ler o projeto, diagnosticar estado WSD e propor o proximo passo seguro.}
+
+Resposta esperada:
+- estado inicial relevante;
+- risco classificado;
+- arquivos/specs usados;
+- alteracoes feitas ou plano proposto;
+- validacoes executadas e resultado.
+PROMPT
+}
+
+_wsd_codex_prompt() {
+  _codex_parse_args "$@" || {
+    local status=$?
+    [[ "$status" -eq 2 ]] && return 0
+    return "$status"
+  }
+  _codex_make_prompt "$_codex_mode" "$_codex_feature" "$_codex_task" "$_codex_brief"
+}
+
+_wsd_codex() {
+  local prompt
+  local auto_use
+  local agent_cmd
+
+  _codex_parse_args "$@" || {
+    local status=$?
+    [[ "$status" -eq 2 ]] && return 0
+    return "$status"
+  }
+
+  prompt="$(_codex_make_prompt "$_codex_mode" "$_codex_feature" "$_codex_task" "$_codex_brief")"
+
+  if [[ "$_codex_dry_run" == "1" ]]; then
+    printf "%s\n" "$prompt"
+    return 0
+  fi
+
+  command -v codex >/dev/null 2>&1 || {
+    echo "FAIL: codex CLI nao encontrado no PATH" >&2
+    echo "Use './+wsd/bin/wsd codex-prompt ...' e cole o prompt manualmente." >&2
+    return 1
+  }
+
+  auto_use="$(_loop_auto_use_value)"
+  if [[ "$auto_use" == "true" && "$_codex_exec" == "1" && -n "$_codex_feature" ]]; then
+    echo "== WSD Codex Auto Loop =="
+    echo "automation.loop.auto_use=true; executando WSD Loop para feature ${_codex_feature}"
+    agent_cmd='codex exec -C "$PWD" "$(cat "$WSD_LOOP_PROMPT")"'
+    _wsd_loop run --feature "$_codex_feature" --agent-cmd "$agent_cmd"
+    return
+  fi
+
+  if [[ "$_codex_exec" == "1" ]]; then
+    codex exec -C "$project_root" "$prompt"
+  else
+    codex --cd "$project_root" "$prompt"
+  fi
+}
+
+_codex_shortcuts_usage() {
+  cat <<'USAGE'
+Usage: ./+wsd/bin/wsd codex-shortcuts <status|install|uninstall|print> [--force]
+
+Purpose:
+  Gerencia prompts globais opcionais do Codex para atalhos WSD.
+
+Notes:
+  Codex CLI usa prompts customizados como /prompts:<nome>. Para WSD Loop,
+  o atalho opcional fica como /prompts:loop status, nao como /loop status.
+  Para workflow compartilhado no repo, prefira a skill wsd-loop em .agents/skills.
+USAGE
+}
+
+_codex_shortcuts_prompt_content() {
+  if [[ -f +wsd/templates/codex-prompts/loop.md ]]; then
+    cat +wsd/templates/codex-prompts/loop.md
+    return
+  fi
+
+  cat <<'PROMPT'
+---
+description: WSD Codex Loop Shortcut: status, auto on/off, plan, once, run
+argument-hint: "status | auto status|on|off | on | off | plan FEATURE | once FEATURE | run FEATURE"
+---
+
+# WSD Codex Loop Shortcut
+
+Use WSDD in this repository and interpret `$ARGUMENTS` as a short WSD Loop request.
+
+Valid mappings:
+
+- `status` -> run `./+wsd/bin/wsd loop status`
+- `auto status` -> run `./+wsd/bin/wsd loop auto status`
+- `auto on` or `on` -> run `./+wsd/bin/wsd loop auto on`
+- `auto off` or `off` -> run `./+wsd/bin/wsd loop auto off`
+- `plan FEATURE` -> run `./+wsd/bin/wsd loop plan --feature FEATURE`
+- `once FEATURE` -> run `./+wsd/bin/wsd loop once --feature FEATURE`
+- `run FEATURE` -> only run after checking `+context.json`, approved spec, clean-worktree requirements, and L2 approval policy.
+
+If `$ARGUMENTS` is empty, show current loop status and the available mappings.
+PROMPT
+}
+
+_wsd_codex_shortcuts() {
+  local action="${1:-status}"
+  local force=0
+  local codex_home="${CODEX_HOME:-$HOME/.codex}"
+  local prompt_dir="$codex_home/prompts"
+  local prompt_file="$prompt_dir/loop.md"
+
+  shift || true
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      --force)
+        force=1
+        shift
+        ;;
+      help|--help|-h)
+        _codex_shortcuts_usage
+        return 0
+        ;;
+      *)
+        echo "FAIL: argumento desconhecido para codex-shortcuts: $1" >&2
+        _codex_shortcuts_usage >&2
+        return 1
+        ;;
+    esac
+  done
+
+  case "$action" in
+    status)
+      echo "Codex skills repo-local:"
+      if [[ -f .agents/skills/wsd-loop/SKILL.md ]]; then
+        echo "ok: .agents/skills/wsd-loop/SKILL.md"
+      elif [[ -f .codex/skills/wsd-loop/SKILL.md ]]; then
+        echo "warn: .codex/skills/wsd-loop/SKILL.md presente; reinstale WSD para espelhar em .agents/skills"
+      else
+        echo "missing: wsd-loop skill"
+      fi
+      echo ""
+      echo "Codex custom prompt opcional:"
+      if [[ -f "$prompt_file" ]]; then
+        echo "ok: $prompt_file"
+      else
+        echo "missing: $prompt_file"
+      fi
+      echo ""
+      echo "Uso Codex recomendado:"
+      echo "  loop status"
+      echo "  loop auto on"
+      echo "  loop auto off"
+      echo "  /prompts:loop status   # apos: ./+wsd/bin/wsd codex-shortcuts install"
+      ;;
+    install)
+      if [[ -f "$prompt_file" && "$force" != "1" ]] && ! grep -q 'WSD Codex Loop Shortcut' "$prompt_file"; then
+        echo "FAIL: $prompt_file ja existe e nao parece ser prompt WSD. Use --force para sobrescrever." >&2
+        return 1
+      fi
+      mkdir -p "$prompt_dir"
+      _codex_shortcuts_prompt_content > "$prompt_file"
+      echo "PASS: Codex prompt instalado em $prompt_file"
+      echo "Reinicie o Codex CLI se o prompt nao aparecer."
+      echo "Uso: /prompts:loop status"
+      ;;
+    uninstall)
+      if [[ ! -f "$prompt_file" ]]; then
+        echo "PASS: $prompt_file ja ausente"
+      elif grep -q 'WSD Codex Loop Shortcut' "$prompt_file"; then
+        rm -f "$prompt_file"
+        echo "PASS: Codex prompt removido: $prompt_file"
+      else
+        echo "FAIL: $prompt_file existe e nao parece ser prompt WSD; remova manualmente se desejar." >&2
+        return 1
+      fi
+      ;;
+    print)
+      _codex_shortcuts_prompt_content
+      ;;
+    help|--help|-h)
+      _codex_shortcuts_usage
+      ;;
+    *)
+      echo "FAIL: acao desconhecida para codex-shortcuts: $action" >&2
+      _codex_shortcuts_usage >&2
+      return 1
+      ;;
+  esac
+}
+
+_shortcuts_usage() {
+  cat <<'USAGE'
+Usage: ./+wsd/bin/wsd shortcuts <status|shell>
+
+Purpose:
+  Mostra atalhos curtos para evitar digitar ./+wsd/bin/wsd.
+
+Examples:
+  eval "$(./+wsd/bin/wsd shortcuts shell)"
+  wsd loop auto status
+  wl status
+USAGE
+}
+
+_wsd_shortcuts() {
+  local action="${1:-status}"
+  case "$action" in
+    status)
+      echo "Atalhos disponiveis:"
+      echo "  Codex: use a skill wsd-loop com pedidos como 'loop status' ou instale /prompts:loop via codex-shortcuts"
+      echo "  Claude Code: use /loop status quando instalado com --tools claude-code"
+      echo "  Shell: eval \"\$(./+wsd/bin/wsd shortcuts shell)\" e depois use 'wsd ...' ou 'wl ...'"
+      ;;
+    shell)
+      cat <<'SHELL'
+wsd() {
+  local root
+  root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  if [ -x "$root/+wsd/bin/wsd" ]; then
+    (cd "$root" && ./+wsd/bin/wsd "$@")
+  else
+    printf '%s\n' "WSD not found from $PWD" >&2
+    return 127
+  fi
+}
+wl() {
+  wsd loop "$@"
+}
+SHELL
+      ;;
+    help|--help|-h)
+      _shortcuts_usage
+      ;;
+    *)
+      echo "FAIL: acao desconhecida para shortcuts: $action" >&2
+      _shortcuts_usage >&2
+      return 1
+      ;;
+  esac
+}
+
 case "$command" in
   start)
-    echo "== WSD Start =="
-    git status --short --branch
-    git branch -vv
-    git remote -v
-    git remote show origin 2>/dev/null || true
-    if [[ -f scripts/wsd_check.sh ]]; then
-      bash scripts/wsd_check.sh --risk L0 .
+    _start_brief=0
+    while [[ "$#" -gt 0 ]]; do
+      case "$1" in
+        --brief)
+          _start_brief=1
+          shift
+          ;;
+        help|--help|-h)
+          echo "Usage: ./+wsd/bin/wsd start [--brief]"
+          exit 0
+          ;;
+        *)
+          echo "FAIL: argumento desconhecido em start: $1" >&2
+          echo "Usage: ./+wsd/bin/wsd start [--brief]" >&2
+          exit 1
+          ;;
+      esac
+    done
+    if [[ "$_start_brief" == "1" ]]; then
+      echo "== WSD Start Brief =="
+      printf "path: %s\n" "$project_root"
+      printf "branch: %s\n" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+      printf "upstream: %s\n" "$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || echo missing)"
+      if [[ -n "$(git status --short 2>/dev/null)" ]]; then
+        echo "worktree: dirty"
+      else
+        echo "worktree: clean"
+      fi
+      printf "wsd_version: %s\n" "$(_json_get +wsd/config.json version 2>/dev/null || echo unknown)"
+      [[ -f AGENTS.md ]] && echo "agents: present" || echo "agents: missing"
+      [[ -f +context.json ]] && echo "context: present" || echo "context: missing"
+      [[ -f +specs/project/STATE.md ]] && echo "state: present" || echo "state: missing"
+      [[ -f +specs/HANDOFF.md ]] && echo "handoff: present" || echo "handoff: missing"
+      _features_count="$(find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | wc -l | tr -d ' ' || true)"
+      [[ -n "$_features_count" ]] || _features_count=0
+      printf "features: %s\n" "$_features_count"
+    else
+      echo "== WSD Start =="
+      git status --short --branch
+      git branch -vv
+      git remote -v
+      git remote show origin 2>/dev/null || true
+      if [[ -f scripts/wsd_check.sh ]]; then
+        bash scripts/wsd_check.sh --risk L0 .
+      fi
+      if [[ -f +specs/HANDOFF.md ]]; then
+        echo "-- HANDOFF.md (last session) --"
+        head -20 +specs/HANDOFF.md
+      fi
+      find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | sort || true
+      find +specs/quick -maxdepth 1 -type f -name '*.md' 2>/dev/null | sort || true
+      gh pr list --state open --limit 20 2>/dev/null || true
     fi
-    if [[ -f +specs/HANDOFF.md ]]; then
-      echo "-- HANDOFF.md (last session) --"
-      head -20 +specs/HANDOFF.md
-    fi
-    find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | sort || true
-    find +specs/quick -maxdepth 1 -type f -name '*.md' 2>/dev/null | sort || true
-    gh pr list --state open --limit 20 2>/dev/null || true
     ;;
   check)
     if [[ -f scripts/wsd_check.sh ]]; then
@@ -521,6 +1494,13 @@ open(f, 'w').writelines(out)
     test -f +wsd/schemas/context.schema.json && echo "ok: +wsd/schemas/context.schema.json" || echo "missing: +wsd/schemas/context.schema.json"
     test -x +wsd/bin/wsd-validate-context.cjs && echo "ok: +wsd/bin/wsd-validate-context.cjs" || echo "missing: +wsd/bin/wsd-validate-context.cjs"
     test -f AGENTS.md && echo "ok: AGENTS.md" || echo "missing: AGENTS.md"
+    if [[ -f AGENTS.md ]]; then
+      if grep -q 'WSD Codex Bootstrap' AGENTS.md && grep -q 'codex-prompt' AGENTS.md && grep -q '+context.json' AGENTS.md; then
+        echo "ok: AGENTS.md WSD Codex Bootstrap"
+      else
+        echo "warn: AGENTS.md sem bloco WSD Codex Bootstrap atualizado"
+      fi
+    fi
     test -f +context.json && echo "ok: +context.json" || echo "missing: +context.json"
     test -d +specs && echo "ok: +specs" || echo "missing: +specs"
     test -f +specs/project/STATE.md && echo "ok: +specs/project/STATE.md" || echo "missing: +specs/project/STATE.md"
@@ -534,6 +1514,7 @@ open(f, 'w').writelines(out)
     command -v node >/dev/null && echo "ok: node" || echo "missing: node (schema validation will skip)"
     command -v python3 >/dev/null && echo "ok: python3" || echo "missing: python3"
     command -v gh >/dev/null && echo "ok: gh optional" || echo "missing: gh optional"
+    command -v codex >/dev/null && echo "ok: codex optional" || echo "missing: codex optional"
     echo "ok: git namespace available (doctor, preflight, pr-check)"
     if [[ -f +wsd/party-mode/agents-wsd.csv ]]; then
       echo "ok: party-mode instalado"
@@ -821,13 +1802,30 @@ USAGE
   version)
     _wsd_version_report "$@"
     ;;
+  loop)
+    _wsd_loop "$@"
+    ;;
+  codex-prompt)
+    _wsd_codex_prompt "$@"
+    ;;
+  codex)
+    _wsd_codex "$@"
+    ;;
+  codex-shortcuts)
+    _wsd_codex_shortcuts "$@"
+    ;;
+  shortcuts)
+    _wsd_shortcuts "$@"
+    ;;
   help|--help|-h)
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable"
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable|loop|codex-prompt|codex|codex-shortcuts|shortcuts"
     echo "       ./+wsd/bin/wsd version [--inventory|--scan] [--json] [--path <dir>] [--max-depth <n>]"
+    echo "       ./+wsd/bin/wsd loop plan|once|run|status|stop"
+    echo "       ./+wsd/bin/wsd codex-prompt|codex [--task <text>] [--feature <slug>]"
     ;;
   *)
     echo "Unknown WSD command: $command" >&2
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable" >&2
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|doctor|hooks|update|git|party|snapshot|version|lovable|loop|codex-prompt|codex|codex-shortcuts|shortcuts" >&2
     exit 1
     ;;
 esac

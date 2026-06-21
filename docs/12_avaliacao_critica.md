@@ -150,10 +150,11 @@ O installer renderiza o `+context.json` a partir do perfil — o agente não pre
 
 **Lacunas específicas:**
 
-O `wsd install --tools codex` cria três skills em `.codex/skills/`:
-- `.codex/skills/wsd` — regras gerais WSD para o Codex
-- `.codex/skills/wsd-start` — procedimento de abertura de sessão
-- `.codex/skills/wsd-finish` — procedimento de encerramento
+O `wsd install --tools codex` cria skills em `.agents/skills/` (com espelho legado em `.codex/skills/`), incluindo:
+- `.agents/skills/wsd` — regras gerais WSD para o Codex
+- `.agents/skills/wsd-start` — procedimento de abertura de sessão
+- `.agents/skills/wsd-finish` — procedimento de encerramento
+- `.agents/skills/wsd-loop` — atalhos do Ralph/WSD Loop
 
 O equivalente para Claude Code ainda não está no mesmo nível de maturidade. Sem `.claude/` skills correspondentes, o agente não tem o fluxo de sessão automatizado. O `wsd start` pode rodar manualmente, mas não será invocado como skill no início de uma sessão Claude.
 

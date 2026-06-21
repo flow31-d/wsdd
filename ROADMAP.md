@@ -1,7 +1,7 @@
 ---
 title: "Roadmap WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -9,7 +9,7 @@ tags:
 status: ativo
 tipo: nota
 parent: "[[wsd/wsd]]"
-links: "[[wsd/wsd]], [[wsd/README]], [[wsd/CHANGELOG]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]]"
+links: "[[wsd/wsd]], [[wsd/README]], [[wsd/CHANGELOG]], [[wsd/docs/04_playbook_implantacao]], [[wsd/docs/10_matriz_sincronizacao_notas]], [[wsd/docs/11_modulo_git_governance]], [[wsd/docs/19_wsd_loop_automacao_inteligente]]"
 otimizado_para_obsidian: true
 ---
 # Roadmap WSD
@@ -64,6 +64,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 13/05/2026 — Claude (Opus 4.7): Consolidação da entrega `v0.2.0` (minor "estável adotável"). 8 features + UX polish: WSD-010 (CONCERNS padrão), WSD-002 (render condicional), WSD-009 (release script), WSD-007 (install opt-out D-001), WSD-004 L0+L1 (check robusto), WSD-003 (CI no wsdd), WSD-006 (Obsidian D-002), WSD-013 (fix raiz ENOENT). Decisões D-001 (Opção B+) e D-002 (Opção A) resolvidas. 9/9 npm test + 27/27 cenários e2e + piloto operacional no `flow31-d/worc`. Próximas frentes mapeadas para `v0.2.1`/`v0.3.0`: WSD-004 L2, WSD-005, WSD-008, WSD-012.
 - 13/05/2026 — Claude (Opus 4.7): Consolidação da entrega `v0.3.0` (minor — reforço do contrato operacional WSD). `scripts/wsd_check.sh` reescrito (185 linhas) validando 6 notas obrigatórias de `+specs/project/` como L0-required (PROJECT/STATE/ROADMAP/IDEAS/IDEAS_PIPELINE/CONCERNS). `+context.json` com blocos formais `environment`, `repository` (+ `clone_policy`), `permissions`, `workflow`. Artefatos `+specs/project/` preenchidos com conteúdo real do projeto. `templates/local-wsd/bin/wsd-snapshot.cjs` propaga novos campos. Inclui `REVIEW_PRE_V1.md` (tracker pré-v1) e `docs/18_manual_leigo_comandos_wsdd.md` (manual leigo). WSD-008 parcialmente endereçado pelo tracker. Próximas frentes restantes: WSD-004 L2 (branch_naming, pre-flight git, audit), WSD-005 (normalização cosmética), WSD-012 (`wsd git audit`).
 - 30/05/2026 18:15:09 -03 — Codex: Consolidação da entrega `v0.3.1` (patch — inventário de versão WSD por projeto): `wsd version` consulta o projeto atual, `--inventory/--scan` varre múltiplos repos e `--json` permite automações.
+- 15/06/2026 — Codex: Consolidação da entrega `v0.4.0` (minor — WSD Loop + Codex Adherence Pack): `automation.loop`, prompts vendorizados, subcomando `wsd loop`, comandos `wsd codex-prompt`/`wsd codex`, `start --brief`, gates de iteração e ideias futuras registradas em `+specs/project/IDEAS.md`.
+- 17/06/2026 — Codex: Consolidação da entrega `v0.4.1` (patch — atalhos de agente): `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` no Claude Code e atalhos shell para reduzir digitação manual.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -154,7 +156,9 @@ Novas features em `v0.1.x` (patches) ou `v0.2.0` (features grandes), seguindo o 
 - [x] `v0.3.1` — **Inventário de versão WSD por projeto**: `templates/local-wsd/bin/wsd` ganha subcomando `version` para ler `+wsd/config.json`, mostrar versão instalada, data de instalação, fonte (`wsd_source`), versão da fonte e status de alinhamento. Modo `--inventory/--scan --path <dir>` varre múltiplos projetos com WSD aplicado; `--json` dá saída estruturada para auditoria. `templates/repo/AGENTS.md.template` passa a listar o comando nos comandos locais. `npm test` ganha gate `test:install-version`.
 - [x] `v0.3.2` — **Versão carimbada no snapshot**: `templates/local-wsd/bin/wsd-snapshot.cjs` grava o campo `wsd_version` (lido de `+wsd/config.json`) em cada `+wsd/snapshot.json`. Permite que consumidores que já leem snapshots (ex.: Zelador) detectem deriva de versão passivamente, sem precisar abrir o `config.json` de cada repo. Complementa o `wsd version` ativo da v0.3.1.
 - [x] `v0.3.3` — **Publicação pública do carimbo de versão**: leva ao `wsdd` público a feature da v0.3.2 (público estava em v0.3.1). Sem mudança de código além da publicação; entrega `wsd_version` no snapshot e detecção passiva de deriva ao repositório público.
-- [ ] `v0.3.x` / `v0.4.0` — **Próxima frente**: itens restantes não bloqueantes: WSD-004 L2 (branch_naming, pre-flight git, audit ROADMAP↔status), WSD-005 (normalização cosmética de PROJECT_NAME/CANONICAL_HOST), WSD-012 (`wsd git audit`). WSD-008 parcialmente endereçado pelo `REVIEW_PRE_V1.md` da v0.3.0. Ver `REVIEW_PRE_V1.md` para detalhes.
+- [x] `v0.4.0` — **WSD Loop Automation + Codex Adherence Pack**: `automation.loop` no `+context.json`, prompts `+wsd/loop/PROMPT_plan.md` e `PROMPT_build.md`, subcomando `wsd loop plan|once|run|status|stop`, `WSD Codex Bootstrap` no `AGENTS.md`, comandos `wsd codex-prompt`/`wsd codex`, `start --brief`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop` + `test:install-codex-adherence`.
+- [x] `v0.4.1` — **Atalhos de agente para WSD Loop**: skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop status`, e `wsd shortcuts shell` para funções `wsd()`/`wl()`.
+- [ ] `v0.4.x` / `v0.5.0` — **Próximas frentes**: auto-PR/Issues, dashboard de runs, sandbox forte, adapters multi-agente e checkpoints L2 assistidos. Ver `+specs/project/IDEAS.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -221,5 +225,7 @@ Regra de acompanhamento:
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/ROADMAP.md` | Consolidação da `v0.2.1` (patch cosmético) — mensagem "Refreshed" do `wsd update` agora dinâmica via `config.modules`. Próxima frente fica `v0.2.x`/`v0.3.0`. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.3.0` (minor — reforço do contrato operacional): `wsd_check.sh` reescrito (6 notas obrigatórias), `+context.json` com blocos formais (`environment`/`repository`/`permissions`/`workflow` + `clone_policy`), artefatos `+specs/project/` preenchidos, snapshot CJS expandido, `REVIEW_PRE_V1.md` + `docs/18` manual leigo. Próxima frente passa a `v0.3.x`/`v0.4.0` (WSD-004 L2, WSD-005, WSD-012). |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.3.1` (patch): inventário de versão WSD por projeto via `wsd version`, modo `--inventory` e gate `test:install-version`. |
+| 15/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.0`: WSD Loop implementado e próximas automações movidas para `+specs/project/IDEAS.md`. |
+| 17/06/2026 | Codex | `+Apps/wsd/ROADMAP.md` | Consolidação da `v0.4.1`: atalhos Codex/Claude/shell para WSD Loop e alinhamento de skills Codex em `.agents/skills`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

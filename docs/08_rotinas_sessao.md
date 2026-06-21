@@ -1,7 +1,7 @@
 ---
 title: "08 — Rotinas de Sessão WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -46,6 +46,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Planejamento dos comandos Git/GitHub Governance no início, execução e promoção de sessão (`v0.1.10-alpha`).
 - 07/05/2026 — Codex: Atualização das rotinas para refletir comandos Git/GitHub Governance implementados na `v0.1.10-alpha`.
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` na rotina de início quando for necessário confirmar a versão WSD aplicada no projeto.
+- 15/06/2026 — Codex: Inclusão do `wsd loop` como rotina opcional para automatizar execução L0/L1 com gates e poucas aprovações.
+- 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt` e `codex`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -56,6 +58,14 @@ Comando curto recomendado dentro do projeto:
 ```bash
 ./+wsd/bin/wsd start
 ```
+
+Contexto compacto para agentes ou wrappers:
+
+```bash
+./+wsd/bin/wsd start --brief
+```
+
+No Codex, o fluxo normal continua sendo abrir a sessão já na pasta do projeto e pedir a tarefa. O `AGENTS.md` gerado pelo WSD contém a seção `WSD Codex Bootstrap`, que instrui o agente a ler `+context.json`, `STATE.md`, `HANDOFF.md` e classificar risco sem o operador precisar listar esses arquivos.
 
 Quando houver dúvida sobre qual WSD está aplicado no repo, rodar antes ou logo após o start:
 
@@ -104,6 +114,26 @@ Prompt recomendado quando o usuário pedir uma tarefa:
 Use WSD. Classifique a tarefa, confira spec se necessário, execute só o escopo permitido e valide.
 ```
 
+Alternativa com comando curto:
+
+```bash
+./+wsd/bin/wsd codex-prompt --task "descreva a tarefa"
+./+wsd/bin/wsd codex --task "descreva a tarefa"
+./+wsd/bin/wsd codex --exec --feature <slug>
+```
+
+`codex-prompt` só imprime o prompt WSDD. `codex` chama o Codex CLI apontando para o repo atual; `--exec` usa modo não interativo. Para testar sem depender do Codex instalado, usar `./+wsd/bin/wsd codex --dry-run --task "..."`.
+
+Para ligar/desligar uso automático do Ralph/WSD Loop:
+
+```bash
+./+wsd/bin/wsd loop auto status
+./+wsd/bin/wsd loop auto on
+./+wsd/bin/wsd loop auto off
+```
+
+Com `automation.loop.auto_use=true`, o agente deve preferir WSD Loop para L0/L1 elegível, com spec aprovada e worktree limpa. Com `false`, o loop continua manual/sugerido.
+
 O agente deve:
 
 - aplicar matriz de risco e auto-sizing;
@@ -121,6 +151,24 @@ O agente deve:
 - quando `git-governance` estiver ativo, rodar `./+wsd/bin/wsd git pr-check` antes de criar ou atualizar PR.
   Neste alpha, `pr-check` trata `upstream` e `remote` como sinais adicionais; o bloqueio principal é branch dedicada, worktree limpa e commits à frente da base.
   Spec/Issue e validação seguem no fluxo L1/L2 e nos checkers do projeto, não no `pr-check` local.
+
+### 3.1 Automação com WSD Loop (v0.4.0)
+
+Quando a spec L0/L1 já estiver clara e o operador quiser reduzir aprovações, usar:
+
+```bash
+./+wsd/bin/wsd loop plan --feature <slug>
+./+wsd/bin/wsd loop once --feature <slug> --agent-cmd '<comando do agente>'
+./+wsd/bin/wsd loop run --feature <slug> --agent-cmd '<comando do agente>' --max-iterations 3
+./+wsd/bin/wsd loop auto on
+```
+
+Regras:
+
+- `plan` e `once` sem `--agent-cmd` apenas geram prompts auditáveis em `+logs/wsd-loop/`;
+- `run` exige `--agent-cmd`;
+- L2 exige `--human-approved` e só roda se `automation.loop.allowed_risks` incluir `L2`;
+- cada iteração valida paths, risco, `git diff --check`, WSD gates e CI antes de auto-commit.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -163,13 +211,16 @@ Se a sessão terminar com worktree suja, isso deve ficar explícito. Não limpar
 Quando o WSD for instalado com `--tools codex`, o projeto recebe:
 
 ```text
-.codex/skills/wsd/SKILL.md
-.codex/skills/wsd-start/SKILL.md
-.codex/skills/wsd-finish/SKILL.md
-.codex/skills/wsd-specify/SKILL.md
-.codex/skills/wsd-design/SKILL.md
-.codex/skills/wsd-tasks/SKILL.md
+.agents/skills/wsd/SKILL.md
+.agents/skills/wsd-start/SKILL.md
+.agents/skills/wsd-finish/SKILL.md
+.agents/skills/wsd-specify/SKILL.md
+.agents/skills/wsd-design/SKILL.md
+.agents/skills/wsd-tasks/SKILL.md
+.agents/skills/wsd-loop/SKILL.md
 ```
+
+O instalador também espelha essas skills em `.codex/skills/` para compatibilidade com setups antigos. O caminho principal atual para Codex é `.agents/skills/`.
 
 Uso prático:
 
@@ -178,6 +229,7 @@ Uso prático:
 - `wsd-specify`: fase Specify — clarificação + WHEN/THEN/SHALL em `+specs/features/<slug>/spec.md` (HARD-GATE);
 - `wsd-design`: fase Design — abordagens e arquitetura em `+specs/features/<slug>/design.md` (pode pular para casos simples);
 - `wsd-tasks`: fase Tasks — quebra em `+specs/features/<slug>/tasks.md` atômico com gate level por task;
+- `wsd-loop`: atalhos de Ralph/WSD Loop como `loop status`, `loop auto on`, `loop auto off`, `loop plan <feature>`;
 - `wsd-finish`: relatório de fechamento, atualização de STATE.md, geração de HANDOFF.md.
 
 ### 6.2 Claude Code (`--tools claude-code`)
@@ -190,6 +242,7 @@ Quando o WSD for instalado com `--tools claude-code`, o projeto recebe:
 .claude/commands/wsd-specify.md
 .claude/commands/wsd-design.md
 .claude/commands/wsd-tasks.md
+.claude/commands/loop.md
 .claude/settings.json              ← hooks PreToolUse, PreCompact, SessionStart, Stop
 +wsd/hooks/pre-tool.sh             ← enforcement de forbidden_paths
 ```
@@ -200,6 +253,7 @@ Uso prático:
 - `/wsd-specify`: cria `+specs/features/<slug>/spec.md` com WHEN/THEN/SHALL (HARD-GATE);
 - `/wsd-design`: cria `+specs/features/<slug>/design.md` (pode pular em casos simples);
 - `/wsd-tasks`: cria `+specs/features/<slug>/tasks.md` atômico;
+- `/loop status`: consulta estado do Ralph/WSD Loop; `/loop on` e `/loop off` alternam `automation.loop.auto_use`;
 - `/wsd-finish`: fecha sessão, atualiza STATE.md, gera HANDOFF.md.
 
 A governança (conteúdo da skill `wsd` do Codex) vive no `AGENTS.md` gerado + hooks — não em comando persistente, porque Claude Code usa comandos slash sob demanda.
@@ -219,11 +273,13 @@ Ao alterar comandos de sessão, revisar sempre:
 - `templates/codex-skills/wsd-specify/SKILL.md`;
 - `templates/codex-skills/wsd-design/SKILL.md`;
 - `templates/codex-skills/wsd-tasks/SKILL.md`;
+- `templates/codex-skills/wsd-loop/SKILL.md`;
 - `templates/claude-commands/commands/wsd-start.md`;
 - `templates/claude-commands/commands/wsd-finish.md`;
 - `templates/claude-commands/commands/wsd-specify.md`;
 - `templates/claude-commands/commands/wsd-design.md`;
 - `templates/claude-commands/commands/wsd-tasks.md`;
+- `templates/claude-commands/commands/loop.md`;
 - `templates/claude-commands/hooks/pre-tool.sh`;
 - `templates/claude-commands/settings.json`;
 - `templates/repo/AGENTS.md.template`;
@@ -250,5 +306,7 @@ bash scripts/wsd_docs_check.sh
 | 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Planejamento dos comandos `wsd git preflight`, `doctor` e `pr-check` nas rotinas de sessão da v0.1.10-alpha. |
 | 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Atualização das rotinas para comandos `wsd git` implementados na v0.1.10-alpha. |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do `wsd version` como checagem opcional de início de sessão para rastrear a versão WSD aplicada no repo. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do fluxo opcional `wsd loop plan|once|run` para automação L0/L1 governada por gates. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do Codex Adherence Pack: `start --brief`, `codex-prompt`, `codex` e bootstrap via `AGENTS.md`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

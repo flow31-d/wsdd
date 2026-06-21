@@ -1,7 +1,7 @@
 ---
 title: "Changelog WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -45,7 +45,10 @@ otimizado_para_obsidian: true
 19. [[#19. 0.2.1 — 13/05/2026]]
 20. [[#20. 0.3.0 — 13/05/2026]]
 21. [[#21. 0.3.1 — 30/05/2026]]
-22. [[#22. 🕒 Registro de Alterações por Agentes]]
+22. [[#22. 0.3.3 — 13/06/2026]]
+23. [[#23. 0.4.0 — 15/06/2026]]
+24. [[#24. 0.4.1 — 17/06/2026]]
+25. [[#25. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -75,6 +78,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 30/05/2026 — Codex: Higiene pós-release `v0.3.1`: quick start atual padronizado para `flow31-d/wsdd`, registro de fechamento público adicionado em `docs/15` e pendências antigas de estabilização `v0.1.0` marcadas como concluídas.
 - 13/06/2026 — Claude (Opus 4.8): Inclusão da versão **`0.3.2`** (patch — versão no snapshot): `templates/local-wsd/bin/wsd-snapshot.cjs` passa a carimbar o campo `wsd_version` (lido do `+wsd/config.json`) em cada `+wsd/snapshot.json`. Permite detecção passiva de deriva de versão por consumidores que já leem snapshots (ex.: Zelador), sem abrir o `config.json` por repo. Complementa o subcomando ativo `wsd version` da v0.3.1. Snapshots sem o campo passam a sinalizar gerador antigo.
 - 13/06/2026 — Claude (Opus 4.8): Inclusão da versão **`0.3.3`** (patch — publicação pública): leva ao `wsdd` público a feature de `wsd_version` no snapshot (privada na `0.3.2`). Público estava em `0.3.1`; passa a receber o carimbo de versão e a detecção passiva de deriva. Seção 22 adicionada, Registro renumerado para seção 23.
+- 15/06/2026 — Codex: Inclusão da versão **`0.4.0`** (minor — WSD Loop + Codex Adherence Pack): `automation.loop`, `automation.loop.auto_use`, prompts vendorizados `+wsd/loop/`, subcomando `wsd loop plan|once|run|status|stop|auto`, `WSD Codex Bootstrap`, `start --brief`, `codex-prompt`, `codex`, gates de paths/risco/CI antes de auto-commit e testes `test:install-loop`/`test:install-codex-adherence`. Seção 23 adicionada, Registro renumerado para seção 24.
+- 17/06/2026 — Codex: Inclusão da versão **`0.4.1`** (patch — atalhos de agente): skills Codex no caminho atual `.agents/skills/` com espelho `.codex/skills/`, skill `wsd-loop`, prompt opcional `/prompts:loop`, comando Claude `/loop`, CLI `codex-shortcuts`/`shortcuts` e gates cobrindo a ergonomia de WSD Loop. Seção 24 adicionada, Registro renumerado para seção 25.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -858,7 +863,64 @@ Sem mudança quebra-compat. Projetos já instalados recebem o gerador novo ao ro
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 23. 🕒 Registro de Alterações por Agentes
+## 23. 0.4.0 — 15/06/2026
+
+**Minor — WSD Loop + Codex Adherence Pack.** Esta release adiciona uma camada Ralph-like nativa ao WSD: ciclos curtos de planejar, executar, validar e repetir, amarrados a `+context.json`, specs, tasks, matriz de risco, permissões de path e gates locais. Também reforça o fluxo diário do Codex: abrir o agente na pasta do projeto continua válido, mas o `AGENTS.md` e o CLI local agora deixam a aderência WSDD explícita.
+
+### Adicionado
+
+- **`automation.loop` no `+context.json`** — defaults conservadores: L0/L1 automatizáveis, L2 com aprovação explícita, worktree limpa, auto-commit depois dos gates e auto-push desligado.
+- **`automation.loop.auto_use`** — opção fixa para ligar/desligar o uso automático do Ralph/WSD Loop por agentes; default `false`, comandos `wsd loop auto on|off|status`.
+- **Prompts vendorizados** — `+wsd/loop/PROMPT_plan.md` e `+wsd/loop/PROMPT_build.md` para padronizar como agentes planejam e executam uma tarefa por iteração.
+- **`./+wsd/bin/wsd loop`** — subcomandos `plan`, `once`, `run`, `status` e `stop`.
+- **Gates por iteração** — validação de risco, spec, tasks, lock, paths alterados, `git diff --check`, `wsd_check.sh` e CI declarada antes de auto-commit.
+- **Logs locais ignorados** — `.gitignore` recebe `+logs/wsd-loop/`, `+wsd/loop/state.json` e `+wsd/loop/lock`.
+- **WSD Codex Bootstrap** — o `AGENTS.md` gerado instrui Codex a carregar `+context.json`, `STATE.md`, `HANDOFF.md`, classificar L0/L1/L2 e validar sem o operador listar arquivos.
+- **`./+wsd/bin/wsd start --brief`** — contexto compacto para agentes e wrappers.
+- **`./+wsd/bin/wsd codex-prompt` e `./+wsd/bin/wsd codex`** — geram ou executam prompt WSDD curto; `--dry-run` permite testar sem Codex instalado.
+- **`wsd doctor` ampliado** — reporta o bloco `WSD Codex Bootstrap` e a presença opcional do Codex CLI.
+- **Docs e ideias futuras** — `docs/19_wsd_loop_automacao_inteligente.md` e novas ideias em `+specs/project/IDEAS.md`.
+- **Gates de regressão** — `test:install-loop` e `test:install-codex-adherence` incluídos em `npm test`.
+
+### Exemplos
+
+```bash
+./+wsd/bin/wsd loop plan --feature minha-feature
+./+wsd/bin/wsd loop once --feature minha-feature --agent-cmd 'codex exec ...'
+./+wsd/bin/wsd loop run --feature minha-feature --agent-cmd 'codex exec ...' --max-iterations 3
+./+wsd/bin/wsd loop auto on
+./+wsd/bin/wsd loop status
+./+wsd/bin/wsd codex-prompt --task "minha tarefa"
+./+wsd/bin/wsd codex --dry-run --task "minha tarefa"
+```
+
+### Nota de Compatibilidade
+
+Sem quebra para projetos existentes. Rodar `./+wsd/bin/wsd update` copia `+wsd/loop/`, atualiza o CLI vendorizado e anexa os ignores locais. Para usar o loop com contrato completo, revisar ou adicionar o bloco `automation.loop` ao `+context.json` do projeto. Para receber o `WSD Codex Bootstrap` no `AGENTS.md`, projetos antigos devem atualizar o arquivo manualmente ou regenerá-lo de forma consciente, porque `wsd update` preserva `AGENTS.md`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 24. 0.4.1 — 17/06/2026
+
+**Patch — atalhos de agente para WSD Loop e aderência do fluxo de ideias.** Esta release reduz a fricção de uso diário do Ralph/WSD Loop sem mudar o contrato de risco da `v0.4.0` e fecha gaps de descoberta da captura de ideias no Codex.
+
+### Adicionado
+
+- **Skills Codex no caminho atual** — `install --tools codex` agora gera `.agents/skills/*` e mantém espelho em `.codex/skills/*` para compatibilidade.
+- **Skill `wsd-loop`** — mapeia pedidos curtos como `loop status`, `loop auto on`, `loop auto off`, `loop plan <feature>` para `./+wsd/bin/wsd loop ...`.
+- **Prompt Codex opcional** — `templates/codex-prompts/loop.md` pode ser instalado com `./+wsd/bin/wsd codex-shortcuts install`, habilitando `/prompts:loop status` no Codex CLI.
+- **Claude `/loop`** — `templates/claude-commands/commands/loop.md` permite `/loop status`, `/loop on`, `/loop off`, `/loop plan <feature>`.
+- **Atalhos de shell** — `./+wsd/bin/wsd shortcuts shell` imprime funções `wsd()` e `wl()` que resolvem o Git root e evitam digitar `./+wsd/bin/wsd`.
+- **Aderência do `wsd-idea` no Codex** — `templates/codex-skills/wsd-idea/SKILL.md` agora tem frontmatter `name`/`description`, e os gates validam que toda skill Codex instalável declare esses metadados.
+- **Pipeline de ideias dogfooded** — `+specs/project/IDEAS_PIPELINE.md` foi sincronizado com as ideias existentes do próprio WSD e o self-check falha se o pipeline ficar placeholder enquanto `IDEAS.md` contém ideias.
+
+### Nota de Compatibilidade
+
+No Codex CLI, o comando customizado documentado fica no namespace `/prompts:...`; portanto o atalho literal `/loop status` é entregue no Claude Code, enquanto no Codex o caminho compartilhável é a skill `wsd-loop` e o atalho opcional é `/prompts:loop status`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 25. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -882,5 +944,7 @@ Sem mudança quebra-compat. Projetos já instalados recebem o gerador novo ao ro
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.0`** (minor "estável adotável") — 8 features funcionais (WSD-002, WSD-003, WSD-004 L0+L1, WSD-006, WSD-007, WSD-009, WSD-010, WSD-013) + UX polish do install interativo. Resolve D-001 (Opção B+) e D-002 (Opção A). 9/9 npm test + 27/27 e2e + piloto worc validados. Seção 18 adicionada, Registro renumerado para seção 19. |
 | 13/05/2026 — | Claude (Opus 4.7) | `+Apps/WSD/CHANGELOG.md` | Inclusão da versão **`0.2.1`** (patch cosmético) — mensagem "Refreshed" do `wsd update` agora reflete dinamicamente os módulos copiados (respeita `config.modules`). Bug detectado durante `./+wsd/bin/wsd update` no piloto worc logo após v0.2.0. Seção 19 adicionada, Registro renumerado para seção 20. |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.3.1`** — subcomando `wsd version`, inventário multi-repo, saída JSON e gate `test:install-version`. Seção 21 adicionada, Registro renumerado para seção 22. |
+| 15/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.0`** — WSD Loop, Codex Adherence Pack, `automation.loop.auto_use`, prompts vendorizados, subcomandos `wsd loop`/`wsd loop auto`/`wsd codex-prompt`/`wsd codex` e gates `test:install-loop`/`test:install-codex-adherence`. |
+| 17/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.1`** — atalhos Codex/Claude/shell para WSD Loop, `.agents/skills`, `wsd-loop`, `/prompts:loop`, `/loop` e gates de instalação. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

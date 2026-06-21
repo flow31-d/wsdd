@@ -32,6 +32,7 @@ required_files=(
   "docs/10_matriz_sincronizacao_notas.md"
   "docs/11_modulo_git_governance.md"
   "docs/14_qualidade_desenvolvimento.md"
+  "docs/19_wsd_loop_automacao_inteligente.md"
   "schemas/context.schema.json"
   "templates/repo/AGENTS.md.template"
   "templates/repo/+context.json.template"
@@ -43,13 +44,19 @@ required_files=(
   "templates/specs/feature-tasks.md.template"
   "templates/repo/scripts/wsd_check.sh"
   "templates/local-wsd/bin/wsd"
+  "templates/local-wsd/loop/PROMPT_plan.md"
+  "templates/local-wsd/loop/PROMPT_build.md"
   "templates/local-wsd/bin/wsd-validate-context.cjs"
+  "templates/codex-prompts/loop.md"
   "templates/codex-skills/wsd-specify/SKILL.md"
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
+  "templates/codex-skills/wsd-idea/SKILL.md"
+  "templates/codex-skills/wsd-loop/SKILL.md"
   "templates/claude-commands/commands/wsd-specify.md"
   "templates/claude-commands/commands/wsd-design.md"
   "templates/claude-commands/commands/wsd-tasks.md"
+  "templates/claude-commands/commands/loop.md"
   "templates/git-hooks/pre-commit"
   "templates/git-hooks/commit-msg"
   "templates/git-hooks/pre-push"
@@ -61,12 +68,20 @@ required_files=(
   "scripts/wsd_bootstrap_repo.sh"
   "scripts/wsd_docs_check.sh"
   "scripts/wsd_check.sh"
+  "scripts/test_install_codex_adherence.sh"
 )
 
 for file in "${required_files[@]}"; do
   [[ -f "$file" ]] || fail "missing required file: $file"
 done
 ok "required files present"
+
+for skill in templates/codex-skills/*/SKILL.md; do
+  head -n 1 "$skill" | grep -qx -- '---' || fail "Codex skill missing YAML frontmatter: $skill"
+  sed -n '1,12p' "$skill" | grep -q '^name:' || fail "Codex skill missing name: $skill"
+  sed -n '1,12p' "$skill" | grep -q '^description:' || fail "Codex skill missing description: $skill"
+done
+ok "Codex skill frontmatter present"
 
 for script in scripts/*.sh templates/repo/scripts/*.sh install.sh templates/local-wsd/bin/wsd templates/git-hooks/pre-commit templates/git-hooks/commit-msg templates/git-hooks/pre-push; do
   bash -n "$script" || fail "shell syntax failed: $script"
@@ -223,8 +238,37 @@ grep -q 'git_governance' templates/repo/+context.json.template || fail "+context
 grep -q 'git doctor' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing git namespace"
 ok "git governance MVP artifacts present"
 
+grep -q 'automation' schemas/context.schema.json || fail "schemas/context.schema.json missing automation block"
+grep -q 'auto_use' schemas/context.schema.json || fail "schemas/context.schema.json missing automation.loop.auto_use"
+grep -q 'automation' templates/repo/+context.json.template || fail "+context.json.template missing automation block"
+grep -q 'auto_use' templates/repo/+context.json.template || fail "+context.json.template missing automation.loop.auto_use"
+grep -q 'loop)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing loop command"
+grep -q '_wsd_loop' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing loop dispatcher"
+grep -q 'loop auto' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing loop auto toggle"
+grep -q 'test:install-loop' package.json || fail "package.json missing test:install-loop"
+grep -q 'WSD Loop' docs/19_wsd_loop_automacao_inteligente.md || fail "docs/19 missing WSD Loop content"
+ok "WSD Loop automation artifacts present"
+
+grep -q 'WSD Codex Bootstrap' templates/repo/AGENTS.md.template || fail "AGENTS.md.template missing WSD Codex Bootstrap"
+grep -q 'codex-prompt)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex-prompt command"
+grep -q '_wsd_codex' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex launcher"
+grep -q 'start --brief' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing start --brief"
+grep -q '.agents' bin/wsd-method.js || fail "bin/wsd-method.js missing .agents/skills install target"
+grep -q 'codex-shortcuts)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex-shortcuts command"
+grep -q 'shortcuts)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing shortcuts command"
+grep -q 'WSD Codex Loop Shortcut' templates/codex-prompts/loop.md || fail "Codex loop prompt missing marker"
+grep -q '/loop status' templates/claude-commands/commands/loop.md || fail "Claude /loop command missing status mapping"
+grep -q 'test:install-codex-adherence' package.json || fail "package.json missing test:install-codex-adherence"
+ok "Codex adherence artifacts present"
+
 bash scripts/wsd_docs_check.sh
 ok "documentation sync passed"
+
+if grep -q '^## IDEA-[0-9][0-9][0-9]' +specs/project/IDEAS.md \
+  && grep -q '^| — | — | — | — | — | — |$' +specs/project/IDEAS_PIPELINE.md; then
+  fail "+specs/project/IDEAS_PIPELINE.md still has placeholder row while IDEAS.md has ideas"
+fi
+ok "WSD ideas pipeline is populated when ideas exist"
 
 if find . -type f \( -name "*.md" -o -name "*.md.template" \) -print0 | xargs -0 grep -L '^---$' >/tmp/wsd-md-without-frontmatter.$$ 2>/dev/null; then
   if [[ -s /tmp/wsd-md-without-frontmatter.$$ ]]; then

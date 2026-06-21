@@ -1,7 +1,7 @@
 ---
 title: "04 — Playbook de Implantação WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -54,6 +54,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`.
 - 07/05/2026 — Codex: Atualização do playbook para tratar `--git-policy full` como disponível na `v0.1.10-alpha`.
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` no fluxo de validação pós-instalação para registrar qual versão do WSD ficou aplicada no repo.
+- 15/06/2026 — Codex: Inclusão de `wsd loop status` no pós-install e referência ao uso opcional de `wsd loop` para automação L0/L1.
+- 15/06/2026 — Codex: Inclusão de `wsd codex-prompt` no pós-install para aderência Codex com prompt curto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -191,7 +193,7 @@ Mesmo assim, o agente deve revisar:
 - `+specs/codebase/*.md` quando `--brownfield`;
 - `scripts/wsd_check.sh`;
 - `+wsd/config.json`;
-- `.codex/skills/*/SKILL.md`, quando `--tools codex` for usado;
+- `.agents/skills/*/SKILL.md` (espelhado em `.codex/skills/*/SKILL.md` por compatibilidade), quando `--tools codex` for usado;
 - `.claude/commands/*.md`, quando `--tools claude-code` for usado.
 
 Campos essenciais que não podem ficar vazios ou genéricos:
@@ -304,6 +306,9 @@ Rodar:
 ```bash
 ./+wsd/bin/wsd doctor
 ./+wsd/bin/wsd version
+./+wsd/bin/wsd loop status
+./+wsd/bin/wsd loop auto status
+./+wsd/bin/wsd codex-prompt --brief --task "validar aderencia WSDD"
 ./+wsd/bin/wsd check
 python3 -m json.tool +context.json
 bash scripts/wsd_check.sh --risk L0 .
@@ -344,6 +349,7 @@ Registrar:
 - merge commit;
 - status WSD;
 - versão WSD instalada (`./+wsd/bin/wsd version`);
+- estado local do WSD Loop, se usado (`./+wsd/bin/wsd loop status`);
 - comando checker;
 - specs ativas.
 
@@ -377,5 +383,7 @@ bash scripts/wsd_docs_check.sh
 | 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`. |
 | 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Atualização do playbook para `--git-policy full` disponível no instalador. |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd version` na validação e no registro pós-implantação do WSD em projetos. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd loop status` no pós-install e no registro de implantação. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd codex-prompt` na validação pós-install para aderência Codex. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

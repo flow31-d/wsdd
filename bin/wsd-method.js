@@ -293,6 +293,11 @@ async function update(args) {
     console.log('info: skipping party-mode/ (modules.party_mode=false in +wsd/config.json)');
   }
 
+  const loopSource = path.join(WSD_ROOT, 'templates', 'local-wsd', 'loop');
+  if (fs.existsSync(loopSource)) {
+    copyDir(loopSource, path.join(vendor, 'loop'));
+  }
+
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd'), 0o755);
@@ -305,12 +310,14 @@ async function update(args) {
   config.updated_at = new Date().toISOString();
   config.wsd_source = WSD_ROOT;
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+  appendSnapshotGitignore(directory);
 
   // Lista dinâmica reflete o que foi efetivamente copiado (respeita config.modules).
   const refreshed = ['bin', 'templates', 'profiles', 'scripts', 'schemas'];
   if (modules.docs !== false) refreshed.push('docs');
   if (modules.examples !== false) refreshed.push('examples');
   if (modules.party_mode !== false) refreshed.push('party-mode');
+  refreshed.push('loop');
   console.log('');
   console.log(`WSD updated: ${prevVersion} -> ${VERSION}`);
   console.log(`Refreshed: +wsd/{${refreshed.sort().join(',')}}`);
@@ -474,6 +481,10 @@ function installVendorTree(directory, settings) {
     }
     copyDir(srcPath, path.join(vendor, name), { skipGit: true });
   }
+  const loopSource = path.join(WSD_ROOT, 'templates', 'local-wsd', 'loop');
+  if (fs.existsSync(loopSource)) {
+    copyDir(loopSource, path.join(vendor, 'loop'));
+  }
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd'), 0o755);
@@ -512,13 +523,18 @@ function renderRepoTemplates(directory, settings, force) {
 function installCodexSkills(directory, settings, force) {
   if (!settings.TOOLS.includes('codex') && !settings.TOOLS.includes('both')) return;
   const sourceRoot = path.join(WSD_ROOT, 'templates', 'codex-skills');
-  const targetRoot = path.join(directory, '.codex', 'skills');
-  for (const src of walkFiles(sourceRoot)) {
-    const rel = path.relative(sourceRoot, src);
-    const dest = path.join(targetRoot, rel);
-    if (fs.existsSync(dest) && !force) continue;
-    ensureDir(path.dirname(dest));
-    fs.writeFileSync(dest, render(fs.readFileSync(src, 'utf8'), settings));
+  const targetRoots = [
+    path.join(directory, '.agents', 'skills'),
+    path.join(directory, '.codex', 'skills')
+  ];
+  for (const targetRoot of targetRoots) {
+    for (const src of walkFiles(sourceRoot)) {
+      const rel = path.relative(sourceRoot, src);
+      const dest = path.join(targetRoot, rel);
+      if (fs.existsSync(dest) && !force) continue;
+      ensureDir(path.dirname(dest));
+      fs.writeFileSync(dest, render(fs.readFileSync(src, 'utf8'), settings));
+    }
   }
 }
 
@@ -627,7 +643,7 @@ function installClaudeCommands(directory, settings, force) {
 }
 function appendSnapshotGitignore(directory) {
   const gitignorePath = path.join(directory, '.gitignore');
-  const entries = ['+wsd/snapshot.json', '+wsd/.last-check.json'];
+  const entries = ['+wsd/snapshot.json', '+wsd/.last-check.json', '+wsd/loop/state.json', '+wsd/loop/lock', '+logs/wsd-loop/'];
   let existing = '';
   if (fs.existsSync(gitignorePath)) existing = fs.readFileSync(gitignorePath, 'utf8');
   const toAdd = entries.filter(e => !existing.includes(e));

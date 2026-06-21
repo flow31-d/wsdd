@@ -1,3 +1,8 @@
+---
+name: wsd-idea
+description: Capture a new WSD project idea in IDEAS.md and IDEAS_PIPELINE.md. Use when the user says tenho uma ideia, quero registrar uma ideia, nova ideia, or asks to store a future improvement for later triage.
+---
+
 # Skill: wsd-idea — Captura de Ideia
 
 ## Quando usar

@@ -1,7 +1,7 @@
 ---
 title: "05 — Contrato de Artefatos WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -50,6 +50,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
 - 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
 - 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
+- 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -67,6 +68,7 @@ Campos mínimos:
   "repository": {},
   "permissions": {},
   "workflow": {},
+  "automation": {},
   "wsd": {},
   "ci": {}
 }
@@ -114,6 +116,29 @@ O MVP Git/GitHub Governance adiciona um bloco opcional ao `+context.json`. Insta
 
 Esse bloco é aceito por `schemas/context.schema.json`. O core continua funcionando sem GitHub quando `mode = "none"` ou quando o bloco estiver ausente em instalações antigas.
 
+### Bloco `automation.loop` (v0.4.0)
+
+O WSD Loop adiciona um bloco opcional de automação. Instalações novas renderizam o bloco por padrão; instalações antigas continuam válidas sem ele até adotarem o loop.
+
+```json
+"automation": {
+  "loop": {
+    "enabled": true,
+    "default_max_iterations": 3,
+    "allowed_risks": ["L0", "L1"],
+    "auto_use": false,
+    "require_clean_worktree": true,
+    "auto_commit": true,
+    "auto_push": false,
+    "one_task_per_iteration": true,
+    "stop_on_repeated_gate_failure": true,
+    "require_human_for_l2": true
+  }
+}
+```
+
+Esse bloco é aceito por `schemas/context.schema.json` e lido por `./+wsd/bin/wsd loop`. A política padrão permite automação L0/L1, mantém L2 dependente de aprovação explícita, desliga auto-push e deixa `auto_use=false` até o operador ligar com `./+wsd/bin/wsd loop auto on`.
+
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 3. `AGENTS.md`
@@ -127,7 +152,12 @@ Deve responder:
 - como abrir sessão;
 - o que é proibido;
 - como validar;
-- onde estão specs e contexto.
+- onde estão specs e contexto;
+- como o Codex deve fazer bootstrap WSDD sem o operador listar arquivos manualmente.
+
+A partir da `v0.4.0`, o template instalável deve conter a seção `WSD Codex Bootstrap`, mencionando `+context.json`, `+specs/project/STATE.md`, `+specs/HANDOFF.md`, classificação L0/L1/L2 e os comandos `wsd codex-prompt`/`wsd codex`.
+
+A partir da `v0.4.1`, skills Codex instaláveis devem usar `.agents/skills/` como caminho principal e `.codex/skills/` como espelho de compatibilidade. Atalhos globais de prompt do Codex são opcionais por usuário e instalados via `wsd codex-shortcuts install`, não durante o bootstrap do projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -260,23 +290,24 @@ O snapshot é parte do contrato porque WDB/Zelador e outros consumidores operaci
 
 ## 9. `+wsd/` — Vendor Tree
 
-O diretório `+wsd/` é criado pelo installer e contém o WSD vendorizado para uso local no projeto. É versionado no repositório (exceto `snapshot.json` e `.last-check.json`).
+O diretório `+wsd/` é criado pelo installer e contém o WSD vendorizado para uso local no projeto. É versionado no repositório (exceto estado efêmero como snapshot, last-check e estado do loop).
 
 Estrutura principal:
 
 | Caminho | Função |
 |---|---|
-| `+wsd/bin/wsd` | CLI local — `wsd start`, `check`, `finish`, `doctor`, `version`, `update`, `git`, `party`, `snapshot` |
+| `+wsd/bin/wsd` | CLI local — `wsd start`, `start --brief`, `check`, `finish`, `doctor`, `version`, `update`, `git`, `party`, `snapshot`, `loop`, `codex-prompt`, `codex` |
 | `+wsd/bin/wsd-validate-context.cjs` | Validador zero-deps do `+context.json` contra o schema |
 | `+wsd/bin/wsd-snapshot.cjs` | Gerador do `+wsd/snapshot.json` (resumo do estado do projeto) |
 | `+wsd/schemas/context.schema.json` | JSON Schema 2020-12 canônico do `+context.json` |
 | `+wsd/config.json` | Metadados da instalação: versão, source, ferramentas, data; lido por `wsd version` |
+| `+wsd/loop/` | Prompts base do WSD Loop (`PROMPT_plan.md`, `PROMPT_build.md`) e estado local ignorado |
 | `+wsd/docs/` | Documentação operacional do método (01–16) |
 | `+wsd/party-mode/` | Sistema de orquestração multi-agente (agents, steps, templates) |
 | `+wsd/templates/` | Templates de specs, comandos e repo (somente leitura) |
 | `+wsd/profiles/` | Perfis de projeto (python_api, node_frontend, etc.) |
 
-**Arquivos ignorados:** `+wsd/snapshot.json` (estado efêmero) e `+wsd/.last-check.json` (timestamp do último check).
+**Arquivos ignorados:** `+wsd/snapshot.json` (estado efêmero), `+wsd/.last-check.json` (timestamp do último check), `+wsd/loop/state.json`, `+wsd/loop/lock` e `+logs/wsd-loop/`.
 
 **Versão instalada:** via `wsd version` — lê `version`, `installed_at` e `wsd_source` de `+wsd/config.json`; quando possível, compara com `wsd_source/package.json`.
 
@@ -309,5 +340,7 @@ Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml`
 | 07/05/2026 — | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Marcação do bloco `git_governance` como implementado e validado pelo schema na `v0.1.10-alpha`. |
 | 11/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Adição das seções: `+specs/project/` (ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md — v0.1.1/v0.1.2) e `+wsd/` vendor tree (estrutura, arquivos ignorados, `wsd update`). Renúmeração de seções 6→11. Fix: referências `.js` → `.cjs` para wsd-validate-context e wsd-snapshot (v0.1.3). |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `wsd version` no contrato da vendor tree e explicitação do uso de `+wsd/config.json` como fonte de versão instalada. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `automation.loop`, prompts `+wsd/loop/` e ignores locais do WSD Loop `v0.4.0`. |
+| 17/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato de skills Codex em `.agents/skills/` e prompts opcionais `codex-shortcuts` (`v0.4.1`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

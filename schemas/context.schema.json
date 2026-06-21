@@ -151,6 +151,43 @@
         }
       }
     },
+    "automation": {
+      "type": "object",
+      "properties": {
+        "loop": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "default_max_iterations",
+            "allowed_risks",
+            "require_clean_worktree",
+            "auto_commit",
+            "auto_push",
+            "one_task_per_iteration",
+            "stop_on_repeated_gate_failure",
+            "require_human_for_l2"
+          ],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "default_max_iterations": { "type": "integer", "minimum": 1 },
+            "allowed_risks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["L0", "L1", "L2"]
+              }
+            },
+            "auto_use": { "type": "boolean" },
+            "require_clean_worktree": { "type": "boolean" },
+            "auto_commit": { "type": "boolean" },
+            "auto_push": { "type": "boolean" },
+            "one_task_per_iteration": { "type": "boolean" },
+            "stop_on_repeated_gate_failure": { "type": "boolean" },
+            "require_human_for_l2": { "type": "boolean" }
+          }
+        }
+      }
+    },
     "wsd": {
       "type": "object",
       "required": ["method", "context_documents"],

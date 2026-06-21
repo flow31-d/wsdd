@@ -55,6 +55,23 @@
     "branch_naming": "{{BRANCH_NAMING}}",
     "commit_style": "{{COMMIT_STYLE}}"
   },
+  "automation": {
+    "loop": {
+      "enabled": true,
+      "default_max_iterations": 3,
+      "allowed_risks": [
+        "L0",
+        "L1"
+      ],
+      "auto_use": false,
+      "require_clean_worktree": true,
+      "auto_commit": true,
+      "auto_push": false,
+      "one_task_per_iteration": true,
+      "stop_on_repeated_gate_failure": true,
+      "require_human_for_l2": true
+    }
+  },
   "wsd": {
     "method": "Wolff Spec Driven",
     "context_documents": [

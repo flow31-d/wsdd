@@ -57,7 +57,7 @@ otimizado_para_obsidian: true
 
 ## 2. Como o Codex Trata Skills
 
-Skills do Codex ficam em `.codex/skills/<nome>/SKILL.md` (por projeto) ou `~/.codex/skills/` (global).
+Skills do Codex ficam em `.agents/skills/<nome>/SKILL.md` no escopo do repositório, ou em `$HOME/.agents/skills/` no escopo do usuário. O WSD ainda espelha em `.codex/skills/` para compatibilidade com instalações antigas, mas o caminho principal atual é `.agents/skills/`.
 
 ### Modelo de funcionamento
 
@@ -144,9 +144,9 @@ Quando instalados em `.claude/commands/`, cada comando fica disponível como `/w
 | **Estrutura de arquivos** | Single `SKILL.md` (flat) | `commands/*.md` por comando |
 | **Restrição de ferramentas** | Sem mecanismo declarativo | `allowed-tools` no frontmatter |
 | **Interatividade** | Procedural/imperativo | Pode ser interativo (fases, perguntas, bifurcações) |
-| **Slash commands** | Sem equivalente nativo | `/nome-da-skill` disponível como comando |
-| **Escopo projeto** | `.codex/skills/` | `.claude/commands/` |
-| **Escopo global** | `~/.codex/skills/` | `~/.claude/commands/` |
+| **Slash commands** | Built-ins e prompts customizados opcionais como `/prompts:loop`; workflows compartilhados devem usar skills | `/nome-do-comando`, incluindo `/loop status` |
+| **Escopo projeto** | `.agents/skills/` (espelho legado `.codex/skills/`) | `.claude/commands/` |
+| **Escopo global** | `$HOME/.agents/skills/` | `~/.claude/commands/` |
 | **Argument hint** | Sem campo dedicado | `argument-hint` no frontmatter |
 
 ---
@@ -249,7 +249,8 @@ A skill `wsd` não é gerada — seu conteúdo vai para AGENTS.md.
 
 ```
 Codex:
-  .codex/skills/wsd/SKILL.md  → carregada automaticamente → regras sempre ativas
+  .agents/skills/wsd/SKILL.md → carregada automaticamente → regras sempre ativas
+  .agents/skills/wsd-loop/SKILL.md → atalhos como "loop status"
 
 Claude Code:
   AGENTS.md                   → lido pelo Claude ao iniciar sessão → regras sempre lidas
@@ -502,11 +503,14 @@ exit 0
 
 Checklist do que `wsd install` deve gerar por agente:
 
-- [x] `.codex/skills/wsd/SKILL.md` quando `--tools codex` estiver ativo.
-- [x] `.codex/skills/wsd-start/SKILL.md` quando `--tools codex` estiver ativo.
-- [x] `.codex/skills/wsd-finish/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd-start/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd-finish/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.agents/skills/wsd-loop/SKILL.md` quando `--tools codex` estiver ativo.
+- [x] `.codex/skills/*` espelhado para compatibilidade legado.
 - [x] `.claude/commands/wsd-start.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/wsd-finish.md` quando `--tools claude-code` estiver ativo.
+- [x] `.claude/commands/loop.md` quando `--tools claude-code` estiver ativo (`/loop status`, `/loop on`, `/loop off`).
 - [x] `.claude/settings.json` com hooks quando `--tools claude-code` estiver ativo.
 - [x] `+wsd/hooks/pre-tool.sh` quando `--tools claude-code` estiver ativo.
 - [x] `AGENTS.md` com seção WSD quando `--tools codex` ou `--tools claude-code` estiverem ativos.
@@ -514,7 +518,7 @@ Checklist do que `wsd install` deve gerar por agente:
 
 ### Flag `--tools both`
 
-- [x] `--tools both` gera os dois conjuntos sem conflito — `.codex/skills/` e `.claude/commands/` coexistem no mesmo repositório.
+- [x] `--tools both` gera os dois conjuntos sem conflito — `.agents/skills/`, espelho `.codex/skills/` e `.claude/commands/` coexistem no mesmo repositório.
 
 ### Estrutura final após `wsd install --tools claude-code`
 
@@ -526,6 +530,7 @@ Checklist do que `wsd install` deve gerar por agente:
 .claude/
   settings.json            ← hooks configurados
   commands/
+    loop.md
     wsd-start.md
     wsd-finish.md
 AGENTS.md                  ← governança WSD + regras do projeto

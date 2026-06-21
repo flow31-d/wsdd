@@ -1,7 +1,7 @@
 ---
 title: "00 — Planejamento de Instalação WSD"
 created: 05/05/2026
-modified: 30/05/2026
+modified: 15/06/2026
 tags:
   - x
   - wsd
@@ -63,6 +63,8 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 07/05/2026 — Codex: Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização.
 - 07/05/2026 — Codex: Marcação da `v0.1.10-alpha` como implementada: `--git-policy none|basic|full`, Git namespace local, `git_governance` e templates PR/Issue no modo `full`.
 - 30/05/2026 18:15:09 -03 — Codex: Inclusão do subcomando local `wsd version` e do modo de inventário para rastrear a versão WSD instalada em múltiplos projetos.
+- 15/06/2026 — Codex: Inclusão do subcomando local `wsd loop` e do contrato `automation.loop` para automação L0/L1 com gates.
+- 15/06/2026 — Codex: Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `wsd start --brief` para aderência Codex com poucos comandos.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -279,9 +281,10 @@ Regra para `v0.1.10-alpha`: `none` ou resposta negativa mantém apenas a seguran
 Quando Codex for selecionado, o instalador deve criar dentro do projeto:
 
 ```text
-.codex/skills/wsd/SKILL.md
-.codex/skills/wsd-start/SKILL.md
-.codex/skills/wsd-finish/SKILL.md
+.agents/skills/wsd/SKILL.md
+.agents/skills/wsd-start/SKILL.md
+.agents/skills/wsd-finish/SKILL.md
+.agents/skills/wsd-loop/SKILL.md
 AGENTS.md
 ```
 
@@ -335,6 +338,10 @@ Depois de instalado dentro do projeto:
 ./+wsd/bin/wsd doctor
 ./+wsd/bin/wsd version
 ./+wsd/bin/wsd update
+./+wsd/bin/wsd loop status
+./+wsd/bin/wsd loop auto on
+./+wsd/bin/wsd loop auto off
+./+wsd/bin/wsd codex-prompt --task "minha tarefa"
 ```
 
 Inventário de versões WSD em vários projetos:
@@ -388,6 +395,8 @@ Estado implementado até `v0.1.10-alpha`:
 - [x] Publicar WSD como GitHub privado.
 - [x] Criar matriz e checker de sincronização documental.
 - [x] Adicionar `./+wsd/bin/wsd version` para rastrear versão instalada por projeto e inventariar múltiplos repos.
+- [x] Adicionar `./+wsd/bin/wsd loop plan|once|run|status|stop` para automação inteligente L0/L1.
+- [x] Adicionar `./+wsd/bin/wsd codex-prompt`, `codex` e `start --brief` para aderência Codex.
 - [x] Registrar plano do módulo opcional `git-governance`.
 - [x] Criar templates Claude Code.
 - [x] Testar em projeto brownfield real (`koomplet-office`) antes de escalar.
@@ -470,5 +479,6 @@ Quando esta nota mudar, revisar:
 | 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização. |
 | 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Marcação da `v0.1.10-alpha` como implementada no instalador, CLI local, contexto e templates GitHub. |
 | 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão do `wsd version` nos subcomandos locais e documentação do inventário multi-repo por `+wsd/config.json`. |
+| 15/06/2026 | Codex | `+Apps/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `start --brief` no planejamento de instalação. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

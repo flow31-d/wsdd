@@ -29,6 +29,45 @@ git remote show origin
 
 Se a worktree estiver suja, identificar mudanças preexistentes antes de editar. Não usar `git add .`, `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para contornar sujeira local sem decisão explícita.
 
+## WSD Codex Bootstrap
+
+Quando este repositório for aberto no Codex, assumir que este `AGENTS.md` já está ativo. O operador não precisa pedir "leia o WSDD" nem listar arquivos manualmente.
+
+Ao iniciar qualquer tarefa:
+
+1. Tratar `AGENTS.md` como contrato operacional.
+2. Ler `+context.json` antes de editar e respeitar `permissions.write_paths`, `permissions.forbidden_paths` e `secrets_policy`.
+3. Consultar `+specs/project/STATE.md`; se `+specs/HANDOFF.md` existir, considerar continuidade da sessão anterior.
+4. Rodar `./+wsd/bin/wsd start --brief` quando disponível para obter contexto operacional compacto.
+5. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
+6. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
+7. Verificar `automation.loop.auto_use` em `+context.json`.
+8. Antes de finalizar mudanças relevantes, rodar `git diff --check` e `./+wsd/bin/wsd check`.
+
+Política Ralph/WSD Loop:
+
+- Se `automation.loop.auto_use=true`, então para tarefas L0/L1 elegíveis, com spec aprovada e worktree limpa, usar WSD Loop automaticamente antes de executar manualmente.
+- Se houver feature slug: rodar `./+wsd/bin/wsd loop plan --feature <slug>` quando precisar planejar e `./+wsd/bin/wsd loop once --feature <slug>` para gerar o prompt de iteração.
+- Se o operador usar `./+wsd/bin/wsd codex --exec --feature <slug>`, o launcher pode executar `loop run` com Codex Exec.
+- Se `automation.loop.auto_use=false`, não disparar loop por conta própria; apenas sugerir quando fizer sentido.
+- Nunca aplicar auto-use a L2 sem aprovação humana explícita.
+
+Comandos curtos para aderência Codex:
+
+```bash
+./+wsd/bin/wsd codex-prompt --task "descreva a tarefa"
+./+wsd/bin/wsd codex --task "descreva a tarefa"
+./+wsd/bin/wsd codex --exec --feature <slug>
+./+wsd/bin/wsd loop auto status
+./+wsd/bin/wsd loop auto on
+./+wsd/bin/wsd loop auto off
+./+wsd/bin/wsd codex-shortcuts status
+./+wsd/bin/wsd shortcuts status
+```
+
+Use `codex-prompt` quando quiser apenas gerar o prompt auditável. Use `codex` quando quiser abrir o Codex já apontado para este repositório e contrato WSD.
+No Codex, skills compartilhadas do projeto ficam em `.agents/skills/` (espelhadas em `.codex/skills/` para compatibilidade). Para WSD Loop, pedidos curtos como `loop status`, `loop auto on` e `loop auto off` devem mapear para `./+wsd/bin/wsd loop ...`; se o operador instalar prompts opcionais com `codex-shortcuts install`, o atalho do TUI é `/prompts:loop status`.
+
 ## Carregar Contexto (Base ~15k tokens)
 
 Ao iniciar qualquer sessão, carregar na ordem:
@@ -81,7 +120,23 @@ Comandos locais:
 ./+wsd/bin/wsd doctor   # diagnóstico de dependências e hooks
 ./+wsd/bin/wsd hooks    # reinstala git hooks em .git/hooks/
 ./+wsd/bin/wsd version  # checa versão do WSD instalada no repo ou inventário em lote
+./+wsd/bin/wsd loop status  # mostra estado local do WSD Loop, se usado
+./+wsd/bin/wsd loop auto status  # mostra se o Ralph/WSD Loop deve ser usado automaticamente
+./+wsd/bin/wsd codex-prompt --task "..."  # gera prompt curto WSDD para Codex
+./+wsd/bin/wsd codex --task "..."  # abre Codex apontado para este repo
+./+wsd/bin/wsd codex-shortcuts status  # mostra atalhos opcionais do Codex
+./+wsd/bin/wsd shortcuts status  # mostra atalhos de terminal
 ```
+
+Automação L0/L1 com WSD Loop:
+
+```bash
+./+wsd/bin/wsd loop plan --feature <slug>
+./+wsd/bin/wsd loop once --feature <slug> --agent-cmd '<cmd>'
+./+wsd/bin/wsd loop run --feature <slug> --agent-cmd '<cmd>' --max-iterations 3
+```
+
+Use apenas com spec clara, worktree limpa e gates configurados. L2 exige aprovação humana explícita.
 
 Git hooks instalados (Conventional Commits + WSD gate em cada commit/push):
 
