@@ -64,6 +64,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão do update/adherence preservador da v0.4.5 e atualização do gate público para 16 testes.
 - 21/06/2026 — Codex: Inclusão do hotfix de headings acentuados do `wsd relatorio` na matriz de sincronização da v0.4.6.
 - 21/06/2026 — Codex: Inclusão do hotfix do contador `concerns_active` no `start --brief` da v0.4.7.
+- 21/06/2026 — Codex: Inclusão do hotfix de auditoria documental do `wsd finish` da v0.4.8.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -298,5 +299,6 @@ Se mover ou renomear `.md`, usar `/usr/local/bin/obsidian`; nunca `mv` ou `renam
 | 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do update/adherence preservador da v0.4.5 e atualização do checklist público para 16 gates. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do hotfix de headings acentuados do `wsd relatorio` na v0.4.6. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do hotfix do contador `concerns_active` no `start --brief` da v0.4.7. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/10_matriz_sincronizacao_notas.md` | Inclusão do hotfix de auditoria documental do `wsd finish` da v0.4.8. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

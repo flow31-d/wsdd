@@ -74,6 +74,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.5` com `wsd update` preservador instalando novos atalhos de agente e teste `test:install-update-adherence`.
 - 21/06/2026 — Codex: Atualização para `v0.4.6` com `wsd relatorio` tolerante a headings acentuados em português.
 - 21/06/2026 — Codex: Atualização para `v0.4.7` corrigindo a contagem de concerns ativas no `start --brief`.
+- 21/06/2026 — Codex: Atualização para `v0.4.8` corrigindo a auditoria documental do `wsd finish` em projetos sem pasta `docs/`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -230,7 +231,7 @@ bash scripts/wsd_self_check.sh        # consistência interna
 
 ## 6. Status
 
-Este diretório está publicado como repositório GitHub público em versão **`v0.4.7`** (patch — contador de concerns no start brief). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo; `v0.4.4` adiciona `wsd relatorio`; `v0.4.5` faz `wsd update` garantir novos atalhos de agente sem sobrescrever customizações; `v0.4.6` corrige parsing de headings acentuados no relatório; `v0.4.7` corrige `concerns_active` no `start --brief`.
+Este diretório está publicado como repositório GitHub público em versão **`v0.4.8`** (patch — auditoria documental do finish). A série alpha (`v0.1.0-alpha` → `v0.1.11-alpha`) está consolidada na `v0.1.0` estável; `v0.1.1` a `v0.1.4` são patches pós-release; `v0.2.0` agrupa as 8 features do batch pré-v1; `v0.3.0` endurece o contrato operacional; `v0.3.1` adiciona inventário de versão; `v0.3.2`/`v0.3.3` carimbam versão no snapshot; `v0.4.0` adiciona `./+wsd/bin/wsd loop`; `v0.4.1` adiciona shortcuts Codex/Claude/shell; `v0.4.2` adiciona `CONCERNS_PIPELINE.md` e comandos/skills de concerns; `v0.4.3` faz `wsd finish` fechar sessão com gates, auditoria documental quando disponível, commit automático e worktree limpo; `v0.4.4` adiciona `wsd relatorio`; `v0.4.5` faz `wsd update` garantir novos atalhos de agente sem sobrescrever customizações; `v0.4.6` corrige parsing de headings acentuados no relatório; `v0.4.7` corrige `concerns_active` no `start --brief`; `v0.4.8` faz `wsd finish` rodar `scripts/wsd_docs_check.sh` mesmo em projetos sem pasta `docs/`.
 
 Histórico de entregas (alpha + estável):
 
@@ -264,6 +265,7 @@ Histórico de entregas (alpha + estável):
 - **`v0.4.5`** (patch — update/adherence preservador): `./+wsd/bin/wsd update` passa a responder `--help` sem efeitos colaterais e, ao atualizar projetos existentes, garante novos arquivos em `.agents/skills`, `.codex/skills`, `.claude/commands` e `+wsd/hooks` sem sobrescrever arquivos existentes. Adiciona `test:install-update-adherence`.
 - **`v0.4.6`** (patch — relatório tolerante a acentos): `wsd relatorio` passa a localizar seções como `## Preocupações Ativas` mesmo quando o template canônico usa `Preocupacoes Ativas`. O teste `test:install-relatorio` cobre esse caso.
 - **`v0.4.7`** (patch — contador de concerns): `wsd start --brief` corrige a contagem `concerns_active` para linhas `| CONC-...` no `CONCERNS_PIPELINE.md`. O teste `test:install-relatorio` cobre o contador.
+- **`v0.4.8`** (patch — auditoria documental do finish): `wsd finish` passa a executar `scripts/wsd_docs_check.sh` sempre que o auditor local existir, sem exigir pasta `docs/`. O teste `test:install-finish-clean` cobre repo sem `docs/`.
 
 Não contém segredos.
 
@@ -426,5 +428,6 @@ Regra prática:
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.5`: `wsd update` preservador instala novos atalhos de agente e `update --help` não altera o projeto. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.6`: relatório passa a aceitar headings acentuados em português. |
 | 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.7`: `start --brief` conta concerns ativas corretamente. |
+| 21/06/2026 | Codex | `+Apps/wsd/README.md` | Atualização para `v0.4.8`: `wsd finish` roda auditor documental local sem exigir pasta `docs/`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

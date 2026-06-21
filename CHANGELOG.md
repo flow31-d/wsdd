@@ -54,7 +54,8 @@ otimizado_para_obsidian: true
 28. [[#28. 0.4.5 — 21/06/2026]]
 29. [[#29. 0.4.6 — 21/06/2026]]
 30. [[#30. 0.4.7 — 21/06/2026]]
-31. [[#31. 🕒 Registro de Alterações por Agentes]]
+31. [[#31. 0.4.8 — 21/06/2026]]
+32. [[#32. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
@@ -92,6 +93,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.5`** (patch — update/adherence preservador): `wsd update` passa a instalar novos atalhos de agente em projetos existentes sem sobrescrever customizações e `update --help` deixa de alterar o projeto. Seção 28 adicionada, Registro renumerado para seção 29.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.6`** (patch — relatório tolerante a acentos): `wsd relatorio` normaliza acentos ao localizar headings, cobrindo `Preocupações Ativas`. Seção 29 adicionada, Registro renumerado para seção 30.
 - 21/06/2026 — Codex: Inclusão da versão **`0.4.7`** (patch — contador de concerns no start brief): `wsd start --brief` corrige `concerns_active` para linhas `CONC-###`. Seção 30 adicionada, Registro renumerado para seção 31.
+- 21/06/2026 — Codex: Inclusão da versão **`0.4.8`** (patch — auditoria documental do finish): `wsd finish` executa `scripts/wsd_docs_check.sh` sem exigir pasta raiz `docs/`. Seção 31 adicionada, Registro renumerado para seção 32.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -1035,7 +1037,20 @@ Inclui:
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
-## 31. 🕒 Registro de Alterações por Agentes
+## 31. 0.4.8 — 21/06/2026
+
+**Patch — auditoria documental do finish.** Corrige o `./+wsd/bin/wsd finish` para rodar o auditor documental local em projetos que não possuem pasta raiz `docs/`.
+
+Inclui:
+
+- **Condição corrigida** — `_finish_docs_check` executa `scripts/wsd_docs_check.sh` sempre que o arquivo existir.
+- **Skip mais preciso** — quando o auditor local não existe, a mensagem passa a informar `scripts/wsd_docs_check.sh ausente`.
+- **Cobertura de regressão** — `test:install-finish-clean` simula repo sem `docs/` e confirma `WSD docs check: PASS`.
+- **Caso real** — correção motivada pelo Portal Manhattan, que documenta em `+specs/` e scripts próprios, sem pasta raiz `docs/`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
+
+## 32. 🕒 Registro de Alterações por Agentes
 
 | Data e hora | Agente | Arquivos/escopo | Alteração registrada |
 |---|---|---|---|
@@ -1067,5 +1082,6 @@ Inclui:
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.5`** — update preservador para aderência de agente em projetos existentes e teste `test:install-update-adherence`. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.6`** — relatório tolerante a headings acentuados e teste de regressão. |
 | 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.7`** — contador de concerns no `start --brief` e teste de regressão. |
+| 21/06/2026 | Codex | `+Apps/wsd/CHANGELOG.md` | Inclusão da versão **`0.4.8`** — auditoria documental do `wsd finish` sem dependência de pasta `docs/`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

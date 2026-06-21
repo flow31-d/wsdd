@@ -236,6 +236,8 @@ ok "wsd CLI finish has STATE.md prompts"
 
 grep -q '_wsd_finish' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_finish clean-close function"
 grep -q '_finish_docs_check' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing docs audit"
+grep -Fq 'if [[ -f scripts/wsd_docs_check.sh ]]; then' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish docs audit still depends on non-local docs"
+grep -Fq 'rm -rf "$tmpdir/docs"' scripts/test_install_finish_clean.sh || fail "test_install_finish_clean missing no-root-docs regression"
 grep -q 'chore(wsd): finish session' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing default commit message"
 grep -q 'git commit -m' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd finish missing closing commit"
 grep -q 'test:install-finish-clean' package.json || fail "package.json missing test:install-finish-clean"

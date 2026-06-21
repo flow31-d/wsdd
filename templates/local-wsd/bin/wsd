@@ -1315,7 +1315,7 @@ USAGE
 }
 
 _finish_docs_check() {
-  if [[ -f scripts/wsd_docs_check.sh && -d docs ]]; then
+  if [[ -f scripts/wsd_docs_check.sh ]]; then
     bash scripts/wsd_docs_check.sh
     return 0
   fi
@@ -1939,7 +1939,7 @@ _wsd_finish() {
     else
       _docs_rc=$?
       if [[ "$_docs_rc" == "2" ]]; then
-        gate_docs="SKIPPED (auditor documental WSD ausente ou docs nao instalados)"
+        gate_docs="SKIPPED (scripts/wsd_docs_check.sh ausente)"
         echo "info: $gate_docs"
       else
         return "$_docs_rc"

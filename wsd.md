@@ -70,6 +70,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Atualização para `v0.4.5` com `wsd update` preservador, aderência de agente para projetos já instalados e teste de regressão.
 - 21/06/2026 — Codex: Atualização para `v0.4.6` com parser de relatório tolerante a headings acentuados.
 - 21/06/2026 — Codex: Atualização para `v0.4.7` com contador correto de concerns ativas no `start --brief`.
+- 21/06/2026 — Codex: Atualização para `v0.4.8` com auditoria documental do `wsd finish` corrigida para projetos sem pasta `docs/`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -102,7 +103,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 
 ## 3. Estado Atual
 
-Versão atual do pacote: **`v0.4.7`** (patch — contador de concerns no start brief).
+Versão atual do pacote: **`v0.4.8`** (patch — auditoria documental do finish).
 
 O WSD já possui:
 
@@ -148,8 +149,9 @@ O WSD já possui:
 - Release **`v0.4.5`** (21/06/2026): patch — `wsd update` responde `--help` sem efeitos colaterais e atualiza projetos existentes com novos arquivos de agente (`.agents`, `.codex`, `.claude`, hooks) em modo new-files-only; adiciona `test:install-update-adherence`.
 - Release **`v0.4.6`** (21/06/2026): patch — `wsd relatorio` normaliza acentos ao localizar headings, cobrindo `Preocupações Ativas` em projetos reais.
 - Release **`v0.4.7`** (21/06/2026): patch — `wsd start --brief` corrige `concerns_active` para linhas de pipeline `| CONC-...`.
+- Release **`v0.4.8`** (21/06/2026): patch — `wsd finish` executa `scripts/wsd_docs_check.sh` sempre que existir, sem exigir pasta raiz `docs/`.
 
-Foco atual: **`v0.4.7` publicado como hotfix de start brief** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
+Foco atual: **`v0.4.8` publicado como hotfix de finish docs audit** (21/06/2026). Próximas frentes estão em `+specs/project/IDEAS.md`: auto-PR, dashboard de runs, sandbox forte, adapters multi-agente, checkpoints L2 assistidos e adapter de hooks Codex.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -227,5 +229,6 @@ Antes de editar qualquer repositório que use WSD, o agente deve encontrar e res
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.5`: `wsd update` preservador, aderência de agente em projetos já instalados e gate de regressão. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.6`: `wsd relatorio` normaliza acentos ao localizar seções. |
 | 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.7`: `start --brief` conta concerns ativas corretamente. |
+| 21/06/2026 | Codex | `+Apps/wsd/wsd.md` | Atualização para `v0.4.8`: `wsd finish` roda `scripts/wsd_docs_check.sh` sem exigir pasta `docs/`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

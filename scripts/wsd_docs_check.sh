@@ -113,6 +113,8 @@ ok "TLC integration artifacts present"
 
 grep -q '_wsd_finish' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_finish"
 grep -q '_finish_docs_check' templates/local-wsd/bin/wsd || fail "wsd finish missing docs audit hook"
+grep -Fq 'if [[ -f scripts/wsd_docs_check.sh ]]; then' templates/local-wsd/bin/wsd || fail "wsd finish docs audit must run when scripts/wsd_docs_check.sh exists"
+grep -Fq 'rm -rf "$tmpdir/docs"' scripts/test_install_finish_clean.sh || fail "finish clean regression test must cover repo without root docs directory"
 grep -q 'chore(wsd): finish session' templates/local-wsd/bin/wsd || fail "wsd finish missing default closing commit message"
 grep -q 'test:install-finish-clean' package.json || fail "package.json missing finish clean regression test"
 grep -q 'finish limpo' docs/10_matriz_sincronizacao_notas.md || fail "sync matrix missing finish clean contract"

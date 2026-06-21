@@ -51,6 +51,7 @@ Esta seção documenta o histórico evolutivo do documento, assegurando a rastre
 - 21/06/2026 — Codex: Inclusão de concerns como leitura base de sessão e fluxo `/concern-{PROJECT_SLUG}` / `wsd-concern`.
 - 21/06/2026 — Codex: `wsd finish` passa a ser fechamento limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot e commit automático aprovado.
 - 21/06/2026 — Codex: Inclusão de `wsd relatorio` como visão geral operacional de estado, plano, ideias, concerns e sugestão do agente.
+- 21/06/2026 — Codex: Correção do `wsd finish`: auditor documental local roda quando `scripts/wsd_docs_check.sh` existe, mesmo sem pasta raiz `docs/`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -205,7 +206,7 @@ A partir da `v0.4.3`, o CLI executa automaticamente:
 
 1. Estado Git: `git status`, `git diff --stat`, `git diff --check`, `git log -1`.
 2. Checker L0 (se `scripts/wsd_check.sh` presente).
-3. Auditoria documental WSD quando `scripts/wsd_docs_check.sh` está disponível na raiz do método.
+3. Auditoria documental local quando `scripts/wsd_docs_check.sh` existe no projeto.
 4. Gera `+specs/HANDOFF.md` com branch atual, último commit, gates de aprovação, alterações capturadas e specs abertas.
 5. Prompts interativos em terminal (se `python3` disponível e stdin interativo):
    - **Lições aprendidas** → tabela `## Lições Aprendidas` em `STATE.md`;
@@ -347,5 +348,6 @@ bash scripts/wsd_docs_check.sh
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de concerns como leitura base de sessão e fluxo `wsd-concern`/`concern-{PROJECT_SLUG}`. |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Atualização do contrato `wsd finish`: fechamento limpo com gates, docs audit, HANDOFF, snapshot e commit automático (`v0.4.3`). |
 | 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de `wsd relatorio` para visão geral operacional e artefatos `wsd-relatorio`/`/wsd-relatorio`. |
+| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Correção do contrato `wsd finish`: auditor documental local não depende de pasta raiz `docs/` (`v0.4.8`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
