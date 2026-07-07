@@ -19,6 +19,14 @@ otimizado_para_obsidian: true
 
 # 13 — Compatibilidade WSD com Claude Code
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -41,23 +49,18 @@ otimizado_para_obsidian: true
 8. [[#8. Templates Claude Code]]
 9. [[#9. Configuração de Hooks]]
 10. [[#10. O que o Installer Precisa Gerar]]
-11. [[#11. 🕒 Registro de Alterações por Agentes]]
 
 ---
 
 ## 1. 🔄 Atualizações
 
-- 06/05/2026 — Claude: Criação do documento com análise comparativa completa Codex vs. Claude Code skills e proposta de compatibilidade para o WSD.
-- 06/05/2026 14:41:06 -03 — Codex: Padronização da lista de geração do installer com checkboxes para acompanhar os artefatos necessários ao suporte Claude.
-- 06/05/2026 — Claude: Implementação completa — `templates/claude-commands/` criado com `commands/wsd-start.md`, `commands/wsd-finish.md`, `hooks/pre-tool.sh` e `settings.json`; `installClaudeCommands()` adicionado ao `wsd-method.js`; suporte `--tools claude-code` e `--tools both` operacional; `AGENTS.md.template` atualizado com referências a `/wsd-start` e `/wsd-finish`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
----
-
 ## 2. Como o Codex Trata Skills
 
-Skills do Codex ficam em `.agents/skills/<nome>/SKILL.md` no escopo do repositório, ou em `$HOME/.agents/skills/` no escopo do usuário. O WSD ainda espelha em `.codex/skills/` para compatibilidade com instalações antigas, mas o caminho principal atual é `.agents/skills/`.
+Skills do Codex ficam em `.agents/skills/<nome>/SKILL.md` no escopo do repositório, ou em `$HOME/.agents/skills/` no escopo do usuário. O WSD ainda espelha em `.agents/skills/` para compatibilidade com instalações antigas, mas o caminho principal atual é `.agents/skills/`.
 
 ### Modelo de funcionamento
 
@@ -144,8 +147,6 @@ Quando instalados em `.claude/commands/`, cada comando fica disponível como `/w
 | **Estrutura de arquivos** | Single `SKILL.md` (flat) | `commands/*.md` por comando |
 | **Restrição de ferramentas** | Sem mecanismo declarativo | `allowed-tools` no frontmatter |
 | **Interatividade** | Procedural/imperativo | Pode ser interativo (fases, perguntas, bifurcações) |
-| **Slash commands** | Built-ins e prompts customizados opcionais como `/prompts:loop`; workflows compartilhados devem usar skills | `/nome-do-comando`, incluindo `/loop status` |
-| **Escopo projeto** | `.agents/skills/` (espelho legado `.codex/skills/`) | `.claude/commands/` |
 | **Escopo global** | `$HOME/.agents/skills/` | `~/.claude/commands/` |
 | **Argument hint** | Sem campo dedicado | `argument-hint` no frontmatter |
 
@@ -516,7 +517,6 @@ Checklist do que `wsd install` deve gerar por agente:
 - [x] `.agents/skills/wsd-idea/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.agents/skills/wsd-concern/SKILL.md` quando `--tools codex` estiver ativo.
 - [x] `.agents/skills/wsd-loop/SKILL.md` quando `--tools codex` estiver ativo.
-- [x] `.codex/skills/*` espelhado para compatibilidade legado.
 - [x] `.claude/commands/wsd-start.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/wsd-finish.md` quando `--tools claude-code` estiver ativo.
 - [x] `.claude/commands/idea-{PROJECT_SLUG}.md` quando `--tools claude-code` estiver ativo.
@@ -529,7 +529,6 @@ Checklist do que `wsd install` deve gerar por agente:
 
 ### Flag `--tools both`
 
-- [x] `--tools both` gera os dois conjuntos sem conflito — `.agents/skills/`, espelho `.codex/skills/` e `.claude/commands/` coexistem no mesmo repositório.
 
 ### Estrutura final após `wsd install --tools claude-code`
 
@@ -556,13 +555,3 @@ scripts/
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ---
-
-## 11. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 06/05/2026 — | Claude | `x/wsd/docs/13_compatibilidade_claude_code.md` | Criação com análise comparativa completa Codex vs. Claude Code skills, identificação do gap de governança e proposta de modelo de compatibilidade com templates e hooks. |
-| 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/13_compatibilidade_claude_code.md` | Padronização da lista de geração do installer com checkboxes para acompanhar os artefatos necessários ao suporte Claude. |
-| 06/05/2026 — | Claude | `templates/claude-commands/`, `bin/wsd-method.js`, `templates/repo/AGENTS.md.template`, `docs/13_compatibilidade_claude_code.md` | Implementação completa: comandos slash Claude Code, função installClaudeCommands(), suporte --tools claude-code e --tools both, atualização de checklist e AGENTS.md template. |
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]

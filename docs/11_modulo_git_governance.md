@@ -47,17 +47,10 @@ otimizado_para_obsidian: true
 16. [[#16. Critérios de Aceite]]
 17. [[#17. Fora de Escopo Inicial]]
 18. [[#18. Sincronização Obrigatória]]
-19. [[#19. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 14:38:29 -03 — Codex: Registro do plano oficial para criar o módulo opcional `git-governance`, derivado da política Git em `Recursos/r.3.4_git_github`.
-- 06/05/2026 14:41:06 -03 — Codex: Padronização das listas de implementação e critérios de aceite do módulo com checkboxes para acompanhamento operacional.
-- 07/05/2026 — Codex: Replanejamento da primeira implementação como `v0.1.10-alpha` MVP Git/GitHub Governance para uso em projeto real em andamento.
-- 07/05/2026 — Codex: Marcação do MVP `v0.1.10-alpha` como implementado em installer, contexto, AGENTS, CLI local, templates GitHub e testes por modo.
-- 12/05/2026 — Claude: Conversão de documento de plano para registro de decisão: reescrita do abstract, seção 15 reestruturada com separação clara entre implementado/planejado, seção 18 simplificada com tabela apontando para docs/10.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -509,17 +502,5 @@ Resumo dos arquivos de maior impacto:
 | Regra Git | `docs/07`, `templates/repo/AGENTS.md.template` |
 | Comandos CLI locais | `templates/local-wsd/bin/wsd`, `docs/08` |
 | Qualquer mudança | `scripts/wsd_docs_check.sh`, `scripts/wsd_self_check.sh` |
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 19. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 14:38:29 -03 | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Registro do plano oficial para criar o módulo opcional `git-governance`, derivado da política Git em `Recursos/r.3.4_git_github`. |
-| 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Padronização das listas de implementação e critérios de aceite do módulo com checkboxes para acompanhamento operacional. |
-| 07/05/2026 — | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Replanejamento da primeira implementação como `v0.1.10-alpha` MVP Git/GitHub Governance, com `multi-host` e enforcement avançado adiados. |
-| 07/05/2026 — | Codex | `x/wsd/docs/11_modulo_git_governance.md` | Marcação do MVP `v0.1.10-alpha` como implementado, preservando teste em projeto real como pendência antes da estável. |
-| 12/05/2026 — | Claude | `+Apps/WSD/docs/11_modulo_git_governance.md` | Conversão de plano para registro de decisão: abstract reescrito, seção 15 reestruturada (implementado / pendente / planejado), seção 18 simplificada com tabela. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

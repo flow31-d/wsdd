@@ -33,5 +33,5 @@ Nao implementar correcao depois de capturar. A captura cria memoria e plano; exe
 
 - Atualizar sempre os dois arquivos.
 - Nunca apagar concerns antigas.
-- Concern L2 exige aprovacao humana antes de execucao.
+- Concern L2 exige validacao reforcada e rollback documentado antes de execucao.
 - Fechamento futuro exige evidencia registrada no pipeline.

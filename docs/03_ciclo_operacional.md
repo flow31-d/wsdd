@@ -34,16 +34,10 @@ otimizado_para_obsidian: true
 7. [[#7. Fase 6 — Promover]]
 8. [[#8. Fase 7 — Fechar Sessão]]
 9. [[#9. Sincronização do Ciclo]]
-10. [[#10. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Atualização do ciclo para recomendar o CLI local `+wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar.
-- 07/05/2026 — Codex: Planejamento do encaixe do MVP Git/GitHub Governance no ciclo operacional (`v0.1.10-alpha`).
-- 07/05/2026 — Codex: Atualização do ciclo para refletir `v0.1.10-alpha` implementado com `wsd git preflight`, `doctor` e `pr-check`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -217,16 +211,5 @@ Ao alterar este ciclo, revisar:
 - `templates/local-wsd/bin/wsd`, se afetar comandos locais;
 - `templates/codex-skills/wsd/SKILL.md`, se afetar comportamento de agente;
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]].
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 10. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Atualização do ciclo para recomendar o CLI local `+wsd/bin/wsd` e indicar sincronização obrigatória quando o fluxo mudar. |
-| 07/05/2026 — | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Planejamento do encaixe de `wsd git preflight`, `doctor` e `pr-check` no ciclo operacional da v0.1.10-alpha. |
-| 07/05/2026 — | Codex | `x/wsd/docs/03_ciclo_operacional.md` | Atualização do ciclo para refletir `v0.1.10-alpha` implementado com Git namespace local. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

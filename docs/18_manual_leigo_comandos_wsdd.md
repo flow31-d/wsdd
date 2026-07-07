@@ -16,6 +16,14 @@ otimizado_para_obsidian: true
 ---
 # 18 — Manual Leigo dos Comandos WSDD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -24,7 +32,6 @@ otimizado_para_obsidian: true
 > Explicar, em linguagem simples, os comandos principais para instalar e usar o WSDD/WSD no dia a dia.
 
 > [!info] Versão coberta
-> Versão coberta: **`v0.4.8`** do WSD/WSDD, com inventário de versão por projeto via `wsd version`, automação L0/L1 via `wsd loop`, aderência Codex via `wsd codex-prompt`, atalhos Codex/Claude/shell, relatório geral via `wsd relatorio`, pipeline de preocupações via `CONCERNS_PIPELINE.md`, fechamento limpo via `wsd finish` e `wsd update` preservador.
 
 ## 📑 Índice
 
@@ -40,19 +47,10 @@ otimizado_para_obsidian: true
 10. [[#10. Fluxos Prontos]]
 11. [[#11. Problemas Comuns]]
 12. [[#12. Cola Rápida]]
-13. [[#13. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-- 13/05/2026 — Codex: Criação do manual leigo com os comandos principais da release pública `wsdd v0.2.1`.
-- 30/05/2026 18:15:09 -03 — Codex: Atualização para `v0.3.1`, incluindo o comando `wsd version` para saber qual versão do WSD está instalada em cada projeto.
-- 15/06/2026 — Codex: Inclusão dos comandos `wsd loop` da `v0.4.0` para automação com menos aprovações.
-- 15/06/2026 — Codex: Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `start --brief`.
-- 21/06/2026 — Codex: Inclusão do comando `wsd relatorio` da `v0.4.4`.
-- 21/06/2026 — Codex: Atualização para `v0.4.5`: `wsd update` passa a trazer novos atalhos de agente sem sobrescrever arquivos customizados.
-- 21/06/2026 — Codex: Atualização para `v0.4.6`: `wsd relatorio` passa a reconhecer headings acentuados em português.
-- 21/06/2026 — Codex: Atualização para `v0.4.7`: `start --brief` passa a contar concerns ativas corretamente.
-- 21/06/2026 — Codex: Atualização para `v0.4.8`: `wsd finish` passa a rodar auditor documental local sem exigir pasta `docs/`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -453,26 +451,17 @@ Registre esta preocupação: preciso conferir ...
 
 Ou use um comando curto do WSD:
 
-```bash
-./+wsd/bin/wsd codex-prompt --task "minha tarefa"
-./+wsd/bin/wsd codex --task "minha tarefa"
-./+wsd/bin/wsd codex-shortcuts status
-```
 
-`codex-prompt` só mostra o texto que você pode colar no Codex. `codex` tenta abrir o Codex já apontado para o projeto.
 
 Se quiser um atalho slash no Codex CLI, rode uma vez:
 
-```bash
-./+wsd/bin/wsd codex-shortcuts install
-```
 
 Depois reinicie o Codex se necessário e use:
 
 ```text
-/prompts:loop status
-/prompts:loop on
-/prompts:loop off
+`/loop` (Claude Code) ou skill `wsd-loop` (Codex) status
+`/loop` (Claude Code) ou skill `wsd-loop` (Codex) on
+`/loop` (Claude Code) ou skill `wsd-loop` (Codex) off
 ```
 
 Observação: no Codex o comando customizado fica no namespace `/prompts:...`; `/loop status` puro é comando de Claude Code via `.claude/commands/loop.md`.
@@ -530,7 +519,6 @@ Esse comando atualiza a parte vendorizada do WSD no projeto e adiciona novos ata
 - `+specs/`;
 - `scripts/wsd_check.sh`;
 - `scripts/git-hooks/`.
-- arquivos customizados já existentes em `.agents/skills/`, `.codex/skills/`, `.claude/commands/` e `+wsd/hooks/`.
 
 Se ele reclamar de `wsd_source`, reinstale a versão desejada por cima com `--force`:
 
@@ -683,10 +671,8 @@ npx github:flow31-d/wsdd#v0.4.8 install --init-git
 ./+wsd/bin/wsd relatorio
 
 # Prompt curto para Codex seguir WSDD
-./+wsd/bin/wsd codex-prompt --task "minha tarefa"
 
 # Atalhos Codex e terminal
-./+wsd/bin/wsd codex-shortcuts status
 ./+wsd/bin/wsd shortcuts status
 
 # Ligar/desligar Ralph/WSD Loop automatico
@@ -720,22 +706,5 @@ npx github:flow31-d/wsdd#v0.4.8 install --init-git
 ./+wsd/bin/wsd update
 ./+wsd/bin/wsd snapshot
 ```
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 13. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 13/05/2026 — | Codex | `x/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Criação do manual leigo para instalação e uso diário do WSDD `v0.2.1`, incluindo comandos de install, sessão, check, Git, Party Mode, manutenção e troubleshooting. |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.3.1`: inclusão de `wsd version`, inventário multi-repo e exemplos de saída JSON para automação. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.0`: inclusão de `wsd loop` e exemplos de automação L0/L1. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Inclusão de `wsd codex-prompt`, `wsd codex` e `start --brief`. |
-| 17/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Inclusão de atalhos WSD Loop para Codex (`/prompts:loop`), Claude Code (`/loop status`) e shell (`shortcuts`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.4`: inclusão de `wsd relatorio`, `/wsd-relatorio` e exemplos de relatório geral. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.5`: `wsd update` preservador e exemplos de instalação com nova tag. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.6`: relatório tolerante a headings acentuados. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.7`: contador de concerns no `start --brief`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/18_manual_leigo_comandos_wsdd.md` | Atualização para `v0.4.8`: auditoria documental do `wsd finish` sem dependência de pasta `docs/`. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

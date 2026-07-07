@@ -1,349 +1,110 @@
 # Instruções para Agentes — {{PROJECT_NAME}}
 
-## Identidade Operacional
+Contrato operacional deste repositório (WSD {{PROJECT_TYPE}}). Detalhes por
+tema vivem em `+wsd/guides/` — leia um guia somente quando a tarefa tocar o tema.
 
-- Projeto: `{{PROJECT_NAME}}`
-- Repositório: `{{REPO_NAME}}`
-- Host canônico: `{{CANONICAL_HOST}}`
-- Caminho canônico: `{{CANONICAL_PATH}}`
-- Branch principal: `{{DEFAULT_BRANCH}}`
-- Remote: `{{GITHUB_REMOTE}}`
-- Tipo de projeto: `{{PROJECT_TYPE}}`
+## Identidade
 
-## Política de Ambiente
+- Repositório: `{{REPO_NAME}}` · branch principal: `{{DEFAULT_BRANCH}}` · remote: `{{GITHUB_REMOTE}}`
+- Host/path canônico: `{{CANONICAL_HOST}}` · `{{CANONICAL_PATH}}`
+- {{ENVIRONMENT_POLICY_SUMMARY}}
 
-{{ENVIRONMENT_POLICY_SUMMARY}}
+## WSD Bootstrap
 
-Agentes devem confirmar host, path, branch e remote antes de editar.
+Ao abrir este repositório, este AGENTS.md já está ativo. Ao iniciar qualquer tarefa:
 
-## Entrada Obrigatória
+1. `git status --short --branch` — conferir branch, remote e sujeira.
+2. Ler `+context.json` e respeitar `permissions.write_paths`/`forbidden_paths`/`secrets_policy`.
+3. Ler `+specs/project/STATE.md` (seções ativas) e concerns ativas em `+specs/project/CONCERNS.md`; se `+specs/HANDOFF.md` existir, considerar continuidade.
+4. Classificar risco L0/L1/L2 e agir proporcionalmente (tabela abaixo).
+5. `./+wsd/bin/wsd start --brief` quando quiser o estado compacto.
 
-Sempre começar com:
+## Modo de operação: full-auto
+
+`workflow.approval_mode = full_auto`: execute a tarefa inteira, valide e feche
+com commit — sem pausar para aprovação humana. L2 não pausa, mas exige spec,
+validação reforçada e rollback documentado antes de executar.
+
+**Única pausa obrigatória**: worktree suja que você não criou nesta sessão
+(outro agente ou humano deixou mudanças pendentes). Pare, mostre o estado e
+peça decisão humana antes de qualquer merge, stash, reset ou limpeza. Nunca use
+`git add .`, `reset`, `clean`, `stash`, `merge`, `rebase` ou troca de branch
+para esconder sujeira de terceiros. Exceção: `./+wsd/bin/wsd finish` pode fazer
+staging/commit do trabalho da própria sessão após os gates.
+
+## Intenção → Ação
+
+| Operador pede | Você faz |
+|---|---|
+| "uma geral", "como está o projeto", "o que fazer agora" | `./+wsd/bin/wsd relatorio` e resume com a sugestão final |
+| "vamos fazer/implementar X" | classifica risco; L1/L2 → `/wsd-specify` antes de codar |
+| "anota essa ideia" | `/idea-{{PROJECT_SLUG}}` (ou editar IDEAS.md + IDEAS_PIPELINE.md) |
+| "anota essa preocupação", "precisa conferir" | `/concern-{{PROJECT_SLUG}}` → `CONC-###` nos dois arquivos de concerns |
+| "fecha por hoje", "encerra a sessão" | `./+wsd/bin/wsd finish` |
+| "liga/desliga o loop" | `./+wsd/bin/wsd loop auto on` / `loop auto off` |
+
+## Risco (auto-sizing)
+
+| Risco | Quando | O que fazer |
+|---|---|---|
+| **L0** | ≤3 arquivos, local, reversível | implementar → validar → commitar |
+| **L1** | feature, endpoint, integração, refatoração relevante | spec WHEN/THEN/SHALL (`/wsd-specify`) → implementar → validar → commitar |
+| **L2** | produção, deploy, banco, auth, secrets, dados sensíveis | 4 fases + validação reforçada + rollback documentado → commitar |
+
+## Contexto (orçamento ≤5k tokens de base)
+
+Base da sessão: este arquivo + `+specs/project/PROJECT.md` + seções ativas de
+`STATE.md` + concerns ativas. **Todo o resto é on-demand**: ROADMAP ao planejar,
+IDEAS_PIPELINE ao avançar ideia, uma única spec de feature por vez{{#if BROWNFIELD}},
+`+specs/codebase/*.md` apenas quando a task exigir contexto do código preexistente{{/if}}.
+Nunca carregar múltiplas specs simultaneamente. Entradas resolvidas de
+STATE/CONCERNS são arquivadas em `+specs/project/archive/` — não carregar.
+
+## Regras invioláveis
+
+- Não inventar validação, API ou comportamento; se não sabe, diga e verifique.
+- Fora do escopo da task → registrar em STATE.md (Ideias Adiadas) ou IDEAS.md; não implementar.
+- Segredos nunca entram em git, spec, prompt ou log.
+- Conventional Commits 1.0.0: `<type>(<scope>): <description>` — um task, um commit.
+- Ao concluir: rodar gates de validação e fechar com worktree limpa.
+- Paths sensíveis (exigem spec L2 + rollback):
+{{SENSITIVE_PATHS_MARKDOWN_LIST}}
+
+## Validação (gate obrigatório antes de commitar)
 
 ```bash
-git status --short --branch
-git branch -vv
-git remote -v
-git remote show origin
+{{VALIDATION_COMMANDS_BLOCK}}
+./+wsd/bin/wsd check
 ```
-
-Se a worktree estiver suja, identificar mudanças preexistentes antes de editar. Não usar `git add .`, `pull`, `merge`, `rebase`, `stash`, `reset`, `clean` ou troca de branch para contornar sujeira local sem decisão explícita. Exceção: `./+wsd/bin/wsd finish` pode fazer staging/commit automático depois dos gates.
-
-## WSD Codex Bootstrap
-
-Quando este repositório for aberto no Codex, assumir que este `AGENTS.md` já está ativo. O operador não precisa pedir "leia o WSDD" nem listar arquivos manualmente.
-
-Ao iniciar qualquer tarefa:
-
-1. Tratar `AGENTS.md` como contrato operacional.
-2. Ler `+context.json` antes de editar e respeitar `permissions.write_paths`, `permissions.forbidden_paths` e `secrets_policy`.
-3. Consultar `+specs/project/STATE.md`; se `+specs/HANDOFF.md` existir, considerar continuidade da sessão anterior.
-4. Consultar `+specs/project/CONCERNS.md` e `+specs/project/CONCERNS_PIPELINE.md` antes de editar; identificar concerns ativas que tocam a área da tarefa.
-5. Rodar `./+wsd/bin/wsd start --brief` quando disponível para obter contexto operacional compacto.
-6. Classificar a tarefa como L0, L1 ou L2 antes de implementar.
-7. Exigir spec aprovada para L1/L2; L2 exige aprovação humana explícita e rollback.
-8. Verificar `automation.loop.auto_use` em `+context.json`.
-9. Antes de finalizar mudanças relevantes, rodar `git diff --check` e `./+wsd/bin/wsd check`.
-
-Se o operador pedir relatório WSD, visão geral, estado atual, plano, ideias, concerns ou "o que fazer agora", rodar `./+wsd/bin/wsd relatorio` e responder com o resumo e a sugestão final.
-
-Política Ralph/WSD Loop:
-
-- Se `automation.loop.auto_use=true`, então para tarefas L0/L1 elegíveis, com spec aprovada e worktree limpa, usar WSD Loop automaticamente antes de executar manualmente.
-- Se houver feature slug: rodar `./+wsd/bin/wsd loop plan --feature <slug>` quando precisar planejar e `./+wsd/bin/wsd loop once --feature <slug>` para gerar o prompt de iteração.
-- Se o operador usar `./+wsd/bin/wsd codex --exec --feature <slug>`, o launcher pode executar `loop run` com Codex Exec.
-- Se `automation.loop.auto_use=false`, não disparar loop por conta própria; apenas sugerir quando fizer sentido.
-- Nunca aplicar auto-use a L2 sem aprovação humana explícita.
-
-Comandos curtos para aderência Codex:
-
-```bash
-./+wsd/bin/wsd codex-prompt --task "descreva a tarefa"
-./+wsd/bin/wsd codex --task "descreva a tarefa"
-./+wsd/bin/wsd codex --exec --feature <slug>
-./+wsd/bin/wsd loop auto status
-./+wsd/bin/wsd loop auto on
-./+wsd/bin/wsd loop auto off
-./+wsd/bin/wsd codex-shortcuts status
-./+wsd/bin/wsd shortcuts status
-./+wsd/bin/wsd relatorio
-```
-
-Use `codex-prompt` quando quiser apenas gerar o prompt auditável. Use `codex` quando quiser abrir o Codex já apontado para este repositório e contrato WSD.
-No Codex, skills compartilhadas do projeto ficam em `.agents/skills/` (espelhadas em `.codex/skills/` para compatibilidade). Para WSD Loop, pedidos curtos como `loop status`, `loop auto on` e `loop auto off` devem mapear para `./+wsd/bin/wsd loop ...`; se o operador instalar prompts opcionais com `codex-shortcuts install`, o atalho do TUI é `/prompts:loop status`.
-
-## Carregar Contexto (Base ~15k tokens)
-
-Ao iniciar qualquer sessão, carregar na ordem:
-
-1. `+specs/project/PROJECT.md` — visão, goals e regras do projeto
-2. `+specs/project/STATE.md` — decisões ativas, bloqueadores e lições
-3. `+specs/project/CONCERNS.md` — preocupações ativas, áreas frágeis, riscos e itens a conferir
-4. `+specs/project/CONCERNS_PIPELINE.md` — plano de resolução das preocupações ativas
-5. `+specs/HANDOFF.md` — se existir, resumir e perguntar se quer continuar de onde parou
-
-On-demand (carregar somente quando relevante à task):
-
-- `+specs/project/ROADMAP.md` — ao planejar features ou verificar backlog
-- `+specs/project/IDEAS_PIPELINE.md` — ao avançar uma ideia para spec ou ROADMAP
-- `+specs/features/[slug]/spec.md` — somente a spec da feature em execução (criado por `/wsd-specify`)
-- `+specs/features/[slug]/tasks.md` — somente tasks da feature ativa (criado por `/wsd-tasks`)
-{{#if BROWNFIELD}}- `+specs/codebase/ARCHITECTURE.md` — ao fazer mudanças arquiteturais
-- `+specs/codebase/TESTING.md` — ao criar tasks ou executar gate checks
-- `+specs/codebase/STACK.md`, `+specs/codebase/CONVENTIONS.md`, `+specs/codebase/STRUCTURE.md`, `+specs/codebase/INTEGRATIONS.md` — quando precisar de contexto específico do codebase preexistente
+{{#if BROWNFIELD}}
+Gates por tier (Quick/Full/Build): `+specs/codebase/TESTING.md`.
 {{/if}}
-Nunca carregar múltiplas specs simultaneamente.{{#if BROWNFIELD}} Carregar `+specs/codebase/` apenas quando explicitamente relevante à task.{{/if}}
+## Guias on-demand (`+wsd/guides/`)
 
-## WSD Local
-
-Este repositório usa WSD + TLC:
-
-- `+wsd/`: cópia local vendorizada do método WSD.
-- `+context.json`: identidade, permissões, paths, ferramentas e validações.
-- `+specs/project/STATE.md`: memória operacional (decisões, bloqueadores, lições, deferred).
-- `+specs/project/ROADMAP.md`: visão consolidada de features — planejadas, em andamento, concluídas.
-- `+specs/project/IDEAS.md`: notebook de ideias brutas capturadas via `/idea-{{PROJECT_SLUG}}`.
-- `+specs/project/IDEAS_PIPELINE.md`: controle de progressão de ideias (raw → implementada).
-- `+specs/project/CONCERNS.md`: preocupações ativas, componentes frágeis, dívidas técnicas, áreas L2 e riscos conhecidos.
-- `+specs/project/CONCERNS_PIPELINE.md`: plano, próximo passo e evidência para resolver cada concern.
-- `+specs/features/[slug]/spec.md`: contrato executável por feature, criado on-demand por `/wsd-specify` (WHEN/THEN/SHALL).
-- `+specs/features/[slug]/tasks.md`: plano atômico com gate checks por task, criado on-demand por `/wsd-tasks`.
-- `+specs/quick/NNN-slug/`: tasks L0 express, criadas on-demand.{{#if BROWNFIELD}}
-- `+specs/codebase/`: documentação do codebase preexistente (STACK, ARCHITECTURE, CONVENTIONS, STRUCTURE, INTEGRATIONS, TESTING).{{/if}}
-- `scripts/wsd_check.sh`: checker local.
-
-**Regras de planejamento:**
-- Ao avançar ideia de IDEAS.md para spec: atualizar status em IDEAS_PIPELINE.md (`spec-criada`) e adicionar linha em ROADMAP.md.
-- Ao mudar status de feature: atualizar simultaneamente frontmatter da spec E linha em ROADMAP.md.
-- Ao capturar nova ideia: usar `/idea-{{PROJECT_SLUG}}` — nunca editar IDEAS.md diretamente sem o comando.
-- Ao identificar preocupação, risco, fragilidade, dívida técnica, workaround, dependência instável ou item "precisa conferir": registrar imediatamente em `CONCERNS.md` e `CONCERNS_PIPELINE.md` usando `/concern-{{PROJECT_SLUG}}` quando disponível.
-- Ao resolver preocupação: atualizar status e evidência em `CONCERNS_PIPELINE.md`; nunca apagar concern antiga.
-
-Comandos locais:
-
-```bash
-./+wsd/bin/wsd start    # abre sessão: git state, contexto, specs, risco
-./+wsd/bin/wsd check    # valida contrato WSD do repo
-./+wsd/bin/wsd finish   # fecha sessão: gates, docs audit, HANDOFF.md, commit e worktree limpo
-./+wsd/bin/wsd relatorio # mostra estado atual, plano, ideias, concerns e sugestao
-./+wsd/bin/wsd doctor   # diagnóstico de dependências e hooks
-./+wsd/bin/wsd hooks    # reinstala git hooks em .git/hooks/
-./+wsd/bin/wsd version  # checa versão do WSD instalada no repo ou inventário em lote
-./+wsd/bin/wsd loop status  # mostra estado local do WSD Loop, se usado
-./+wsd/bin/wsd loop auto status  # mostra se o Ralph/WSD Loop deve ser usado automaticamente
-./+wsd/bin/wsd codex-prompt --task "..."  # gera prompt curto WSDD para Codex
-./+wsd/bin/wsd codex --task "..."  # abre Codex apontado para este repo
-./+wsd/bin/wsd codex-shortcuts status  # mostra atalhos opcionais do Codex
-./+wsd/bin/wsd shortcuts status  # mostra atalhos de terminal
-```
-
-Automação L0/L1 com WSD Loop:
-
-```bash
-./+wsd/bin/wsd loop plan --feature <slug>
-./+wsd/bin/wsd loop once --feature <slug> --agent-cmd '<cmd>'
-./+wsd/bin/wsd loop run --feature <slug> --agent-cmd '<cmd>' --max-iterations 3
-```
-
-Use apenas com spec clara, worktree limpa e gates configurados. L2 exige aprovação humana explícita.
-
-Git hooks instalados (Conventional Commits + WSD gate em cada commit/push):
-
-- `.git/hooks/pre-commit` — valida contrato WSD antes de cada commit
-- `.git/hooks/commit-msg` — valida formato Conventional Commits 1.0.0
-- `.git/hooks/pre-push` — valida estado WSD antes de push
-
-Reinstalar: `./+wsd/bin/wsd hooks` (fonte versioned: `scripts/git-hooks/`)
+| Antes de… | Leia |
+|---|---|
+| operar git/branch/PR (modo `{{GIT_GOVERNANCE_MODE}}`) | `+wsd/guides/git.md` |
+| usar WSD Loop / automação iterativa | `+wsd/guides/loop.md` |
+| debate multi-agente (Party Mode, L1/L2 complexas) | `+wsd/guides/party.md` |
+| abrir/fechar sessão em detalhe, HANDOFF, compactação | `+wsd/guides/sessao.md` |{{#if LOVABLE}}
+| editar este repo Lovable | `+wsd/guides/lovable.md` (**obrigatório**) |{{/if}}
 
 ## Git/GitHub Governance
 
 {{GIT_GOVERNANCE_SUMMARY}}
-
-Modo: `{{GIT_GOVERNANCE_MODE}}`
-
-Politicas declaradas em `+context.json`:
-
-- Branch principal: `{{DEFAULT_BRANCH}}`
-- Remote esperado: `{{GITHUB_REMOTE}}`
-- Protocolo preferido: `{{REMOTE_PROTOCOL}}`
-- Issue policy: `{{ISSUE_POLICY}}`
-- PR policy: `{{PR_POLICY}}`
-- Sync policy: `{{SYNC_POLICY}}`
-- Dirty worktree policy: `{{DIRTY_WORKTREE_POLICY}}`
-- Branch naming: `{{BRANCH_NAMING}}`
-- Commit style: `{{COMMIT_STYLE}}`
-
-Comandos locais:
-
-```bash
-./+wsd/bin/wsd git doctor
-./+wsd/bin/wsd git preflight
-./+wsd/bin/wsd git pr-check
-```
-
-Regras:
-
-- `none`: usar somente a politica Git minima do WSD core.
-- `basic`: rodar `wsd git preflight` antes de operacoes arriscadas, push ou troca de branch.
-- `full`: rodar `wsd git pr-check` antes de criar ou atualizar PR; PR deve referenciar Issue/spec quando aplicavel.
+Políticas completas em `+context.json` (`git_governance`); detalhes e comandos
+(`wsd git doctor|preflight|pr-check`) em `+wsd/guides/git.md`.
 
 ## Party Mode
 
-Sistema de orquestração multi-agente para decisões de spec, arquitetura, risco e code review.
-26 agentes WSD-aware selecionados automaticamente por contexto (2-3 por sessão).
-
-**Quando usar:**
-- Spec L1/L2 com trade-offs não óbvios
-- SPECIFY (brainstorm) ou DESIGN (arquitetura) — não em EXECUTE
-- RISK L2: obrigatório antes de qualquer deploy de produção
-
-**Quando skip:** L0 trivial, hotfix urgente, já decidido, em EXECUTE.
-
-```bash
-./+wsd/bin/wsd party status       # verifica instalação
-./+wsd/bin/wsd party list-agents  # lista os 26 agentes
-./+wsd/bin/wsd party when-to-use  # decision tree
-```
-
-Assets em `+wsd/party-mode/` — referência: `+wsd/party-mode/WHEN_TO_USE.md`
-
-Output de cada sessão: `+specs/features/<slug>/PARTY_ANALYSIS.md`
-
-Comandos de sessão (Claude Code):
-
-```
-/wsd-start       — abre sessão: git state, STATE.md, HANDOFF.md, risco e auto-sizing
-/wsd-finish      — fecha sessão: gates, HANDOFF.md, commit de fechamento e worktree limpo
-/wsd-relatorio   — relatório geral: estado atual, plano, ideias, concerns e sugestão
-/wsd-specify     — fase Specify: clarifica requirements, escreve spec.md WHEN/THEN/SHALL
-/wsd-design      — fase Design: arquitetura, componentes, design.md
-/wsd-tasks       — fase Tasks: tasks.md atômico com gate checks e dependências
-/wsd-party-mode  — Party Mode: debate multi-agente para L1/L2 complexas
-```
-
-## Auto-sizing por Risco
-
-Antes de qualquer tarefa, classificar e agir proporcionalmente:
-
-| Risco | Quando | O que fazer |
-|---|---|---|
-| **L0** | ≤3 arquivos, mudança local e reversível | Quick mode: descrever → implementar → verificar → commitar |
-| **L1** | Feature, endpoint, integração, refatoração relevante | `/wsd-specify` → (design) → (tasks) → implementar |
-| **L2** | Produção, deploy, banco, auth, secrets, dados sensíveis | 4 fases completas + aguardar aprovação humana antes de executar |
-
-## Knowledge Verification Chain
-
-Ao pesquisar, projetar ou tomar decisão técnica, seguir esta ordem:
-
-1. Codebase existente (código, convenções, padrões)
-2. Docs do projeto ({{#if BROWNFIELD}}`+specs/codebase/`, {{/if}}README, docs/)
-3. Ferramentas MCP disponíveis
-4. Web search (docs oficiais, fontes reputadas)
-5. Flagrar como incerto: "Não encontrei — aqui está meu raciocínio, mas verifique"
-
-**Nunca inventar APIs, padrões ou comportamentos. Se não sabe, diz.**
-
-## Scope Guardrail
-
-Ao notar algo que poderia melhorar mas está fora da task atual:
-
-- Registrar em `+specs/project/STATE.md` (seção Ideias Adiadas)
-- Não implementar sem instrução explícita
-
-## Classificação de Risco
-
-- L0: ajuste pequeno e local; Task Card ou Quick mode suficiente.
-- L1: feature, integração, automação, endpoint, mudança estrutural; spec aprovada obrigatória.
-- L2: produção, deploy, banco, auth, secrets, rede, dados sensíveis, disponibilidade; aprovação humana + rollback documentado.
-
-## Conventional Commits
-
-Todo commit em repositório WSD segue Conventional Commits 1.0.0:
-
-```
-<type>(<scope>): <description>
-```
-
-Tipos: `feat`, `fix`, `refactor`, `docs`, `test`, `style`, `perf`, `build`, `ci`, `chore`
-
-Regras: imperativo, lowercase, sem ponto final. Um task = um commit.
-
-## Paths Sensíveis
-
-Não alterar sem spec L2 ou decisão explícita:
-
-{{SENSITIVE_PATHS_MARKDOWN_LIST}}
+26 agentes para decisões de spec/arquitetura/risco em L1/L2 com trade-offs não
+óbvios (`/wsd-party-mode`). Quando usar e como: `+wsd/guides/party.md`.
 {{#if LOVABLE}}
-## Lovable Workflow
+## Lovable Workflow (resumo — guia completo obrigatório)
 
-Este repositório é editado pela **Lovable** (`gpt-engineer-app[bot]`) — editor visual de UI por IA. A Lovable sincroniza automaticamente com este GitHub e tem heurísticas que rejeitam o build silenciosamente quando o repo sai do estado canônico esperado.
-
-### Regras técnicas obrigatórias
-
-1. **Package manager: Bun puro.** Use `bun install`, `bun add`, `bun run`. NUNCA `npm install` ou `npm i`.
-2. **`package-lock.json` é proibido.** Já marcado em `permissions.forbidden_paths` e adicionado ao `.gitignore`. Presença causa o "Preview travado" (causa raiz confirmada em 17/05/2026).
-3. **`src/routeTree.gen.ts`**: commitar quando o build modificar. NUNCA `git checkout src/routeTree.gen.ts` antes de commitar.
-4. **Limitação da Lovable**: ela só conecta a repos que ela própria criou. Se for migrar owner do repo, é recriar o projeto Lovable do zero — não tente transferir o repo.
-
-### Áreas frágeis — preferir fluxo manual (Issue + branch + PR)
-
-A Lovable refatorou/resetou essas áreas em incidentes anteriores. Evitar deixar a IA da Lovable editar:
-
-- `src/routes/index.tsx` — entrypoint da rota raiz (já foi resetado 2×; manter thin, body em componente separado)
-- Keyframes CSS multi-step (animações órbita, halo, espiral)
-- Parallax tilt / mousemove handlers
-- Posicionamento absoluto com cálculo trigonométrico
-
-### Modelo de colaboração
-
-- **Owner**: Lovable conectada + deploy oficial (Cloudflare Workers)
-- **Colaboradores externos** (Claude Code, outros agentes, humanos): NUNCA push direto em `main`. Sempre **Fork → PR**.
-- Cada colaborador conecta seu Fork à própria Cloudflare Pages/Workers para preview de PR.
-- Conventional Commits 1.0.0.
-
-### Setting de repo GitHub
-
-`Settings → General → Pull Requests → "Automatically delete head branches"` **deve ficar OFF**. Aplicar via `./+wsd/bin/wsd lovable bootstrap` (faz `gh api PATCH delete_branch_on_merge=false`).
-
-### Gate antes de commitar
-
-`./+wsd/bin/wsd lovable doctor` verifica:
-- ausência de `package-lock.json`
-- presença de `bun.lock`
-- `+context.json` declara `lovable_integration.enabled: true`
-
-Esse gate também roda dentro do `wsd_check.sh` quando o repo declara `lovable_integration`.
+Repo editado pela **Lovable** (`gpt-engineer-app[bot]`). Regras duras: Bun puro
+(`bun install`; nunca `npm install`); `package-lock.json` é proibido;
+`src/routeTree.gen.ts` commitado quando o build modificar; colaboradores
+externos nunca fazem push direto em `{{DEFAULT_BRANCH}}` (Fork → PR). Áreas
+frágeis e bootstrap: `+wsd/guides/lovable.md`. Gate: `./+wsd/bin/wsd lovable doctor`.
 {{/if}}
-## Validação
-
-{{#if BROWNFIELD}}Consultar `+specs/codebase/TESTING.md` para gate checks por tier (gates específicos do codebase preexistente):
-
-{{/if}}- **Quick**: unit tests somente
-- **Full**: unit + e2e/integration
-- **Build**: tudo + lint + build
-
-```bash
-{{VALIDATION_COMMANDS_BLOCK}}
-```
-
-Gate check é obrigatório antes de commitar. Não inventar comandos de teste.
-
-## Sincronização de Governança
-
-Ao alterar qualquer arquivo WSD local:
-
-- `AGENTS.md`, `+context.json` ou `+specs/project/` → revisar política do projeto
-- `+specs/features/[slug]/spec.md` → revisar tasks.md correspondente
-- `scripts/wsd_check.sh` → atualizar contrato validável
-- `+specs/project/STATE.md` → atualizar decisões e lições
-
-Antes de fechar:
-
-```bash
-./+wsd/bin/wsd check
-git diff --check
-```
-
-## Produção
-
-Agentes não executam mutação direta em produção. Para L2, preparar branch, PR, artefato, script e rollback documentado — execução exige decisão humana explícita.

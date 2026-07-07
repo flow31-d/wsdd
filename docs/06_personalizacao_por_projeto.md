@@ -37,14 +37,10 @@ otimizado_para_obsidian: true
 7. [[#7. Perfil de Projeto]]
 8. [[#8. Regra Prática]]
 9. [[#9. Sincronização de Perfis]]
-10. [[#10. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Registro da sincronização obrigatória entre perfis, exemplos, README e matriz documental.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -172,14 +168,5 @@ Ao alterar `profiles/*.profile.yaml`, revisar:
 - `examples/`, se houver exemplo relacionado ao perfil;
 - [[wsd/README|README]], se o perfil virar recomendado;
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]], se mudar o grupo de arquivos obrigatórios.
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 10. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/06_personalizacao_por_projeto.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/06_personalizacao_por_projeto.md` | Registro da sincronização obrigatória entre perfis, exemplos, README e matriz documental. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -49,8 +49,8 @@ GIT_NAME="${WSD_GIT_NAME:-Rodrigo Wolff}"
 GIT_EMAIL="${WSD_GIT_EMAIL:-rodrigowolff31@gmail.com}"
 
 # Whitelist de paths sincronizados WSD → wsdd
-# (.github/, examples/, +wsd/, +specs/, +context.json, .agents/, REVIEW_PRE_V1.md,
-#  xmodelos/, +imbox/, +logs/, PRIVATE_USE_NOTICE.md, profiles privados ficam de fora)
+# (.github/, examples/, +wsd/, +specs/, +context.json, .agents/, archive/,
+#  +imbox/, +logs/, PRIVATE_USE_NOTICE.md, profiles privados ficam de fora)
 SYNC_DIRS=(
   "bin"
   "templates"

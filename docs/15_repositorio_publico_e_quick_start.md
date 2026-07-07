@@ -38,24 +38,10 @@ otimizado_para_obsidian: true
 7. [[#7. Regras de Compatibilidade]]
 8. [[#8. Checklist de Release Pública]]
 9. [[#9. npm Registry (Opção Futura)]]
-10. [[#10. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 11/05/2026 — Claude: Criação do documento. Quick start via GitHub, estratégia privado × público, workflow de sync, regras de compatibilidade e checklist de release pública.
-- 12/05/2026 — Claude (Opus 4.7): Adicionada linha de pré-requisito "Obsidian (recomendado)" em 3.1, com explicação da renderização visual de frontmatter/callouts/wikilinks. Refs WSD-006 + decisão D-002 Opção A.
-- 30/05/2026 18:15:09 -03 — Codex: Atualização do checklist público para `npm test` com 11 gates, incluindo o novo `test:install-version`.
-- 30/05/2026 — Codex: Correção do canal público canônico para `flow31-d/wsdd`, registro de fechamento da `v0.3.1` e ajuste do gate de perfis para validar conteúdo final de `bin/`, `profiles/` e `templates/`.
-- 15/06/2026 — Codex: Atualização para `v0.4.0` e `npm test` com 13 gates, incluindo `test:install-loop` e `test:install-codex-adherence`.
-- 17/06/2026 — Codex: Atualização para `v0.4.1` com atalhos WSD Loop para Codex/Claude/shell.
-- 21/06/2026 — Codex: Atualização para `v0.4.3` e `npm test` com 14 gates, incluindo `test:install-finish-clean`.
-- 21/06/2026 — Codex: Atualização para `v0.4.4` e `npm test` com 15 gates, incluindo `test:install-relatorio`.
-- 21/06/2026 — Codex: Atualização para `v0.4.5` e `npm test` com 16 gates, incluindo `test:install-update-adherence`.
-- 21/06/2026 — Codex: Atualização para `v0.4.6` mantendo 16 gates e corrigindo `wsd relatorio` para headings acentuados.
-- 21/06/2026 — Codex: Atualização para `v0.4.7` mantendo 16 gates e corrigindo `concerns_active` no `start --brief`.
-- 21/06/2026 — Codex: Atualização para `v0.4.8` mantendo 16 gates e corrigindo a auditoria documental do `wsd finish`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -157,7 +143,7 @@ Público (github.com/flow31-d/wsdd)
 - Perfis específicos de projetos internos em `bin/wsd-method.js` (ex: `koomplet_office`, `prescreve_mais`)
 - `+specs/` — specs e STATE operacional do WSD (informação de processo interno)
 - `+imbox/` — inbox de notas não categorizadas
-- `wsd_philo/` — base filosófica/pesquisa (referência histórica, não contrato público)
+- `archive/wsd_philo/` — base filosófica/pesquisa (referência histórica, não contrato público)
 - Dados de hosts, paths canônicos e topologias de infraestrutura privada
 
 ### 5.3 Gate de perfis antes do push
@@ -257,7 +243,7 @@ Antes de `git push` e `git tag`:
 - [ ] Esta nota atualizada se a estratégia mudou
 - [ ] Gate de perfis: `rg -n 'koomplet|prescreve|flow31-d/koomplet|GitKoomplet/prescreve' bin profiles templates` → vazio
 - [ ] Gate de secrets: `rg -n 'API_KEY|SECRET|TOKEN|PRIVATE KEY' .` → vazio
-- [ ] `.gitignore` está correto e `+specs/`, `+imbox/`, `wsd_philo/` não estão no staging
+- [ ] `.gitignore` está correto e `+specs/`, `+imbox/`, `archive/` não estão no staging
 
 ### 8.1 Registro de Fechamento — `v0.3.1`
 
@@ -282,7 +268,7 @@ npx wsd-method install
 Para isso, seria necessário:
 
 1. Remover `"private": true` do `package.json`
-2. Adicionar campo `"files"` ao `package.json` excluindo `+specs/`, `+imbox/`, `wsd_philo/` e perfis internos
+2. Adicionar campo `"files"` ao `package.json` excluindo `+specs/`, `+imbox/`, `archive/` e perfis internos
 3. `npm publish --access public`
 
 Vantagens sobre GitHub: `@latest` e `@next` automáticos, versionamento semântico limpo, sem dependência do GitHub estar público.
@@ -290,21 +276,5 @@ Vantagens sobre GitHub: `@latest` e `@next` automáticos, versionamento semânti
 Desvantagem: mais um registry externo para manter; o quick start via GitHub já cobre o caso de uso solo e times pequenos sem overhead adicional.
 
 **Decisão atual (30/05/2026):** manter `"private": true` no pacote e usar `npx github:flow31-d/wsdd` como quick start padrão. npm registry fica como opção futura se houver adoção externa real.
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 10. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 11/05/2026 — | Claude | `x/wsd/docs/15_repositorio_publico_e_quick_start.md` | Criação do documento. Quick start via GitHub, estratégia privado × público, workflow de sync, regras de compatibilidade e checklist de release pública. |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 11/11 gates de `npm test`, incluindo version inventory. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 13/13 gates de `npm test`, incluindo WSD Loop e Codex Adherence Pack. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 14/14 gates de `npm test`, incluindo finish clean close. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 15/15 gates de `npm test`, incluindo `test:install-relatorio`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização do gate público mínimo para 16/16 gates de `npm test`, incluindo `test:install-update-adherence`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização para `v0.4.6`: relatório tolerante a headings acentuados, sem novo gate. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização para `v0.4.7`: contador de concerns no `start --brief`, sem novo gate. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/15_repositorio_publico_e_quick_start.md` | Atualização para `v0.4.8`: auditoria documental do `wsd finish`, sem novo gate. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

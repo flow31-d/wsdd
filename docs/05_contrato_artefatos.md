@@ -15,6 +15,14 @@ otimizado_para_obsidian: true
 ---
 # 05 — Contrato de Artefatos WSD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -35,27 +43,10 @@ otimizado_para_obsidian: true
 8. [[#8. `scripts/wsd_check.sh`]]
 9. [[#9. `+wsd/` — Vendor Tree]]
 10. [[#10. Sincronização de Artefatos]]
-11. [[#11. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Inclusão da regra de sincronização entre contrato, templates, checker e notas derivadas.
-- 07/05/2026 — Claude: Documentação do schema canônico `schemas/context.schema.json` e do validador `wsd-validate-context.js` (v0.1.5-alpha).
-- 07/05/2026 — Codex: Planejamento do bloco `git_governance` no `+context.json` para o MVP Git/GitHub Governance (`v0.1.10-alpha`).
-- 07/05/2026 — Codex: Marcação do bloco `git_governance` como implementado na `v0.1.10-alpha` e validado pelo schema canônico.
-- 11/05/2026 — Claude: Adição da seção `+specs/project/` com ROADMAP.md, IDEAS.md e IDEAS_PIPELINE.md (v0.1.1/v0.1.2). Adição da seção `+wsd/` vendor tree. Renúmeração de seções.
-- 12/05/2026 — Claude (Opus 4.7): Adição de `CONCERNS.md` à seção `+specs/project/` (v0.2.0). Antes era `+specs/codebase/CONCERNS.md` condicional a brownfield. Refs WSD-010.
-- 21/06/2026 — Codex: Adição de `CONCERNS_PIPELINE.md` à seção `+specs/project/` (v0.4.2), com regra de captura em par `CONCERNS.md` + pipeline.
-- 21/06/2026 — Codex: `wsd finish` passa a fechar sessão com gates, docs audit quando disponível, HANDOFF.md, snapshot, commit automático e worktree limpo (`v0.4.3`).
-- 21/06/2026 — Codex: `wsd relatorio` passa a gerar relatório operacional opcional em `+specs/RELATORIO.md` (`v0.4.4`).
-- 21/06/2026 — Codex: `wsd update` passa a garantir novos arquivos de agente em modo preservador (`v0.4.5`).
-- 21/06/2026 — Codex: `wsd finish` passa a rodar o auditor documental local sem exigir pasta raiz `docs/` (`v0.4.8`).
-- 13/05/2026 — Codex: Contrato mínimo operacional passa a exigir snapshot WSD válido, ROADMAP/STATE estruturados e separação entre dirty de fonte e dirty gerado.
-- 30/05/2026 18:15:09 -03 — Codex: Atualização do contrato da vendor tree para incluir `wsd version` como leitor de metadados de `+wsd/config.json`.
-- 15/06/2026 — Codex: Inclusão do bloco `automation.loop`, prompts `+wsd/loop/` e estado local do WSD Loop no contrato de artefatos.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -160,9 +151,6 @@ Deve responder:
 - onde estão specs e contexto;
 - como o Codex deve fazer bootstrap WSDD sem o operador listar arquivos manualmente.
 
-A partir da `v0.4.0`, o template instalável deve conter a seção `WSD Codex Bootstrap`, mencionando `+context.json`, `+specs/project/STATE.md`, `+specs/HANDOFF.md`, classificação L0/L1/L2 e os comandos `wsd codex-prompt`/`wsd codex`.
-
-A partir da `v0.4.1`, skills Codex instaláveis devem usar `.agents/skills/` como caminho principal e `.codex/skills/` como espelho de compatibilidade. Atalhos globais de prompt do Codex são opcionais por usuário e instalados via `wsd codex-shortcuts install`, não durante o bootstrap do projeto.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -307,7 +295,6 @@ Estrutura principal:
 
 | Caminho | Função |
 |---|---|
-| `+wsd/bin/wsd` | CLI local — `wsd start`, `start --brief`, `check`, `finish`, `relatorio`, `doctor`, `version`, `update`, `git`, `party`, `snapshot`, `loop`, `codex-prompt`, `codex` |
 | `+wsd/bin/wsd-validate-context.cjs` | Validador zero-deps do `+context.json` contra o schema |
 | `+wsd/bin/wsd-snapshot.cjs` | Gerador do `+wsd/snapshot.json` (resumo do estado do projeto) |
 | `+wsd/schemas/context.schema.json` | JSON Schema 2020-12 canônico do `+context.json` |
@@ -322,7 +309,7 @@ Estrutura principal:
 
 **Versão instalada:** via `wsd version` — lê `version`, `installed_at` e `wsd_source` de `+wsd/config.json`; quando possível, compara com `wsd_source/package.json`.
 
-**Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json`, atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/`, `+wsd/docs/` quando habilitado e garante novos arquivos de aderência em `.agents/skills/`, `.codex/skills/`, `.claude/commands/` e `+wsd/hooks/` sem sobrescrever arquivos existentes.
+**Atualização:** via `wsd update` — lê `wsd_source` de `+wsd/config.json`, atualiza `+wsd/bin/`, `+wsd/schemas/`, `+wsd/templates/`, `+wsd/docs/` quando habilitado e garante novos arquivos de aderência em `.agents/skills/`, `.agents/skills/`, `.claude/commands/` e `+wsd/hooks/` sem sobrescrever arquivos existentes.
 
 ### Contrato `wsd finish` (v0.4.8)
 
@@ -362,25 +349,5 @@ Ao alterar qualquer contrato desta nota, revisar:
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]].
 
 Se o contrato alterar `+context.json`, também revisar `profiles/*.profile.yaml` E `schemas/context.schema.json` (e suas validações em `scripts/wsd_self_check.sh`).
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 11. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Inclusão da regra de sincronização entre contrato, templates, checker e notas derivadas. |
-| 07/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Documentação do schema canônico `schemas/context.schema.json` e validador `wsd-validate-context.js` na seção `+context.json` e na regra de sincronização de artefatos (v0.1.5-alpha). |
-| 07/05/2026 — | Codex | `x/wsd/docs/05_contrato_artefatos.md` | Marcação do bloco `git_governance` como implementado e validado pelo schema na `v0.1.10-alpha`. |
-| 11/05/2026 — | Claude | `x/wsd/docs/05_contrato_artefatos.md` | Adição das seções: `+specs/project/` (ROADMAP.md, IDEAS.md, IDEAS_PIPELINE.md — v0.1.1/v0.1.2) e `+wsd/` vendor tree (estrutura, arquivos ignorados, `wsd update`). Renúmeração de seções 6→11. Fix: referências `.js` → `.cjs` para wsd-validate-context e wsd-snapshot (v0.1.3). |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `wsd version` no contrato da vendor tree e explicitação do uso de `+wsd/config.json` como fonte de versão instalada. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `automation.loop`, prompts `+wsd/loop/` e ignores locais do WSD Loop `v0.4.0`. |
-| 17/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato de skills Codex em `.agents/skills/` e prompts opcionais `codex-shortcuts` (`v0.4.1`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão de `CONCERNS_PIPELINE.md` como artefato obrigatório e regra de manutenção em par com `CONCERNS.md` (`v0.4.2`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd finish` limpo com gates, docs audit e commit de fechamento (`v0.4.3`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Inclusão do contrato `wsd relatorio` e do artefato opcional `+specs/RELATORIO.md` (`v0.4.4`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Atualização do contrato `wsd update` para incluir novos arquivos de agente em modo preservador (`v0.4.5`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/05_contrato_artefatos.md` | Atualização do contrato `wsd finish`: auditor documental local roda sem exigir pasta raiz `docs/` (`v0.4.8`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

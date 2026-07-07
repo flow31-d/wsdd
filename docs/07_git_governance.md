@@ -36,19 +36,10 @@ otimizado_para_obsidian: true
 9. [[#9. Git Hooks no Bootstrap]]
 10. [[#10. Módulo Opcional `git-governance`]]
 11. [[#11. Sincronização da Política Git]]
-12. [[#12. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Inclusão de sincronização obrigatória entre política Git, AGENTS, ciclo operacional e templates de agentes.
-- 05/05/2026 14:38:29 -03 — Codex: Registro de que a política Git avançada será tratada como módulo opcional `git-governance`.
-- 07/05/2026 — Claude: Adição da Seção 9 (Git Hooks no Bootstrap) com `pre-commit`, `commit-msg`, `pre-push` instalados pelo bootstrap (v0.1.6-alpha).
-- 07/05/2026 — Codex: Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização `v0.1.0`.
-- 07/05/2026 — Codex: Marcação da `v0.1.10-alpha` como implementada com `--git-policy`, Git namespace local e templates GitHub no modo `full`.
-- 12/05/2026 — Claude: Clarificação do padrão de branch por modo (`basic` vs `full`), decisão de idioma de commit (português obrigatório) e atualização de todos os exemplos para português.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -289,19 +280,5 @@ Ao alterar git hooks, revisar também:
 - `templates/repo/AGENTS.md.template` — seção Git Hooks;
 - `bin/wsd-method.js` — função `installGitHooks`;
 - `scripts/wsd_self_check.sh` e `scripts/wsd_docs_check.sh`.
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 12. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/07_git_governance.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/07_git_governance.md` | Inclusão de sincronização obrigatória entre política Git, AGENTS, ciclo operacional e templates de agentes. |
-| 05/05/2026 14:38:29 -03 | Codex | `x/wsd/docs/07_git_governance.md` | Registro de que a política Git avançada será tratada como módulo opcional `git-governance`. |
-| 07/05/2026 — | Claude | `x/wsd/docs/07_git_governance.md` | Adição da Seção 9 — Git Hooks no Bootstrap (`pre-commit`, `commit-msg`, `pre-push`) e atualização dos números de seção e índice (v0.1.6-alpha). |
-| 07/05/2026 — | Codex | `x/wsd/docs/07_git_governance.md` | Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização. |
-| 07/05/2026 — | Codex | `x/wsd/docs/07_git_governance.md` | Marcação da `v0.1.10-alpha` como implementada em instalador, CLI local e templates GitHub. |
-| 12/05/2026 — | Claude | `+Apps/WSD/docs/07_git_governance.md` | Clarificação do padrão de branch por modo (`basic` = `tipo/<slug>`, `full` = `issue-<numero>-<slug>`), decisão explícita de idioma (português obrigatório na description) e atualização de todos os exemplos de commit. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

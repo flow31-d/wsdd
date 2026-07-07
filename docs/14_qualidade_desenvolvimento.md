@@ -40,13 +40,10 @@ otimizado_para_obsidian: true
 9. [[#9. Conventional Commits]]
 10. [[#10. Por que TLC e não Superpowers]]
 11. [[#11. Sincronização Desta Nota]]
-12. [[#12. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 06/05/2026 — Claude: Criação da nota como parte da integração TLC v0.1.4-alpha (T26 da feature `tlc-integration`).
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -334,13 +331,5 @@ Ao alterar esta nota, revisar sempre:
 - `templates/repo/+specs/codebase/TESTING.md.template`;
 - `templates/specs/feature-spec.md.template` (WHEN/THEN/SHALL);
 - skills `wsd-specify`, `wsd-design`, `wsd-tasks` (Codex e Claude Code).
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 12. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 06/05/2026 — | Claude | `x/wsd/docs/14_qualidade_desenvolvimento.md` | Criação da nota como parte da integração TLC v0.1.4-alpha (T26 da feature `tlc-integration`). Consolida auto-sizing, STATE.md, HANDOFF.md, WHEN/THEN/SHALL, TESTING.md tiered, knowledge chain, scope guardrail e Conventional Commits. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

@@ -41,14 +41,10 @@ otimizado_para_obsidian: true
 11. [[#11. Regra 10 — Saída Deve Ser Auditável]]
 12. [[#12. Regra 11 — Pesquisa Segue a Cadeia de Verificação]]
 13. [[#13. Regra 12 — Escopo é Inviolável Durante Execução]]
-12. [[#12. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Reforço da regra de documentação atualizada com referência à matriz de sincronização do WSD.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -223,15 +219,5 @@ Durante a execução de qualquer tarefa, o agente pode notar melhorias, refatora
 **Por que importa:** scope creep durante implementação é a principal causa de bugs introduzidos sem rastreabilidade, diffs difíceis de revisar e testes que cobrem mais do que a task pretendia.
 
 **Exceção:** se algo encontrado durante a task for um bug ativo que bloqueie o objetivo, registrá-lo como bloqueador no STATE.md e decidir com o operador antes de agir.
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 14. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/01_constituicao.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/01_constituicao.md` | Reforço da regra de documentação atualizada com referência à matriz de sincronização do WSD. |
-| 06/05/2026 — | Claude | `x/wsd/docs/01_constituicao.md` | Adição da Regra 11 (Knowledge Verification Chain) e Regra 12 (Scope Guardrail) como parte da integração TLC v0.1.4-alpha. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

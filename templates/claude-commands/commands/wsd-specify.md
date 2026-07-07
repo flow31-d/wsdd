@@ -16,7 +16,7 @@ Output: `+specs/features/[slug]/spec.md`.
 
 ## HARD-GATE
 
-Não iniciar implementação, scaffolding ou código antes da spec ser aprovada pelo usuário. Sem exceções.
+Com `workflow.approval_mode=full_auto` (default), finalize a spec, promova a `approved` com auto-revisão registrada e siga para implementação sem pausar — pause apenas se o usuário pediu revisão explícita. Nunca iniciar código antes da spec estar `approved`.
 
 ## Procedimento
 

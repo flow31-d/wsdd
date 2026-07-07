@@ -15,6 +15,14 @@ otimizado_para_obsidian: true
 ---
 # 08 — Rotinas de Sessão WSD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -32,26 +40,10 @@ otimizado_para_obsidian: true
 5. [[#5. Regra de Continuidade]]
 6. [[#6. Skills Codex Locais]]
 7. [[#7. Sincronização Destas Rotinas]]
-8. [[#8. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Alinhamento das rotinas ao CLI local `+wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`.
-- 06/05/2026 — Claude: Adição da seção 6.2 com comandos slash Claude Code, hook e settings; atualização da lista de sincronização para incluir `templates/claude-commands/`.
-- 06/05/2026 — Claude: Integração de `STATE.md` e `HANDOFF.md` no fluxo de início e fim de sessão, auto-sizing inicial, e novos comandos de fase (`/wsd-specify`, `/wsd-design`, `/wsd-tasks`).
-- 07/05/2026 — Claude: Atualização da seção 4 para refletir `wsd finish` automatizado (`v0.1.7-alpha`): HANDOFF.md gerado pelo CLI e prompts interativos para STATE.md.
-- 07/05/2026 — Codex: Planejamento dos comandos Git/GitHub Governance no início, execução e promoção de sessão (`v0.1.10-alpha`).
-- 07/05/2026 — Codex: Atualização das rotinas para refletir comandos Git/GitHub Governance implementados na `v0.1.10-alpha`.
-- 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` na rotina de início quando for necessário confirmar a versão WSD aplicada no projeto.
-- 15/06/2026 — Codex: Inclusão do `wsd loop` como rotina opcional para automatizar execução L0/L1 com gates e poucas aprovações.
-- 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt` e `codex`.
-- 21/06/2026 — Codex: Inclusão de concerns como leitura base de sessão e fluxo `/concern-{PROJECT_SLUG}` / `wsd-concern`.
-- 21/06/2026 — Codex: `wsd finish` passa a ser fechamento limpo: gates, docs audit quando disponível, HANDOFF.md, snapshot e commit automático aprovado.
-- 21/06/2026 — Codex: Inclusão de `wsd relatorio` como visão geral operacional de estado, plano, ideias, concerns e sugestão do agente.
-- 21/06/2026 — Codex: Correção do `wsd finish`: auditor documental local roda quando `scripts/wsd_docs_check.sh` existe, mesmo sem pasta raiz `docs/`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -138,13 +130,7 @@ Use WSD. Classifique a tarefa, confira spec se necessário, execute só o escopo
 
 Alternativa com comando curto:
 
-```bash
-./+wsd/bin/wsd codex-prompt --task "descreva a tarefa"
-./+wsd/bin/wsd codex --task "descreva a tarefa"
-./+wsd/bin/wsd codex --exec --feature <slug>
-```
 
-`codex-prompt` só imprime o prompt WSDD. `codex` chama o Codex CLI apontando para o repo atual; `--exec` usa modo não interativo. Para testar sem depender do Codex instalado, usar `./+wsd/bin/wsd codex --dry-run --task "..."`.
 
 Para ligar/desligar uso automático do Ralph/WSD Loop:
 
@@ -251,7 +237,7 @@ Quando o WSD for instalado com `--tools codex`, o projeto recebe:
 .agents/skills/wsd-loop/SKILL.md
 ```
 
-O instalador também espelha essas skills em `.codex/skills/` para compatibilidade com setups antigos. O caminho principal atual para Codex é `.agents/skills/`.
+O instalador também espelha essas skills em `.agents/skills/` para compatibilidade com setups antigos. O caminho principal atual para Codex é `.agents/skills/`.
 
 Uso prático:
 
@@ -328,26 +314,5 @@ Rodar:
 ```bash
 bash scripts/wsd_docs_check.sh
 ```
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 8. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Alinhamento das rotinas ao CLI local `+wsd/bin/wsd` e correção dos links das skills Codex para `SKILL.md`. |
-| 06/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Adição da seção 6.2 com comandos slash Claude Code (`/wsd-start`, `/wsd-finish`, hook, settings) e atualização da lista de sincronização. |
-| 06/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Integração de STATE.md/HANDOFF.md no início e fim de sessão, auto-sizing inicial, scope guardrail na execução, e novos comandos de fase (`/wsd-specify`, `/wsd-design`, `/wsd-tasks`) em Codex e Claude Code. |
-| 07/05/2026 — | Claude | `x/wsd/docs/08_rotinas_sessao.md` | Atualização da seção 4 (Fim de Sessão) para refletir `wsd finish` automatizado: HANDOFF.md gerado automaticamente pelo CLI e prompts interativos para STATE.md (v0.1.7-alpha). |
-| 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Planejamento dos comandos `wsd git preflight`, `doctor` e `pr-check` nas rotinas de sessão da v0.1.10-alpha. |
-| 07/05/2026 — | Codex | `x/wsd/docs/08_rotinas_sessao.md` | Atualização das rotinas para comandos `wsd git` implementados na v0.1.10-alpha. |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do `wsd version` como checagem opcional de início de sessão para rastrear a versão WSD aplicada no repo. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do fluxo opcional `wsd loop plan|once|run` para automação L0/L1 governada por gates. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão do Codex Adherence Pack: `start --brief`, `codex-prompt`, `codex` e bootstrap via `AGENTS.md`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de concerns como leitura base de sessão e fluxo `wsd-concern`/`concern-{PROJECT_SLUG}`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Atualização do contrato `wsd finish`: fechamento limpo com gates, docs audit, HANDOFF, snapshot e commit automático (`v0.4.3`). |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Inclusão de `wsd relatorio` para visão geral operacional e artefatos `wsd-relatorio`/`/wsd-relatorio`. |
-| 21/06/2026 | Codex | `+Apps/wsd/docs/08_rotinas_sessao.md` | Correção do contrato `wsd finish`: auditor documental local não depende de pasta raiz `docs/` (`v0.4.8`). |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

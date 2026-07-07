@@ -1,0 +1,22 @@
+{
+  "$schema": "wsd/docs-map/v1",
+  "description": "Mapa código→documentação. scripts/wsd_drift_check.sh avisa quando um commit toca código mapeado sem tocar a doc correspondente.",
+  "map": {
+    "bin/wsd-method.js": ["README.md", "docs/00_planejamento_instalacao_wsd.md", "docs/04_playbook_implantacao.md"],
+    "install.sh": ["README.md", "docs/04_playbook_implantacao.md"],
+    "templates/local-wsd/bin/wsd": ["docs/08_rotinas_sessao.md", "docs/18_manual_leigo_comandos_wsdd.md"],
+    "templates/local-wsd/bin/wsd-report.cjs": ["docs/08_rotinas_sessao.md", "docs/17_snapshot_campos_explicados.md"],
+    "templates/local-wsd/bin/wsd-snapshot.cjs": ["docs/16_wdb_snapshot_integration.md", "docs/17_snapshot_campos_explicados.md"],
+    "templates/local-wsd/loop/": ["docs/19_wsd_loop_automacao_inteligente.md"],
+    "templates/local-wsd/guides/": ["docs/08_rotinas_sessao.md"],
+    "templates/repo/AGENTS.md.template": ["docs/05_contrato_artefatos.md", "docs/08_rotinas_sessao.md"],
+    "templates/repo/+context.json.template": ["docs/05_contrato_artefatos.md"],
+    "schemas/context.schema.json": ["docs/05_contrato_artefatos.md"],
+    "templates/codex-skills/": ["docs/08_rotinas_sessao.md"],
+    "templates/claude-commands/": ["docs/13_compatibilidade_claude_code.md"],
+    "templates/git-hooks/": ["docs/07_git_governance.md"],
+    "templates/modules/git-governance/": ["docs/11_modulo_git_governance.md"],
+    "scripts/wsd_release.sh": ["RELEASING.md"],
+    "profiles/": ["docs/06_personalizacao_por_projeto.md"]
+  }
+}

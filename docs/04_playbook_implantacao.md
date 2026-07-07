@@ -15,6 +15,14 @@ otimizado_para_obsidian: true
 ---
 # 04 — Playbook de Implantação WSD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -42,20 +50,10 @@ otimizado_para_obsidian: true
 12. [[#12. Passo 10 — Promover por PR]]
 13. [[#13. Passo 11 — Registrar no Vault ou Playbook]]
 14. [[#14. Sincronização Deste Playbook]]
-15. [[#15. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Atualização do playbook para usar o instalador `wsd-method` como fluxo preferencial, mantendo cópia manual apenas como fallback.
-- 06/05/2026 — Claude: Inserção do Passo 7 (Auto-sizing e fluxo de 4 fases TLC), tabela L0/L1/L2 → Quick/Specify+Execute/4 fases e ajuste dos paths para `+specs/` e `+logs/`.
-- 07/05/2026 — Codex: Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`.
-- 07/05/2026 — Codex: Atualização do playbook para tratar `--git-policy full` como disponível na `v0.1.10-alpha`.
-- 30/05/2026 18:15:09 -03 — Codex: Inclusão de `wsd version` no fluxo de validação pós-instalação para registrar qual versão do WSD ficou aplicada no repo.
-- 15/06/2026 — Codex: Inclusão de `wsd loop status` no pós-install e referência ao uso opcional de `wsd loop` para automação L0/L1.
-- 15/06/2026 — Codex: Inclusão de `wsd codex-prompt` no pós-install para aderência Codex com prompt curto.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -193,7 +191,6 @@ Mesmo assim, o agente deve revisar:
 - `+specs/codebase/*.md` quando `--brownfield`;
 - `scripts/wsd_check.sh`;
 - `+wsd/config.json`;
-- `.agents/skills/*/SKILL.md` (espelhado em `.codex/skills/*/SKILL.md` por compatibilidade), quando `--tools codex` for usado;
 - `.claude/commands/*.md`, quando `--tools claude-code` for usado.
 
 Campos essenciais que não podem ficar vazios ou genéricos:
@@ -308,7 +305,6 @@ Rodar:
 ./+wsd/bin/wsd version
 ./+wsd/bin/wsd loop status
 ./+wsd/bin/wsd loop auto status
-./+wsd/bin/wsd codex-prompt --brief --task "validar aderencia WSDD"
 ./+wsd/bin/wsd check
 python3 -m json.tool +context.json
 bash scripts/wsd_check.sh --risk L0 .
@@ -370,20 +366,5 @@ Rodar:
 ```bash
 bash scripts/wsd_docs_check.sh
 ```
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 15. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Atualização do playbook para usar o instalador `wsd-method` como fluxo preferencial, mantendo cópia manual apenas como fallback. |
-| 06/05/2026 — | Claude | `x/wsd/docs/04_playbook_implantacao.md` | Inserção do Passo 7 (Auto-sizing + 4 fases TLC), tabela L0/L1/L2 → Quick/Specify+Execute/4 fases, ajuste de paths para `+specs/` e `+logs/`, link para Conventional Commits. |
-| 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Planejamento do uso de `--git-policy full` para projetos reais que valorizam GitHub após a `v0.1.10-alpha`. |
-| 07/05/2026 — | Codex | `x/wsd/docs/04_playbook_implantacao.md` | Atualização do playbook para `--git-policy full` disponível no instalador. |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd version` na validação e no registro pós-implantação do WSD em projetos. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd loop status` no pós-install e no registro de implantação. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/04_playbook_implantacao.md` | Inclusão de `wsd codex-prompt` na validação pós-install para aderência Codex. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

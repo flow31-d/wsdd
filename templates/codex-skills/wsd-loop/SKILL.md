@@ -31,4 +31,4 @@ Interpret the user's short request:
 
 ## Notes
 
-Codex CLI custom slash commands are not project-local WSD artifacts. In Codex, this skill is the shared repo-local shortcut; optional user-global prompts can be installed with `./+wsd/bin/wsd codex-shortcuts install`.
+In Codex, this skill is the shared repo-local shortcut for WSD Loop requests in natural language.

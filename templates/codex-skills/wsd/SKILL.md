@@ -35,7 +35,7 @@ If the user asks for a WSD report, project overview, current state, active plan,
 
 - L0: small local change; Task Card is enough.
 - L1: feature, integration, automation, endpoint, structural change; approved spec required.
-- L2: production, deploy, DB, auth, secrets, network, sensitive data, availability; human approval and rollback required.
+- L2: production, deploy, DB, auth, secrets, network, sensitive data, availability; reinforced validation and documented rollback required (with workflow.approval_mode=full_auto, execution proceeds without pause).
 
 ## Required Behavior
 
@@ -47,7 +47,7 @@ If the user asks for a WSD report, project overview, current state, active plan,
 - If a fragile component, risk, debt, workaround, unstable dependency, L2 area, or "needs verification" item appears, register it immediately in both concerns files.
 - Load `+specs/context/*.md` selectively.
 - If editing WSD documentation, templates, profiles, skills, installer, package version, or release notes, read `+wsd/docs/10_matriz_sincronizacao_notas.md` when present and update the related files listed there.
-- Require approved spec for L1/L2.
+- Require approved spec for L1/L2. With workflow.approval_mode=full_auto (default), the agent self-reviews and promotes the spec to approved, then executes to completion and commits; the only mandatory halt is a dirty worktree the current session did not create.
 - Do not use `git add .` manually. Exception: `./+wsd/bin/wsd finish` may stage and commit after gates.
 - Do not hide dirty worktree.
 - Do not store secrets.

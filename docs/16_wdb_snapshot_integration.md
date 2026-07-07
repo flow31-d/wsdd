@@ -32,17 +32,14 @@ otimizado_para_obsidian: true
 5. [[#5. Como o wdb Consome]]
 6. [[#6. Quando o Snapshot é Gerado]]
 7. [[#7. Regras para os Agentes]]
-8. [[#8. 🕒 Registro de Alterações por Agentes]]
 
 ---
 
 ## 1. 🔄 Atualizações
 
-- 11/05/2026 — Claude: Criação do documento. Definição do schema v1, estratégia de arquivo único por projeto, integração via polling do wdb.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
-
----
 
 ## 2. Como Funciona
 
@@ -254,11 +251,3 @@ O script de refresh pode simplesmente recarregar os JSONs em memória ou gravar 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ---
-
-## 8. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 11/05/2026 — | Claude | `+Apps/WSD/docs/16_wdb_snapshot_integration.md` | Criação do documento. Schema v1, localização de arquivo único por projeto, integração via polling crontab, regras de título ≤ 60 chars. |
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]

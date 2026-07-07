@@ -18,6 +18,14 @@ otimizado_para_obsidian: true
 
 # 12 — Avaliação Crítica do WSD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -35,21 +43,14 @@ otimizado_para_obsidian: true
 3. [[#3. O que Preocupa]]
 4. [[#4. Recomendação]]
 5. [[#5. Veredicto Final]]
-6. [[#6. 🕒 Registro de Alterações por Agentes]]
 
 ---
 
 ## 1. 🔄 Atualizações
 
-- 06/05/2026 11:31:14 -03 — Codex: Reavaliação da nota crítica do WSD com foco Codex-first, reconhecimento de Claude Code quase igualmente importante e atualização da data de análise para o momento atual.
-- 06/05/2026 14:41:06 -03 — Codex: Padronização das listas de ação da nota crítica com checkboxes para facilitar acompanhamento do que falta implementar.
-- 07/05/2026 — Claude: Marcação dos itens concluídos em 4.1, 4.2, 4.3, 4.4 e 4.5 com `[x]` (v0.1.3–v0.1.6-alpha).
-- 07/05/2026 — Codex: Inclusão do MVP Git/GitHub Governance como próxima ação antes da estável (`v0.1.10-alpha`).
-- 07/05/2026 — Codex: Marcação do MVP Git/GitHub Governance como concluído na `v0.1.10-alpha`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
-
----
 
 ## 2. O que é Bem Feito
 
@@ -150,7 +151,7 @@ O installer renderiza o `+context.json` a partir do perfil — o agente não pre
 
 **Lacunas específicas:**
 
-O `wsd install --tools codex` cria skills em `.agents/skills/` (com espelho legado em `.codex/skills/`), incluindo:
+O `wsd install --tools codex` cria skills em `.agents/skills/` (com espelho legado em `.agents/skills/`), incluindo:
 - `.agents/skills/wsd` — regras gerais WSD para o Codex
 - `.agents/skills/wsd-start` — procedimento de abertura de sessão
 - `.agents/skills/wsd-finish` — procedimento de encerramento
@@ -249,7 +250,6 @@ O núcleo do WSD — Constituição + Matriz de Risco + Ciclo Operacional + Cont
 
 ### 4.1 Ação imediata — suporte Codex-first e espelhamento Claude Code
 
-- [x] Criar `.claude/` skills espelhando as `.codex/skills/` existentes. (`v0.1.3-alpha`)
 - [x] Adicionar `--tools claude-code` ao CLI do installer. (`v0.1.3-alpha`)
 - [x] Gerar `.claude/wsd.md` com as regras WSD adaptadas para instruções de Claude Code. (via `AGENTS.md` + `CLAUDE.md` no template — `v0.1.3-alpha`)
 - [x] Gerar `.claude/wsd-start.md`, `wsd-finish.md`, `wsd-specify.md`, `wsd-design.md`, `wsd-tasks.md`. (`v0.1.3/v0.1.4-alpha`)
@@ -342,17 +342,3 @@ Isso transforma as regras de convenção do `+context.json` em enforcement técn
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ---
-
-## 6. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 06/05/2026 11:31:14 -03 | Codex | `x/wsd/docs/12_avaliacao_critica.md` | Reavaliação da nota crítica do WSD com foco Codex-first, suporte Claude Code quase equivalente e atualização temporal da análise para o momento atual. |
-| 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/12_avaliacao_critica.md` | Padronização das listas de ação da nota crítica com checkboxes para facilitar acompanhamento do que falta implementar. |
-| 07/05/2026 — | Claude | `x/wsd/docs/12_avaliacao_critica.md` | Marcação dos itens concluídos em 4.1–4.5 com `[x]` refletindo entregas v0.1.3–v0.1.6-alpha. |
-| 07/05/2026 — | Codex | `x/wsd/docs/12_avaliacao_critica.md` | Saneamento documental v0.1.9-alpha: prompt de lição no `wsd finish` marcado como concluído conforme v0.1.7-alpha. |
-| 07/05/2026 — | Codex | `x/wsd/docs/12_avaliacao_critica.md` | Inclusão do MVP Git/GitHub Governance como próxima ação antes da estável (`v0.1.10-alpha`). |
-| 07/05/2026 — | Codex | `x/wsd/docs/12_avaliacao_critica.md` | Marcação do MVP Git/GitHub Governance como concluído na `v0.1.10-alpha`. |
-| 07/05/2026 — | Claude | `x/wsd/docs/12_avaliacao_critica.md` | Inclusão da Party Mode Integration (`v0.1.11-alpha`) e fechamento dos itens descartados: validação YAML formal (formato legado) e perfis genéricos adicionais (instalação interativa cobre). Fase 3 fechada 100%. |
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]

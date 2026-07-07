@@ -49,7 +49,15 @@ required_files=(
   "templates/local-wsd/loop/PROMPT_plan.md"
   "templates/local-wsd/loop/PROMPT_build.md"
   "templates/local-wsd/bin/wsd-validate-context.cjs"
-  "templates/codex-prompts/loop.md"
+  "templates/local-wsd/bin/wsd-report.cjs"
+  "templates/local-wsd/guides/git.md"
+  "templates/local-wsd/guides/loop.md"
+  "templates/local-wsd/guides/party.md"
+  "templates/local-wsd/guides/sessao.md"
+  "templates/local-wsd/guides/lovable.md"
+  "docs-map.json"
+  "scripts/wsd_drift_check.sh"
+  "CHANGELOG_ARCHIVE.md"
   "templates/codex-skills/wsd-specify/SKILL.md"
   "templates/codex-skills/wsd-design/SKILL.md"
   "templates/codex-skills/wsd-tasks/SKILL.md"
@@ -96,6 +104,7 @@ ok "shell scripts parse"
 
 node --check bin/wsd-method.js >/dev/null || fail "node syntax failed: bin/wsd-method.js"
 node --check templates/local-wsd/bin/wsd-validate-context.cjs >/dev/null || fail "node syntax failed: templates/local-wsd/bin/wsd-validate-context.cjs"
+node --check templates/local-wsd/bin/wsd-report.cjs >/dev/null || fail "node syntax failed: templates/local-wsd/bin/wsd-report.cjs"
 ok "node cli parses"
 
 python3 -m json.tool schemas/context.schema.json >/dev/null || fail "schemas/context.schema.json is invalid JSON"
@@ -244,10 +253,13 @@ grep -q 'test:install-finish-clean' package.json || fail "package.json missing t
 ok "wsd CLI finish clean-close contract present"
 
 grep -q '_wsd_relatorio' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing _wsd_relatorio"
-grep -q 'Relatorio WSD' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing report title"
-grep -q 'Sugestão do agente' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd report missing agent suggestion"
+grep -q 'wsd-report.cjs report' templates/local-wsd/bin/wsd || fail "wsd relatorio must delegate to wsd-report.cjs"
+grep -q 'Relatorio WSD' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing report title"
+grep -q 'Sugestão do Agente' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing agent suggestion"
+grep -q 'renderBrief' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing brief mode"
+grep -q 'bloatWarnings' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing bloat/compaction warnings"
 grep -q 'test:install-relatorio' package.json || fail "package.json missing test:install-relatorio"
-ok "wsd CLI relatorio contract present"
+ok "wsd report engine contract present (Node, não bash)"
 
 # git-hooks templates are executable
 for hook in templates/git-hooks/pre-commit templates/git-hooks/commit-msg templates/git-hooks/pre-push; do
@@ -271,17 +283,16 @@ grep -q 'test:install-loop' package.json || fail "package.json missing test:inst
 grep -q 'WSD Loop' docs/19_wsd_loop_automacao_inteligente.md || fail "docs/19 missing WSD Loop content"
 ok "WSD Loop automation artifacts present"
 
-grep -q 'WSD Codex Bootstrap' templates/repo/AGENTS.md.template || fail "AGENTS.md.template missing WSD Codex Bootstrap"
-grep -q 'codex-prompt)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex-prompt command"
-grep -q '_wsd_codex' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex launcher"
+grep -q 'WSD Bootstrap' templates/repo/AGENTS.md.template || fail "AGENTS.md.template missing WSD Bootstrap"
+grep -q 'Intenção → Ação' templates/repo/AGENTS.md.template || fail "AGENTS.md.template missing Intenção → Ação table"
+grep -q 'full_auto' templates/repo/AGENTS.md.template || fail "AGENTS.md.template missing full_auto operating mode"
 grep -q 'start --brief' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing start --brief"
 grep -q '.agents' bin/wsd-method.js || fail "bin/wsd-method.js missing .agents/skills install target"
-grep -q 'codex-shortcuts)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing codex-shortcuts command"
-grep -q 'shortcuts)' templates/local-wsd/bin/wsd || fail "templates/local-wsd/bin/wsd missing shortcuts command"
-grep -q 'WSD Codex Loop Shortcut' templates/codex-prompts/loop.md || fail "Codex loop prompt missing marker"
+if grep -q "'.codex'" bin/wsd-method.js; then fail "bin/wsd-method.js still mirrors .codex/skills (retired)"; fi
+if grep -qE '^  (codex-prompt|codex|codex-shortcuts|shortcuts)\)' templates/local-wsd/bin/wsd; then fail "retired commands still dispatched in vendored CLI"; fi
 grep -q '/loop status' templates/claude-commands/commands/loop.md || fail "Claude /loop command missing status mapping"
 grep -q 'test:install-codex-adherence' package.json || fail "package.json missing test:install-codex-adherence"
-ok "Codex adherence artifacts present"
+ok "agent adherence artifacts present (lean-core)"
 
 bash scripts/wsd_docs_check.sh
 ok "documentation sync passed"
@@ -305,7 +316,7 @@ fi
 rm -f /tmp/wsd-md-without-frontmatter.$$
 
 secret_pattern='API[_]KEY=[A-Za-z0-9]|SEC[R]ET=[A-Za-z0-9]|TOK[E]N=[A-Za-z0-9]|PASS[W]ORD=[A-Za-z0-9]|BEGI[N] (RSA |OPENSSH |EC |)PRIVA[T]E KEY|\bs[k]-[A-Za-z0-9]{20,}'
-if grep -rnE "$secret_pattern" --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' --include='*.sh' --include='*.js' --include='*.template' --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=xmodelos --exclude-dir=party-mode . >/tmp/wsd-secret-scan.$$ 2>/dev/null; then
+if grep -rnE "$secret_pattern" --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' --include='*.sh' --include='*.js' --include='*.template' --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=archive --exclude-dir=party-mode . >/tmp/wsd-secret-scan.$$ 2>/dev/null; then
   if [[ -s /tmp/wsd-secret-scan.$$ ]]; then
     cat /tmp/wsd-secret-scan.$$
     rm -f /tmp/wsd-secret-scan.$$

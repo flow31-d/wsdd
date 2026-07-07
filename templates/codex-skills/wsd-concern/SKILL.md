@@ -67,6 +67,6 @@ Nao implementar a correcao apos capturar. A captura cria memoria e plano; execuc
 
 - Nunca apagar concerns antigas.
 - Sempre atualizar `CONCERNS.md` e `CONCERNS_PIPELINE.md` juntos.
-- Se severidade for L2, marcar que exige aprovacao humana antes de qualquer execucao.
+- Se severidade for L2, marcar que exige validacao reforcada e rollback documentado antes da execucao.
 - Se a concern surgir durante uma tarefa, registrar imediatamente antes de continuar.
 - Para resolver, exigir evidencia no pipeline.

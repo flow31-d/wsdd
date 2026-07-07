@@ -31,15 +31,14 @@
     "forbidden_paths": {{FORBIDDEN_PATHS_JSON_ARRAY}},
     "tool_allowlist": {{TOOL_ALLOWLIST_JSON_ARRAY}},
     "secrets_policy": "read_only_env_vars",
-    "max_runtime_seconds": 600,
-    "max_tokens_per_request": 64000
+    "max_runtime_seconds": 600
   },
   "workflow": {
-    "approval_mode": "auto_for_l0_human_for_l2",
+    "approval_mode": "full_auto",
     "branch_policy": "ephemeral_feature_branch",
     "incident_mode": "log_and_halt",
     "issue_policy": "issue_or_spec_required_for_l1_l2",
-    "production_mutation_policy": "forbidden_for_agents"
+    "production_mutation_policy": "allowed_with_rollback"
   },
   "git_governance": {
     "enabled": {{GIT_GOVERNANCE_ENABLED}},

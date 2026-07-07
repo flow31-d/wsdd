@@ -39,18 +39,14 @@ otimizado_para_obsidian: true
 9. [[#9. Bloco 7 — Saúde Operacional (state e health)]]
 10. [[#10. O que o Snapshot não contém]]
 11. [[#11. Como ler um Snapshot na prática]]
-12. [[#12. 🕒 Registro de Alterações por Agentes]]
 
 ---
 
 ## 1. 🔄 Atualizações
 
-- 12/05/2026 — Claude: Criação do documento. Explicação completa de todos os campos em linguagem acessível, com cenários práticos de leitura.
-- 13/05/2026 — Codex: Documentação dos campos de sujeira Git separados entre fonte e artefatos gerados.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
-
----
 
 ## 2. O que é o Snapshot
 
@@ -504,11 +500,3 @@ Leitura: snapshot gerado há 3 dias (hoje é dia 12), branch limpa, nenhum traba
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ---
-
-## 12. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 12/05/2026 — | Claude | `+Apps/WSD/docs/17_snapshot_campos_explicados.md` | Criação do documento. Explicação detalhada em linguagem acessível de todos os 7 blocos do snapshot, incluindo fontes de dados, significado prático de cada campo e cenários de leitura. |
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]

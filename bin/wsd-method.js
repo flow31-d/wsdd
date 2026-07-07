@@ -41,26 +41,6 @@ const PROFILE_PRESETS = {
     test_build: 'ruff check app tests && pytest && docker compose config',
     l2_areas: ['migracao de banco', 'auth/autorizacao', 'secrets', 'producao', 'dados sensiveis']
   },
-  koomplet_office: {
-    project_name: 'Koomplet Office',
-    repo_name: 'flow31-d/koomplet-office',
-    github_remote: 'https://github.com/flow31-d/koomplet-office.git',
-    canonical_host: 'DLP',
-    canonical_path: '/srv/CLI/x/dev_cli/koomplet-office',
-    default_branch: 'master',
-    project_type: 'node_frontend_multiplayer_workspace',
-    primary_language: 'TypeScript',
-    environment_policy_summary: 'DLP e o desenvolvimento canonico. GitHub e o historico compartilhado. Oct e publicacao/proxy/frontend servido, nao ambiente de desenvolvimento.',
-    clone_topology_markdown: '- DLP: desenvolvimento canonico.\\n- GitHub: historico compartilhado.\\n- Oct: publicacao/proxy/frontend servido.',
-    lint: [],
-    test: ['npm test'],
-    build: ['npm run build'],
-    smoke: ['validar asset publico servido em https://work.koomplet.com/office/'],
-    test_quick: 'npm test -- --findRelatedTests',
-    test_full: 'npm test',
-    test_build: 'npm test && npm run build',
-    l2_areas: ['deploy publico', 'rsync para Oct', 'proxy/SSL', 'base path /office/', 'assets publicados']
-  },
   lovable_tanstack_start: {
     project_type: 'lovable_tanstack_start',
     primary_language: 'TypeScript',
@@ -89,26 +69,6 @@ const PROFILE_PRESETS = {
       auto_delete_branch_on_merge: false,
       collaboration_model: 'owner_plus_fork_pr'
     }
-  },
-  prescreve_mais: {
-    project_name: 'Prescreve Mais',
-    repo_name: 'GitKoomplet/prescreve_mais',
-    github_remote: 'https://github.com/GitKoomplet/prescreve_mais.git',
-    canonical_host: 'Oct',
-    canonical_path: '/srv/oct/prescreve_mais',
-    default_branch: 'main',
-    project_type: 'python_api_and_frontend',
-    primary_language: 'Python/TypeScript',
-    environment_policy_summary: 'GitHub e o historico compartilhado. Oct e o plano operacional. DLP e auditoria/laboratorio.',
-    clone_topology_markdown: '- GitHub: historico compartilhado.\\n- Oct: plano operacional.\\n- DLP: auditoria/laboratorio.',
-    lint: ['poetry run ruff check app tests', 'cd frontend && npm run lint'],
-    test: ['bash scripts/run_epic1_pr_gate.sh', 'cd frontend && npm run test:run'],
-    build: ['cd frontend && npm run build', 'docker compose config'],
-    smoke: [],
-    test_quick: 'cd frontend && npm run test:run',
-    test_full: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run test:run',
-    test_build: 'poetry run ruff check app tests && bash scripts/run_epic1_pr_gate.sh && cd frontend && npm run build && docker compose config',
-    l2_areas: ['Vidaas/IntegraICP', 'dados sensiveis', 'auth', 'banco', 'producao']
   }
 };
 
@@ -338,6 +298,10 @@ async function update(args) {
   if (fs.existsSync(loopSource)) {
     copyDir(loopSource, path.join(vendor, 'loop'));
   }
+  const guidesSource = path.join(WSD_ROOT, 'templates', 'local-wsd', 'guides');
+  if (fs.existsSync(guidesSource)) {
+    copyDir(guidesSource, path.join(vendor, 'guides'));
+  }
 
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
@@ -346,6 +310,8 @@ async function update(args) {
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.cjs'), 0o755);
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-report.cjs'), path.join(vendor, 'bin', 'wsd-report.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-report.cjs'), 0o755);
 
   config.version = VERSION;
   config.updated_at = new Date().toISOString();
@@ -362,7 +328,7 @@ async function update(args) {
   if (modules.party_mode !== false) refreshed.push('party-mode');
   refreshed.push('loop');
   const ensured = [];
-  if (settings.TOOLS.includes('codex') || settings.TOOLS.includes('both')) ensured.push('.agents/skills', '.codex/skills');
+  if (settings.TOOLS.includes('codex') || settings.TOOLS.includes('both')) ensured.push('.agents/skills');
   if (settings.TOOLS.includes('claude-code') || settings.TOOLS.includes('both')) ensured.push('.claude/commands', '+wsd/hooks');
   console.log('');
   console.log(`WSD updated: ${prevVersion} -> ${VERSION}`);
@@ -614,6 +580,10 @@ function installVendorTree(directory, settings) {
   if (fs.existsSync(loopSource)) {
     copyDir(loopSource, path.join(vendor, 'loop'));
   }
+  const guidesSource = path.join(WSD_ROOT, 'templates', 'local-wsd', 'guides');
+  if (fs.existsSync(guidesSource)) {
+    copyDir(guidesSource, path.join(vendor, 'guides'));
+  }
   ensureDir(path.join(vendor, 'bin'));
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd'), path.join(vendor, 'bin', 'wsd'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd'), 0o755);
@@ -621,6 +591,8 @@ function installVendorTree(directory, settings) {
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-validate-context.cjs'), 0o755);
   copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-snapshot.cjs'), path.join(vendor, 'bin', 'wsd-snapshot.cjs'));
   fs.chmodSync(path.join(vendor, 'bin', 'wsd-snapshot.cjs'), 0o755);
+  copyFile(path.join(WSD_ROOT, 'templates', 'local-wsd', 'bin', 'wsd-report.cjs'), path.join(vendor, 'bin', 'wsd-report.cjs'));
+  fs.chmodSync(path.join(vendor, 'bin', 'wsd-report.cjs'), 0o755);
   fs.writeFileSync(path.join(vendor, 'config.json'), JSON.stringify({
     schema: 'wsd/local-config/v1',
     version: VERSION,
@@ -652,18 +624,13 @@ function renderRepoTemplates(directory, settings, force) {
 function installCodexSkills(directory, settings, force) {
   if (!settings.TOOLS.includes('codex') && !settings.TOOLS.includes('both')) return;
   const sourceRoot = path.join(WSD_ROOT, 'templates', 'codex-skills');
-  const targetRoots = [
-    path.join(directory, '.agents', 'skills'),
-    path.join(directory, '.codex', 'skills')
-  ];
-  for (const targetRoot of targetRoots) {
-    for (const src of walkFiles(sourceRoot)) {
-      const rel = path.relative(sourceRoot, src);
-      const dest = path.join(targetRoot, rel);
-      if (fs.existsSync(dest) && !force) continue;
-      ensureDir(path.dirname(dest));
-      fs.writeFileSync(dest, render(fs.readFileSync(src, 'utf8'), settings));
-    }
+  const targetRoot = path.join(directory, '.agents', 'skills');
+  for (const src of walkFiles(sourceRoot)) {
+    const rel = path.relative(sourceRoot, src);
+    const dest = path.join(targetRoot, rel);
+    if (fs.existsSync(dest) && !force) continue;
+    ensureDir(path.dirname(dest));
+    fs.writeFileSync(dest, render(fs.readFileSync(src, 'utf8'), settings));
   }
 }
 
@@ -812,7 +779,7 @@ function generateInitialSnapshot(directory) {
 
 function appendLovableGitignore(directory) {
   // Lovable scaffold é Bun-puro. Presença de package-lock.json é causa raiz
-  // do "Preview travado" (ver docs_lovable/r.2.11_lovable.md). Garantimos via
+  // do "Preview travado" (ver archive/docs_lovable/r.2.11_lovable.md). Garantimos via
   // .gitignore que `npm install` acidental não promova o lockfile ao repo.
   const gitignorePath = path.join(directory, '.gitignore');
   const entries = ['package-lock.json'];

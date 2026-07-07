@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Testa aderência de agente pós-install (v0.5.0 lean-core):
+# AGENTS.md lean com WSD Bootstrap + Intenção → Ação, skills em .agents/skills
+# (sem espelho .codex), guias on-demand em +wsd/guides e brief via wsd-report.cjs.
+
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
 tmpdir="$(mktemp -d)"
-codex_home="$(mktemp -d)"
-prompt_out=""
-dry_out=""
-start_out=""
-doctor_out=""
-shortcuts_out=""
-trap 'rm -rf "$tmpdir" "$codex_home" "${prompt_out:-}" "${dry_out:-}" "${start_out:-}" "${doctor_out:-}" "${shortcuts_out:-}"' EXIT
+start_out="$(mktemp)"
+doctor_out="$(mktemp)"
+trap 'rm -rf "$tmpdir" "$start_out" "$doctor_out"' EXIT
 
 node bin/wsd-method.js install \
   --directory "$tmpdir" \
@@ -24,56 +24,48 @@ node bin/wsd-method.js install \
 test -x "$tmpdir/+wsd/bin/wsd"
 test -f "$tmpdir/.agents/skills/wsd/SKILL.md"
 test -f "$tmpdir/.agents/skills/wsd-loop/SKILL.md"
-test -f "$tmpdir/.agents/skills/wsd-idea/SKILL.md"
-grep -q "name: wsd-idea" "$tmpdir/.agents/skills/wsd-idea/SKILL.md"
-test -f "$tmpdir/.agents/skills/wsd-concern/SKILL.md"
-grep -q "name: wsd-concern" "$tmpdir/.agents/skills/wsd-concern/SKILL.md"
-test -f "$tmpdir/.codex/skills/wsd-loop/SKILL.md"
-test -f "$tmpdir/.codex/skills/wsd-idea/SKILL.md"
-test -f "$tmpdir/.codex/skills/wsd-concern/SKILL.md"
-test -f "$tmpdir/+wsd/templates/codex-prompts/loop.md"
-grep -q "WSD Codex Bootstrap" "$tmpdir/AGENTS.md"
-grep -q "codex-prompt" "$tmpdir/AGENTS.md"
+test ! -d "$tmpdir/.codex"
 
-start_out="$(mktemp)"
-prompt_out="$(mktemp)"
-dry_out="$(mktemp)"
-doctor_out="$(mktemp)"
-shortcuts_out="$(mktemp)"
+# AGENTS.md lean: bootstrap, intenção→ação, full-auto, guias, limite de linhas
+grep -q "WSD Bootstrap" "$tmpdir/AGENTS.md"
+grep -q "Intenção → Ação" "$tmpdir/AGENTS.md"
+grep -q "full_auto" "$tmpdir/AGENTS.md"
+grep -q "+wsd/guides/" "$tmpdir/AGENTS.md"
+agents_lines="$(wc -l < "$tmpdir/AGENTS.md")"
+if [[ "$agents_lines" -gt 150 ]]; then
+  echo "FAIL: AGENTS.md gerado tem ${agents_lines} linhas (limite 150)" >&2
+  exit 1
+fi
 
+# Guias on-demand vendorizados
+for guide in git loop party sessao; do
+  test -f "$tmpdir/+wsd/guides/${guide}.md"
+done
+
+# Contexto full_auto
+node -e "const c=require(process.argv[1]); if(c.workflow.approval_mode!=='full_auto') process.exit(1)" "$tmpdir/+context.json"
+
+# Brief via engine Node
 "$tmpdir/+wsd/bin/wsd" start --brief >"$start_out"
 grep -q "WSD Start Brief" "$start_out"
 grep -q "context: present" "$start_out"
 grep -q "state: present" "$start_out"
+grep -q "concerns_active:" "$start_out"
 
-"$tmpdir/+wsd/bin/wsd" codex-prompt --task "implemente uma feature pequena" >"$prompt_out"
-grep -q "Use WSDD neste repositorio" "$prompt_out"
-grep -q "+context.json" "$prompt_out"
-grep -q "Classifique a tarefa como L0, L1 ou L2" "$prompt_out"
-grep -q "automation.loop.auto_use=false" "$prompt_out"
-
-"$tmpdir/+wsd/bin/wsd" loop auto on >/dev/null
-"$tmpdir/+wsd/bin/wsd" codex-prompt --task "implemente uma feature pequena" >"$prompt_out"
-grep -q "automation.loop.auto_use=true" "$prompt_out"
-grep -q "use WSD Loop automaticamente" "$prompt_out"
-
-"$tmpdir/+wsd/bin/wsd" codex --dry-run --feature sample-feature --task "corrija um bug" >"$dry_out"
-grep -q "Feature alvo: sample-feature" "$dry_out"
-grep -q "corrija um bug" "$dry_out"
-
+# Doctor reconhece o bootstrap novo e o report engine
 "$tmpdir/+wsd/bin/wsd" doctor >"$doctor_out"
-grep -q "ok: AGENTS.md WSD Codex Bootstrap" "$doctor_out"
+grep -q "ok: AGENTS.md WSD Bootstrap" "$doctor_out"
+grep -q "ok: +wsd/bin/wsd-report.cjs" "$doctor_out"
+grep -q "ok: +wsd/guides" "$doctor_out"
 
-CODEX_HOME="$codex_home" "$tmpdir/+wsd/bin/wsd" codex-shortcuts status >"$shortcuts_out"
-grep -q "missing: $codex_home/prompts/loop.md" "$shortcuts_out"
-CODEX_HOME="$codex_home" "$tmpdir/+wsd/bin/wsd" codex-shortcuts install >"$shortcuts_out"
-grep -q "PASS: Codex prompt instalado" "$shortcuts_out"
-test -f "$codex_home/prompts/loop.md"
-grep -q "WSD Codex Loop Shortcut" "$codex_home/prompts/loop.md"
-"$tmpdir/+wsd/bin/wsd" codex-shortcuts print | grep -q "WSD Codex Loop Shortcut"
-"$tmpdir/+wsd/bin/wsd" shortcuts shell | grep -q "wl()"
-
-if "$tmpdir/+wsd/bin/wsd" codex-prompt --mode invalid >/dev/null 2>&1; then
-  echo "FAIL: codex-prompt accepted invalid mode" >&2
+# Comandos aposentados devem falhar
+if "$tmpdir/+wsd/bin/wsd" codex-prompt --task "x" >/dev/null 2>&1; then
+  echo "FAIL: codex-prompt ainda existe" >&2
   exit 1
 fi
+if "$tmpdir/+wsd/bin/wsd" codex-shortcuts status >/dev/null 2>&1; then
+  echo "FAIL: codex-shortcuts ainda existe" >&2
+  exit 1
+fi
+
+echo "PASS: agent adherence install test"

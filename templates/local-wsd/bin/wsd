@@ -413,7 +413,7 @@ _loop_auto_use_status() {
   value="$(_loop_auto_use_value)"
   echo "automation.loop.auto_use=${value}"
   if [[ "$value" == "true" ]]; then
-    echo "WSD Loop auto-use: enabled for eligible L0/L1 work when AGENTS.md/codex-prompt are followed"
+    echo "WSD Loop auto-use: enabled for eligible L0/L1 work when AGENTS.md is followed"
   else
     echo "WSD Loop auto-use: disabled; loop runs only when explicitly requested"
   fi
@@ -924,377 +924,6 @@ _wsd_loop() {
   esac
 }
 
-_codex_usage() {
-  cat <<'USAGE'
-Usage:
-  ./+wsd/bin/wsd codex-prompt [--mode start|execute|plan|loop] [--feature <slug>] [--task <text>] [--brief] [text...]
-  ./+wsd/bin/wsd codex [--exec] [--dry-run] [--mode start|execute|plan|loop] [--feature <slug>] [--task <text>] [text...]
-
-Purpose:
-  Gera ou executa um prompt curto para Codex seguir WSDD sem o operador listar arquivos manualmente.
-
-Examples:
-  ./+wsd/bin/wsd codex-prompt --task "planeje e implemente login"
-  ./+wsd/bin/wsd codex --task "corrija o bug do checkout"
-  ./+wsd/bin/wsd codex --exec --feature checkout-loop
-USAGE
-}
-
-_codex_parse_args() {
-  _codex_mode="execute"
-  _codex_feature=""
-  _codex_task=""
-  _codex_brief=0
-  _codex_exec=0
-  _codex_dry_run=0
-
-  while [[ "$#" -gt 0 ]]; do
-    case "$1" in
-      --mode)
-        [[ -n "${2:-}" ]] || { echo "FAIL: --mode precisa de valor" >&2; return 1; }
-        _codex_mode="$2"
-        shift 2
-        ;;
-      --feature)
-        [[ -n "${2:-}" ]] || { echo "FAIL: --feature precisa de valor" >&2; return 1; }
-        _codex_feature="$2"
-        shift 2
-        ;;
-      --task)
-        [[ -n "${2:-}" ]] || { echo "FAIL: --task precisa de valor" >&2; return 1; }
-        _codex_task="${_codex_task}${_codex_task:+ }$2"
-        shift 2
-        ;;
-      --brief)
-        _codex_brief=1
-        shift
-        ;;
-      --exec)
-        _codex_exec=1
-        shift
-        ;;
-      --dry-run)
-        _codex_dry_run=1
-        shift
-        ;;
-      help|--help|-h)
-        _codex_usage
-        return 2
-        ;;
-      --)
-        shift
-        if [[ "$#" -gt 0 ]]; then
-          _codex_task="${_codex_task}${_codex_task:+ }$*"
-        fi
-        break
-        ;;
-      --*)
-        echo "FAIL: argumento desconhecido para codex: $1" >&2
-        _codex_usage >&2
-        return 1
-        ;;
-      *)
-        _codex_task="${_codex_task}${_codex_task:+ }$1"
-        shift
-        ;;
-    esac
-  done
-
-  case "$_codex_mode" in
-    start|execute|plan|loop) ;;
-    *)
-      echo "FAIL: --mode deve ser start, execute, plan ou loop" >&2
-      return 1
-      ;;
-  esac
-}
-
-_codex_make_prompt() {
-  local mode="$1"
-  local feature="$2"
-  local task="$3"
-  local brief="$4"
-  local auto_use
-  local auto_use_hint
-
-  auto_use="$(_loop_auto_use_value)"
-  if [[ "$auto_use" == "true" ]]; then
-    auto_use_hint="automation.loop.auto_use=true. Para tarefa L0/L1 elegivel, com spec aprovada e worktree limpa, use WSD Loop automaticamente: rode ./+wsd/bin/wsd loop plan --feature <slug> quando precisar planejar, e ./+wsd/bin/wsd loop once --feature <slug> para gerar o prompt de iteracao antes de executar. Se este comando foi chamado com --exec e --feature, o launcher pode usar loop run com Codex exec."
-  else
-    auto_use_hint="automation.loop.auto_use=false. Use WSD Loop apenas quando o operador pedir ou quando voce propuser explicitamente."
-  fi
-
-  if [[ "$brief" == "1" ]]; then
-    cat <<PROMPT
-Use WSDD neste repositorio. Siga AGENTS.md, leia +context.json e +specs/project/STATE.md, classifique risco L0/L1/L2, use spec/tasks quando necessario, edite apenas paths permitidos e valide antes de finalizar.
-${auto_use_hint}
-Modo: ${mode}
-Feature: ${feature:-n/a}
-Tarefa: ${task:-ler o projeto, diagnosticar estado WSD e propor proximo passo seguro}
-PROMPT
-    return
-  fi
-
-  cat <<PROMPT
-Use WSDD neste repositorio.
-
-Bootstrap obrigatorio:
-- Siga AGENTS.md. O Codex normalmente carrega AGENTS.md ao iniciar na pasta; trate-o como contrato ativo.
-- Antes de editar, leia +context.json e respeite permissions.write_paths, permissions.forbidden_paths e secrets_policy.
-- Consulte +specs/project/STATE.md. Se +specs/HANDOFF.md existir, considere a continuidade da sessao anterior.
-- Se existir, rode ./+wsd/bin/wsd start --brief para obter estado operacional compacto.
-- Classifique a tarefa como L0, L1 ou L2 antes de executar.
-- L1/L2 exigem spec aprovada em +specs/features/<slug>/spec.md; L2 exige aprovacao humana explicita e plano de rollback.
-- Politica Ralph/WSD Loop: ${auto_use_hint}
-- Para ideias fora do escopo, registre em +specs/project/STATE.md ou +specs/project/IDEAS.md em vez de implementar.
-- Antes de finalizar mudancas relevantes, rode git diff --check e ./+wsd/bin/wsd check ou bash scripts/wsd_check.sh --risk L0 .
-- Nunca use git add ., reset, clean, stash, merge, rebase, pull ou troca de branch para esconder estado local sem instrucao explicita. Excecao: ./+wsd/bin/wsd finish pode fazer staging/commit automatico depois dos gates.
-
-Modo solicitado: ${mode}
-Feature alvo: ${feature:-n/a}
-
-Tarefa:
-${task:-Ler o projeto, diagnosticar estado WSD e propor o proximo passo seguro.}
-
-Resposta esperada:
-- estado inicial relevante;
-- risco classificado;
-- arquivos/specs usados;
-- alteracoes feitas ou plano proposto;
-- validacoes executadas e resultado.
-PROMPT
-}
-
-_wsd_codex_prompt() {
-  _codex_parse_args "$@" || {
-    local status=$?
-    [[ "$status" -eq 2 ]] && return 0
-    return "$status"
-  }
-  _codex_make_prompt "$_codex_mode" "$_codex_feature" "$_codex_task" "$_codex_brief"
-}
-
-_wsd_codex() {
-  local prompt
-  local auto_use
-  local agent_cmd
-
-  _codex_parse_args "$@" || {
-    local status=$?
-    [[ "$status" -eq 2 ]] && return 0
-    return "$status"
-  }
-
-  prompt="$(_codex_make_prompt "$_codex_mode" "$_codex_feature" "$_codex_task" "$_codex_brief")"
-
-  if [[ "$_codex_dry_run" == "1" ]]; then
-    printf "%s\n" "$prompt"
-    return 0
-  fi
-
-  command -v codex >/dev/null 2>&1 || {
-    echo "FAIL: codex CLI nao encontrado no PATH" >&2
-    echo "Use './+wsd/bin/wsd codex-prompt ...' e cole o prompt manualmente." >&2
-    return 1
-  }
-
-  auto_use="$(_loop_auto_use_value)"
-  if [[ "$auto_use" == "true" && "$_codex_exec" == "1" && -n "$_codex_feature" ]]; then
-    echo "== WSD Codex Auto Loop =="
-    echo "automation.loop.auto_use=true; executando WSD Loop para feature ${_codex_feature}"
-    agent_cmd='codex exec -C "$PWD" "$(cat "$WSD_LOOP_PROMPT")"'
-    _wsd_loop run --feature "$_codex_feature" --agent-cmd "$agent_cmd"
-    return
-  fi
-
-  if [[ "$_codex_exec" == "1" ]]; then
-    codex exec -C "$project_root" "$prompt"
-  else
-    codex --cd "$project_root" "$prompt"
-  fi
-}
-
-_codex_shortcuts_usage() {
-  cat <<'USAGE'
-Usage: ./+wsd/bin/wsd codex-shortcuts <status|install|uninstall|print> [--force]
-
-Purpose:
-  Gerencia prompts globais opcionais do Codex para atalhos WSD.
-
-Notes:
-  Codex CLI usa prompts customizados como /prompts:<nome>. Para WSD Loop,
-  o atalho opcional fica como /prompts:loop status, nao como /loop status.
-  Para workflow compartilhado no repo, prefira a skill wsd-loop em .agents/skills.
-USAGE
-}
-
-_codex_shortcuts_prompt_content() {
-  if [[ -f +wsd/templates/codex-prompts/loop.md ]]; then
-    cat +wsd/templates/codex-prompts/loop.md
-    return
-  fi
-
-  cat <<'PROMPT'
----
-description: WSD Codex Loop Shortcut: status, auto on/off, plan, once, run
-argument-hint: "status | auto status|on|off | on | off | plan FEATURE | once FEATURE | run FEATURE"
----
-
-# WSD Codex Loop Shortcut
-
-Use WSDD in this repository and interpret `$ARGUMENTS` as a short WSD Loop request.
-
-Valid mappings:
-
-- `status` -> run `./+wsd/bin/wsd loop status`
-- `auto status` -> run `./+wsd/bin/wsd loop auto status`
-- `auto on` or `on` -> run `./+wsd/bin/wsd loop auto on`
-- `auto off` or `off` -> run `./+wsd/bin/wsd loop auto off`
-- `plan FEATURE` -> run `./+wsd/bin/wsd loop plan --feature FEATURE`
-- `once FEATURE` -> run `./+wsd/bin/wsd loop once --feature FEATURE`
-- `run FEATURE` -> only run after checking `+context.json`, approved spec, clean-worktree requirements, and L2 approval policy.
-
-If `$ARGUMENTS` is empty, show current loop status and the available mappings.
-PROMPT
-}
-
-_wsd_codex_shortcuts() {
-  local action="${1:-status}"
-  local force=0
-  local codex_home="${CODEX_HOME:-$HOME/.codex}"
-  local prompt_dir="$codex_home/prompts"
-  local prompt_file="$prompt_dir/loop.md"
-
-  shift || true
-  while [[ "$#" -gt 0 ]]; do
-    case "$1" in
-      --force)
-        force=1
-        shift
-        ;;
-      help|--help|-h)
-        _codex_shortcuts_usage
-        return 0
-        ;;
-      *)
-        echo "FAIL: argumento desconhecido para codex-shortcuts: $1" >&2
-        _codex_shortcuts_usage >&2
-        return 1
-        ;;
-    esac
-  done
-
-  case "$action" in
-    status)
-      echo "Codex skills repo-local:"
-      if [[ -f .agents/skills/wsd-loop/SKILL.md ]]; then
-        echo "ok: .agents/skills/wsd-loop/SKILL.md"
-      elif [[ -f .codex/skills/wsd-loop/SKILL.md ]]; then
-        echo "warn: .codex/skills/wsd-loop/SKILL.md presente; reinstale WSD para espelhar em .agents/skills"
-      else
-        echo "missing: wsd-loop skill"
-      fi
-      echo ""
-      echo "Codex custom prompt opcional:"
-      if [[ -f "$prompt_file" ]]; then
-        echo "ok: $prompt_file"
-      else
-        echo "missing: $prompt_file"
-      fi
-      echo ""
-      echo "Uso Codex recomendado:"
-      echo "  loop status"
-      echo "  loop auto on"
-      echo "  loop auto off"
-      echo "  /prompts:loop status   # apos: ./+wsd/bin/wsd codex-shortcuts install"
-      ;;
-    install)
-      if [[ -f "$prompt_file" && "$force" != "1" ]] && ! grep -q 'WSD Codex Loop Shortcut' "$prompt_file"; then
-        echo "FAIL: $prompt_file ja existe e nao parece ser prompt WSD. Use --force para sobrescrever." >&2
-        return 1
-      fi
-      mkdir -p "$prompt_dir"
-      _codex_shortcuts_prompt_content > "$prompt_file"
-      echo "PASS: Codex prompt instalado em $prompt_file"
-      echo "Reinicie o Codex CLI se o prompt nao aparecer."
-      echo "Uso: /prompts:loop status"
-      ;;
-    uninstall)
-      if [[ ! -f "$prompt_file" ]]; then
-        echo "PASS: $prompt_file ja ausente"
-      elif grep -q 'WSD Codex Loop Shortcut' "$prompt_file"; then
-        rm -f "$prompt_file"
-        echo "PASS: Codex prompt removido: $prompt_file"
-      else
-        echo "FAIL: $prompt_file existe e nao parece ser prompt WSD; remova manualmente se desejar." >&2
-        return 1
-      fi
-      ;;
-    print)
-      _codex_shortcuts_prompt_content
-      ;;
-    help|--help|-h)
-      _codex_shortcuts_usage
-      ;;
-    *)
-      echo "FAIL: acao desconhecida para codex-shortcuts: $action" >&2
-      _codex_shortcuts_usage >&2
-      return 1
-      ;;
-  esac
-}
-
-_shortcuts_usage() {
-  cat <<'USAGE'
-Usage: ./+wsd/bin/wsd shortcuts <status|shell>
-
-Purpose:
-  Mostra atalhos curtos para evitar digitar ./+wsd/bin/wsd.
-
-Examples:
-  eval "$(./+wsd/bin/wsd shortcuts shell)"
-  wsd loop auto status
-  wl status
-USAGE
-}
-
-_wsd_shortcuts() {
-  local action="${1:-status}"
-  case "$action" in
-    status)
-      echo "Atalhos disponiveis:"
-      echo "  Codex: use a skill wsd-loop com pedidos como 'loop status' ou instale /prompts:loop via codex-shortcuts"
-      echo "  Claude Code: use /loop status quando instalado com --tools claude-code"
-      echo "  Shell: eval \"\$(./+wsd/bin/wsd shortcuts shell)\" e depois use 'wsd ...' ou 'wl ...'"
-      ;;
-    shell)
-      cat <<'SHELL'
-wsd() {
-  local root
-  root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-  if [ -x "$root/+wsd/bin/wsd" ]; then
-    (cd "$root" && ./+wsd/bin/wsd "$@")
-  else
-    printf '%s\n' "WSD not found from $PWD" >&2
-    return 127
-  fi
-}
-wl() {
-  wsd loop "$@"
-}
-SHELL
-      ;;
-    help|--help|-h)
-      _shortcuts_usage
-      ;;
-    *)
-      echo "FAIL: acao desconhecida para shortcuts: $action" >&2
-      _shortcuts_usage >&2
-      return 1
-      ;;
-  esac
-}
-
 _finish_usage() {
   cat <<'USAGE'
 Usage: ./+wsd/bin/wsd finish [options]
@@ -1505,17 +1134,17 @@ USAGE
 }
 
 _wsd_relatorio() {
-  local output=""
+  local args=()
 
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
       --save)
-        output="+specs/RELATORIO.md"
+        args+=("--save")
         shift
         ;;
       --output)
         [[ -n "${2-}" ]] || { echo "FAIL: --output precisa de valor" >&2; return 1; }
-        output="$2"
+        args+=("--output" "$2")
         shift 2
         ;;
       help|--help|-h)
@@ -1530,350 +1159,9 @@ _wsd_relatorio() {
     esac
   done
 
-  WSD_RELATORIO_OUTPUT="$output" node - <<'NODE'
-const fs = require('fs');
-const path = require('path');
-const cp = require('child_process');
-
-const root = process.cwd();
-const outputPath = process.env.WSD_RELATORIO_OUTPUT || '';
-
-function read(file) {
-  try {
-    return fs.readFileSync(path.join(root, file), 'utf8');
-  } catch (_error) {
-    return '';
-  }
-}
-
-function readJson(file) {
-  try {
-    return JSON.parse(read(file));
-  } catch (_error) {
-    return {};
-  }
-}
-
-function git(args, fallback = '') {
-  try {
-    return cp.execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-  } catch (_error) {
-    return fallback;
-  }
-}
-
-function strip(value) {
-  return String(value || '')
-    .replace(/`/g, '')
-    .replace(/\*\*/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function normalizeHeading(value) {
-  return strip(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-}
-
-function section(markdown, heading) {
-  const lines = markdown.split(/\r?\n/);
-  const wanted = normalizeHeading(heading);
-  const start = lines.findIndex((line) => normalizeHeading(line.trim()) === wanted);
-  if (start === -1) return '';
-  const out = [];
-  for (let i = start + 1; i < lines.length; i += 1) {
-    if (/^##\s+/.test(lines[i])) break;
-    out.push(lines[i]);
-  }
-  return out.join('\n');
-}
-
-function parseTableRows(markdown) {
-  return markdown
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('|') && line.endsWith('|'))
-    .filter((line) => !/^\|\s*-{2,}/.test(line))
-    .filter((line) => !line.includes('---'))
-    .map((line) => line.slice(1, -1).split('|').map((cell) => strip(cell)))
-    .filter((cells) => cells.some((cell) => cell && cell !== '—'))
-    .filter((cells) => !cells.some((cell) => cell.startsWith('_(')));
-}
-
-function tableRows(file, heading) {
-  const markdown = read(file);
-  if (!markdown) return [];
-  return parseTableRows(section(markdown, heading));
-}
-
-function checkboxItems(file, heading) {
-  const markdown = read(file);
-  if (!markdown) return [];
-  return section(markdown, heading)
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => /^- \[ \]/.test(line))
-    .map((line) => strip(line.replace(/^- \[ \]\s*/, '')));
-}
-
-function frontmatter(file) {
-  const content = read(file);
-  if (!content.startsWith('---')) return {};
-  const end = content.indexOf('\n---', 3);
-  if (end === -1) return {};
-  const data = {};
-  content.slice(3, end).split(/\r?\n/).forEach((line) => {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (match) data[match[1]] = strip(match[2]).replace(/^["']|["']$/g, '');
-  });
-  return data;
-}
-
-function listSpecs() {
-  const base = path.join(root, '+specs/features');
-  if (!fs.existsSync(base)) return [];
-  return fs.readdirSync(base, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => {
-      const specPath = `+specs/features/${entry.name}/spec.md`;
-      const tasksPath = `+specs/features/${entry.name}/tasks.md`;
-      const meta = frontmatter(specPath);
-      const tasks = read(tasksPath);
-      const openTasks = (tasks.match(/^- \[ \]/gm) || []).length;
-      return {
-        slug: entry.name,
-        title: meta.title || entry.name,
-        status: strip(meta.status || 'unknown'),
-        risk: strip(meta.risk || 'unknown'),
-        specPath,
-        tasksPath: fs.existsSync(path.join(root, tasksPath)) ? tasksPath : '',
-        openTasks,
-      };
-    })
-    .sort((a, b) => a.slug.localeCompare(b.slug));
-}
-
-function countIdeaIds() {
-  const ideas = read('+specs/project/IDEAS.md');
-  return [...ideas.matchAll(/^##\s+(IDEA-[0-9]+)/gm)].map((match) => match[1]);
-}
-
-function rowStatus(row, index) {
-  return strip(row[index] || '').toLowerCase();
-}
-
-function isClosedStatus(status) {
-  return ['done', 'resolved', 'accepted-risk', 'obsolete', 'implementada', 'descartada', 'discarded'].includes(status);
-}
-
-function bulletRows(rows, formatter, emptyText, limit = 10) {
-  const visible = rows.slice(0, limit);
-  if (!visible.length) return [`- ${emptyText}`];
-  const out = visible.map(formatter);
-  if (rows.length > limit) out.push(`- ... mais ${rows.length - limit} item(ns) omitido(s)`);
-  return out;
-}
-
-function mdList(items, emptyText, limit = 10) {
-  if (!items.length) return [`- ${emptyText}`];
-  const out = items.slice(0, limit).map((item) => `- ${item}`);
-  if (items.length > limit) out.push(`- ... mais ${items.length - limit} item(ns) omitido(s)`);
-  return out;
-}
-
-const context = readJson('+context.json');
-const wsdConfig = readJson('+wsd/config.json');
-const projectName = context.project?.name || path.basename(root);
-const projectType = context.project?.type || 'unknown';
-const defaultBranch = context.repository?.default_branch || 'main';
-const now = new Date();
-const generatedAt = now.toISOString().replace('T', ' ').replace(/\..+$/, ' UTC');
-
-const branch = git(['rev-parse', '--abbrev-ref', 'HEAD'], 'unknown');
-const upstream = git(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], 'missing');
-const statusShort = git(['status', '--short', '--untracked-files=all'], '');
-const lastCommit = git(['log', '-1', '--pretty=%h - %s (%ad)', '--date=short'], '(no commits)');
-const remote = git(['remote', 'get-url', 'origin'], 'missing');
-const aheadBehind = git(['status', '--short', '--branch'], '').split(/\r?\n/)[0] || 'unknown';
-
-const roadmapActive = tableRows('+specs/project/ROADMAP.md', '## Features Ativas')
-  .filter((row) => row[0] && row[0] !== 'Feature');
-const roadmapBacklog = tableRows('+specs/project/ROADMAP.md', '## Backlog')
-  .filter((row) => row[0] && row[0] !== 'Feature');
-const roadmapDone = tableRows('+specs/project/ROADMAP.md', '## Concluídas')
-  .filter((row) => row[0] && row[0] !== 'Feature');
-const inProgressRoadmap = roadmapActive.filter((row) => rowStatus(row, 1) === 'in-progress');
-const plannedRoadmap = roadmapActive.filter((row) => ['planned', 'specified', 'blocked'].includes(rowStatus(row, 1)));
-
-const specs = listSpecs();
-const openSpecs = specs.filter((spec) => !isClosedStatus(spec.status));
-const specsWithOpenTasks = specs.filter((spec) => spec.openTasks > 0 && !isClosedStatus(spec.status));
-
-const blockers = tableRows('+specs/project/STATE.md', '## Bloqueadores Ativos')
-  .filter((row) => row[1] && row[1] !== 'Bloqueador' && !isClosedStatus(rowStatus(row, 3)));
-const todos = checkboxItems('+specs/project/STATE.md', '## Todos Ativos');
-
-const ideaIds = countIdeaIds();
-const ideaPipeline = tableRows('+specs/project/IDEAS_PIPELINE.md', '## Pipeline')
-  .filter((row) => /^IDEA-[0-9]+$/.test(row[0] || ''));
-const activeIdeas = ideaPipeline.filter((row) => !isClosedStatus(rowStatus(row, 2)));
-const ideaPipelineIds = new Set(ideaPipeline.map((row) => row[0]));
-const ideasWithoutPipeline = ideaIds.filter((id) => !ideaPipelineIds.has(id));
-
-const concernRows = tableRows('+specs/project/CONCERNS.md', '## Preocupacoes Ativas')
-  .filter((row) => /^CONC-[0-9]+$/.test(row[0] || ''));
-const activeConcerns = concernRows.filter((row) => !isClosedStatus(rowStatus(row, 4)));
-const concernPipeline = tableRows('+specs/project/CONCERNS_PIPELINE.md', '## Pipeline')
-  .filter((row) => /^CONC-[0-9]+$/.test(row[0] || ''));
-const activeConcernPipeline = concernPipeline.filter((row) => !isClosedStatus(rowStatus(row, 2)));
-const concernPipelineIds = new Set(concernPipeline.map((row) => row[0]));
-const concernsWithoutPipeline = activeConcerns.map((row) => row[0]).filter((id) => !concernPipelineIds.has(id));
-
-const docs = {
-  context: fs.existsSync(path.join(root, '+context.json')),
-  agents: fs.existsSync(path.join(root, 'AGENTS.md')),
-  handoff: fs.existsSync(path.join(root, '+specs/HANDOFF.md')),
-  roadmap: fs.existsSync(path.join(root, '+specs/project/ROADMAP.md')),
-  ideas: fs.existsSync(path.join(root, '+specs/project/IDEAS.md')),
-  ideasPipeline: fs.existsSync(path.join(root, '+specs/project/IDEAS_PIPELINE.md')),
-  concerns: fs.existsSync(path.join(root, '+specs/project/CONCERNS.md')),
-  concernsPipeline: fs.existsSync(path.join(root, '+specs/project/CONCERNS_PIPELINE.md')),
-};
-
-const attention = [];
-if (statusShort) attention.push('worktree com alterações pendentes');
-if (blockers.length) attention.push(`${blockers.length} bloqueador(es) ativo(s)`);
-if (activeConcerns.length) attention.push(`${activeConcerns.length} concern(s) ativa(s)`);
-if (concernsWithoutPipeline.length) attention.push(`${concernsWithoutPipeline.length} concern(s) sem pipeline`);
-if (ideasWithoutPipeline.length) attention.push(`${ideasWithoutPipeline.length} ideia(s) sem pipeline`);
-if (inProgressRoadmap.length || specsWithOpenTasks.length) attention.push('implementação em andamento detectada');
-const overall = attention.length ? `atenção: ${attention.join('; ')}` : 'estável: sem sinais críticos nos artefatos WSD';
-
-let suggestion;
-if (statusShort) {
-  suggestion = 'Finalizar ou registrar as alterações pendentes antes de iniciar nova frente. Se estiver tudo aprovado, rode `./+wsd/bin/wsd finish`.';
-} else if (blockers.length) {
-  suggestion = `Resolver ou reclassificar o bloqueador mais antigo: ${blockers[0][1]}.`;
-} else if (concernsWithoutPipeline.length) {
-  suggestion = `Criar plano no CONCERNS_PIPELINE.md para ${concernsWithoutPipeline[0]} antes de mexer em novas features.`;
-} else if (activeConcernPipeline.length) {
-  suggestion = `Avançar a concern ${activeConcernPipeline[0][0]} para o próximo passo: ${activeConcernPipeline[0][5] || activeConcernPipeline[0][4] || 'triagem/mitigação'}.`;
-} else if (inProgressRoadmap.length) {
-  suggestion = `Concluir a feature em andamento "${inProgressRoadmap[0][0]}" antes de puxar outro item.`;
-} else if (specsWithOpenTasks.length) {
-  suggestion = `Executar as tarefas abertas da spec ${specsWithOpenTasks[0].specPath}.`;
-} else if (plannedRoadmap.length) {
-  suggestion = `Promover o primeiro item ativo do ROADMAP: "${plannedRoadmap[0][0]}".`;
-} else if (activeIdeas.length) {
-  suggestion = `Triar a ideia ${activeIdeas[0][0]} e decidir se vira spec, roadmap ou descarte.`;
-} else if (roadmapBacklog.length) {
-  suggestion = `Escolher o primeiro item do backlog ("${roadmapBacklog[0][0]}") e criar spec se for L1/L2.`;
-} else {
-  suggestion = 'Projeto sem fila operacional clara. A próxima ação recomendada é revisar objetivos e alimentar ROADMAP, IDEAS ou CONCERNS com o próximo trabalho real.';
-}
-
-const planItems = [];
-activeConcernPipeline.slice(0, 5).forEach((row) => {
-  planItems.push(`Concern ${row[0]} (${row[2] || 'status n/a'}): ${row[5] || row[4] || row[1]}`);
-});
-inProgressRoadmap.slice(0, 5).forEach((row) => {
-  planItems.push(`Feature em andamento: ${row[0]} (${row[3] || 'spec não informada'})`);
-});
-plannedRoadmap.slice(0, 5).forEach((row) => {
-  planItems.push(`Feature ${row[1] || 'planejada'}: ${row[0]} (${row[3] || 'sem spec'})`);
-});
-activeIdeas.slice(0, 5).forEach((row) => {
-  planItems.push(`Ideia ${row[0]} (${row[2]}): ${row[3] || 'definir próxima etapa'}`);
-});
-
-const report = [
-  `# Relatorio WSD — ${projectName}`,
-  '',
-  `Gerado em: ${generatedAt}`,
-  '',
-  '## Resumo Executivo',
-  '',
-  `- Estado geral: ${overall}`,
-  `- Implementação pela metade: ${inProgressRoadmap.length || specsWithOpenTasks.length ? 'sim' : 'não'}`,
-  `- Plano programado: ${planItems.length ? `${planItems.length} item(ns) inferidos em ordem WSD` : 'não há fila clara registrada'}`,
-  `- Ideias: ${ideaIds.length} registrada(s), ${activeIdeas.length} ativa(s) no pipeline, ${ideasWithoutPipeline.length} sem pipeline`,
-  `- Concerns: ${activeConcerns.length} ativa(s), ${activeConcernPipeline.length} ativa(s) no pipeline, ${concernsWithoutPipeline.length} sem pipeline`,
-  `- Sugestão do agente: ${suggestion}`,
-  '',
-  '## Estado Atual',
-  '',
-  `- Projeto: ${projectName}`,
-  `- Tipo: ${projectType}`,
-  `- Path: ${root}`,
-  `- Branch: ${branch}`,
-  `- Upstream: ${upstream}`,
-  `- Default branch: ${defaultBranch}`,
-  `- Remote: ${remote}`,
-  `- Git: ${aheadBehind}`,
-  `- Worktree: ${statusShort ? 'dirty' : 'clean'}`,
-  `- Último commit: ${lastCommit}`,
-  `- WSD instalado: ${wsdConfig.version || 'unknown'}`,
-  `- HANDOFF: ${docs.handoff ? '+specs/HANDOFF.md presente' : 'ausente'}`,
-  '',
-  '## Artefatos WSD',
-  '',
-  `- AGENTS.md: ${docs.agents ? 'presente' : 'ausente'}`,
-  `- +context.json: ${docs.context ? 'presente' : 'ausente'}`,
-  `- ROADMAP.md: ${docs.roadmap ? 'presente' : 'ausente'}`,
-  `- IDEAS.md / IDEAS_PIPELINE.md: ${docs.ideas ? 'presente' : 'ausente'} / ${docs.ideasPipeline ? 'presente' : 'ausente'}`,
-  `- CONCERNS.md / CONCERNS_PIPELINE.md: ${docs.concerns ? 'presente' : 'ausente'} / ${docs.concernsPipeline ? 'presente' : 'ausente'}`,
-  '',
-  '## Implementações Em Desenvolvimento',
-  '',
-  ...bulletRows(inProgressRoadmap, (row) => `- ${row[0]} — status ${row[1]}, prioridade ${row[2] || 'n/a'}, spec ${row[3] || 'n/a'}`, 'nenhuma feature `in-progress` no ROADMAP'),
-  '',
-  '### Specs Abertas',
-  '',
-  ...bulletRows(openSpecs, (spec) => `- ${spec.slug} — status ${spec.status}, risco ${spec.risk}, tarefas abertas ${spec.openTasks}`, 'nenhuma spec aberta detectada'),
-  '',
-  '## Plano Programado',
-  '',
-  ...mdList(planItems, 'nenhum plano programado claro em ROADMAP, specs, concerns ou ideias'),
-  '',
-  '## Bloqueadores e Todos Ativos',
-  '',
-  ...bulletRows(blockers, (row) => `- ${row[0]} — ${row[1]} (impacto: ${row[2] || 'n/a'}, status: ${row[3] || 'n/a'})`, 'nenhum bloqueador ativo registrado'),
-  '',
-  ...mdList(todos, 'nenhum todo ativo em STATE.md'),
-  '',
-  '## Ideias',
-  '',
-  ...bulletRows(activeIdeas, (row) => `- ${row[0]} — ${row[1]} (status: ${row[2]}, etapa: ${row[3] || 'n/a'}, artefato: ${row[4] || 'n/a'})`, 'nenhuma ideia ativa no pipeline'),
-  '',
-  ...mdList(ideasWithoutPipeline.map((id) => `${id} sem linha em IDEAS_PIPELINE.md`), 'pipeline de ideias alinhado com as ideias registradas'),
-  '',
-  '## Concerns',
-  '',
-  ...bulletRows(activeConcerns, (row) => `- ${row[0]} — ${row[1]} (severidade: ${row[3] || 'n/a'}, status: ${row[4] || 'n/a'}, área: ${row[5] || 'n/a'})`, 'nenhuma concern ativa registrada'),
-  '',
-  '### Pipeline de Concerns',
-  '',
-  ...bulletRows(activeConcernPipeline, (row) => `- ${row[0]} — status ${row[2] || 'n/a'}, etapa ${row[3] || 'n/a'}, próximo passo: ${row[5] || 'n/a'}, evidência: ${row[6] || 'n/a'}`, 'nenhuma concern ativa no pipeline'),
-  '',
-  ...mdList(concernsWithoutPipeline.map((id) => `${id} sem linha em CONCERNS_PIPELINE.md`), 'pipeline de concerns alinhado com as concerns ativas'),
-  '',
-  '## Sugestão do Agente',
-  '',
-  suggestion,
-  '',
-].join('\n');
-
-if (outputPath) {
-  const targetPath = path.isAbsolute(outputPath) ? outputPath : path.join(root, outputPath);
-  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-  fs.writeFileSync(targetPath, `${report}\n`);
-  process.stdout.write(`PASS: relatorio WSD salvo em ${outputPath}\n`);
-} else {
-  process.stdout.write(`${report}\n`);
-}
-NODE
+  command -v node >/dev/null 2>&1 || { echo "FAIL: node é necessário para wsd relatorio" >&2; return 1; }
+  [[ -f +wsd/bin/wsd-report.cjs ]] || { echo "FAIL: +wsd/bin/wsd-report.cjs ausente — rode ./+wsd/bin/wsd update" >&2; return 1; }
+  node +wsd/bin/wsd-report.cjs report "${args[@]}"
 }
 
 _wsd_finish() {
@@ -1957,6 +1245,10 @@ _wsd_finish() {
     gate_pr="SKIPPED (gh ausente)"
   fi
 
+  if command -v node >/dev/null 2>&1 && [[ -f +wsd/bin/wsd-report.cjs ]]; then
+    node +wsd/bin/wsd-report.cjs bloat || true
+  fi
+
   _finish_state_prompts "$today"
 
   if [[ -f +wsd/bin/wsd-snapshot.cjs ]]; then
@@ -2019,30 +1311,23 @@ case "$command" in
       esac
     done
     if [[ "$_start_brief" == "1" ]]; then
-      echo "== WSD Start Brief =="
-      printf "path: %s\n" "$project_root"
-      printf "branch: %s\n" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-      printf "upstream: %s\n" "$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || echo missing)"
-      if [[ -n "$(git status --short 2>/dev/null)" ]]; then
-        echo "worktree: dirty"
+      if command -v node >/dev/null 2>&1 && [[ -f +wsd/bin/wsd-report.cjs ]]; then
+        node +wsd/bin/wsd-report.cjs brief
       else
-        echo "worktree: clean"
+        echo "== WSD Start Brief =="
+        printf "path: %s\n" "$project_root"
+        printf "branch: %s\n" "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+        if [[ -n "$(git status --short 2>/dev/null)" ]]; then
+          echo "worktree: dirty"
+        else
+          echo "worktree: clean"
+        fi
+        printf "wsd_version: %s\n" "$(_json_get +wsd/config.json version 2>/dev/null || echo unknown)"
+        [[ -f AGENTS.md ]] && echo "agents: present" || echo "agents: missing"
+        [[ -f +context.json ]] && echo "context: present" || echo "context: missing"
+        [[ -f +specs/project/STATE.md ]] && echo "state: present" || echo "state: missing"
+        echo "warn: node ausente — brief completo requer node"
       fi
-      printf "wsd_version: %s\n" "$(_json_get +wsd/config.json version 2>/dev/null || echo unknown)"
-      [[ -f AGENTS.md ]] && echo "agents: present" || echo "agents: missing"
-      [[ -f +context.json ]] && echo "context: present" || echo "context: missing"
-      [[ -f +specs/project/STATE.md ]] && echo "state: present" || echo "state: missing"
-      [[ -f +specs/project/CONCERNS.md ]] && echo "concerns: present" || echo "concerns: missing"
-      [[ -f +specs/project/CONCERNS_PIPELINE.md ]] && echo "concerns_pipeline: present" || echo "concerns_pipeline: missing"
-      if [[ -f +specs/project/CONCERNS_PIPELINE.md ]]; then
-        _concerns_active="$(grep -E '^\| \[?CONC-[0-9][0-9][0-9]' +specs/project/CONCERNS_PIPELINE.md 2>/dev/null | grep -Ev '`(resolved|accepted-risk|obsolete)`' | wc -l | tr -d ' ' || true)"
-        [[ -n "$_concerns_active" ]] || _concerns_active=0
-        printf "concerns_active: %s\n" "$_concerns_active"
-      fi
-      [[ -f +specs/HANDOFF.md ]] && echo "handoff: present" || echo "handoff: missing"
-      _features_count="$(find +specs/features -maxdepth 2 -type f -name 'spec.md' 2>/dev/null | wc -l | tr -d ' ' || true)"
-      [[ -n "$_features_count" ]] || _features_count=0
-      printf "features: %s\n" "$_features_count"
     else
       echo "== WSD Start =="
       git status --short --branch
@@ -2081,12 +1366,14 @@ case "$command" in
     test -f +wsd/docs/10_matriz_sincronizacao_notas.md && echo "ok: +wsd/docs/10_matriz_sincronizacao_notas.md" || echo "missing: +wsd/docs/10_matriz_sincronizacao_notas.md"
     test -f +wsd/schemas/context.schema.json && echo "ok: +wsd/schemas/context.schema.json" || echo "missing: +wsd/schemas/context.schema.json"
     test -x +wsd/bin/wsd-validate-context.cjs && echo "ok: +wsd/bin/wsd-validate-context.cjs" || echo "missing: +wsd/bin/wsd-validate-context.cjs"
+    test -f +wsd/bin/wsd-report.cjs && echo "ok: +wsd/bin/wsd-report.cjs" || echo "missing: +wsd/bin/wsd-report.cjs (rode ./+wsd/bin/wsd update)"
+    test -d +wsd/guides && echo "ok: +wsd/guides" || echo "missing: +wsd/guides (rode ./+wsd/bin/wsd update)"
     test -f AGENTS.md && echo "ok: AGENTS.md" || echo "missing: AGENTS.md"
     if [[ -f AGENTS.md ]]; then
-      if grep -q 'WSD Codex Bootstrap' AGENTS.md && grep -q 'codex-prompt' AGENTS.md && grep -q '+context.json' AGENTS.md; then
-        echo "ok: AGENTS.md WSD Codex Bootstrap"
+      if grep -q 'WSD Bootstrap' AGENTS.md && grep -q '+context.json' AGENTS.md; then
+        echo "ok: AGENTS.md WSD Bootstrap"
       else
-        echo "warn: AGENTS.md sem bloco WSD Codex Bootstrap atualizado"
+        echo "warn: AGENTS.md sem bloco WSD Bootstrap atualizado"
       fi
     fi
     test -f +context.json && echo "ok: +context.json" || echo "missing: +context.json"
@@ -2102,7 +1389,6 @@ case "$command" in
     command -v node >/dev/null && echo "ok: node" || echo "missing: node (schema validation will skip)"
     command -v python3 >/dev/null && echo "ok: python3" || echo "missing: python3"
     command -v gh >/dev/null && echo "ok: gh optional" || echo "missing: gh optional"
-    command -v codex >/dev/null && echo "ok: codex optional" || echo "missing: codex optional"
     echo "ok: git namespace available (doctor, preflight, pr-check)"
     if [[ -f +wsd/party-mode/agents-wsd.csv ]]; then
       echo "ok: party-mode instalado"
@@ -2403,28 +1689,15 @@ USAGE
   loop)
     _wsd_loop "$@"
     ;;
-  codex-prompt)
-    _wsd_codex_prompt "$@"
-    ;;
-  codex)
-    _wsd_codex "$@"
-    ;;
-  codex-shortcuts)
-    _wsd_codex_shortcuts "$@"
-    ;;
-  shortcuts)
-    _wsd_shortcuts "$@"
-    ;;
   help|--help|-h)
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop|codex-prompt|codex|codex-shortcuts|shortcuts"
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop"
     echo "       ./+wsd/bin/wsd version [--inventory|--scan] [--json] [--path <dir>] [--max-depth <n>]"
-    echo "       ./+wsd/bin/wsd loop plan|once|run|status|stop"
+    echo "       ./+wsd/bin/wsd loop plan|once|run|status|stop|auto"
     echo "       ./+wsd/bin/wsd relatorio [--save|--output <file>]"
-    echo "       ./+wsd/bin/wsd codex-prompt|codex [--task <text>] [--feature <slug>]"
     ;;
   *)
     echo "Unknown WSD command: $command" >&2
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop|codex-prompt|codex|codex-shortcuts|shortcuts" >&2
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop" >&2
     exit 1
     ;;
 esac

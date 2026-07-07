@@ -205,4 +205,9 @@ python3 -m json.tool +wsd/snapshot.json >/dev/null || fail "+wsd/snapshot.json i
 grep -q '"schema": "wsd/project-snapshot/v1"' +wsd/snapshot.json || fail "+wsd/snapshot.json schema mismatch"
 pass_step "+wsd/snapshot.json generated and valid"
 
+# Compactação de memória (warn-only): notas acima do limiar devem arquivar
+if command -v node >/dev/null 2>&1 && [[ -f "+wsd/bin/wsd-report.cjs" ]]; then
+  node +wsd/bin/wsd-report.cjs bloat || true
+fi
+
 echo "PASS: WSD check completed"

@@ -82,8 +82,7 @@
           "type": "string",
           "enum": ["read_only_env_vars", "denied", "vault_managed"]
         },
-        "max_runtime_seconds": { "type": "integer", "minimum": 1 },
-        "max_tokens_per_request": { "type": "integer", "minimum": 1 }
+        "max_runtime_seconds": { "type": "integer", "minimum": 1 }
       }
     },
     "workflow": {
@@ -92,7 +91,7 @@
       "properties": {
         "approval_mode": {
           "type": "string",
-          "enum": ["auto_for_l0_human_for_l2", "human_only", "auto_only"]
+          "enum": ["full_auto", "auto_for_l0_human_for_l2", "human_only", "auto_only"]
         },
         "branch_policy": {
           "type": "string",
@@ -108,7 +107,7 @@
         },
         "production_mutation_policy": {
           "type": "string",
-          "enum": ["forbidden_for_agents", "requires_human_approval"]
+          "enum": ["allowed_with_rollback", "forbidden_for_agents", "requires_human_approval"]
         }
       }
     },

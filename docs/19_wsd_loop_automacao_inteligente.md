@@ -16,6 +16,14 @@ otimizado_para_obsidian: true
 ---
 # 19 — WSD Loop: Automação Inteligente
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -23,17 +31,11 @@ otimizado_para_obsidian: true
 > [!abstract] Objetivo
 > Documentar o `wsd loop` e o Codex Adherence Pack, camadas do WSD `v0.4.0` criadas para reduzir aprovações e prompts manuais em tarefas L0/L1 sem remover gates, limites de risco e rastreabilidade.
 
-## 1. Atualizações
+## 1. 🔄 Atualizações
 
-- 15/06/2026 — Codex: Criação da nota `19` para a entrega `v0.4.0`, com comandos `wsd loop`, contrato `automation.loop`, gates e política de aprovação mínima.
-- 15/06/2026 — Codex: Inclusão do Codex Adherence Pack: `WSD Codex Bootstrap`, `start --brief`, `codex-prompt`, `codex` e `test:install-codex-adherence`.
-- 17/06/2026 — Codex: Inclusão dos atalhos `wsd-loop` para Codex, `/loop status` para Claude Code, `/prompts:loop` opcional no Codex CLI e comandos `codex-shortcuts`/`shortcuts`.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.3`: `wsd finish` fecha limpo após gates, reduzindo aprovações manuais no encerramento sem alterar o contrato do loop.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.4`: `wsd relatorio` oferece visão geral antes ou depois de loops sem alterar execução automática.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.5`: `wsd update` passa a propagar novos atalhos de agente em projetos existentes sem sobrescrever customizações.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.6`: `wsd relatorio` reconhece headings acentuados em português ao auditar concerns antes/depois do loop.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.7`: `start --brief` conta concerns ativas do pipeline corretamente antes de iniciar loops.
-- 21/06/2026 — Codex: Nota de compatibilidade `v0.4.8`: `wsd finish` roda auditor documental local mesmo quando o projeto não usa pasta raiz `docs/`.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
+
+[[#📑 Índice|⬆️ Voltar ao Índice]]
 
 ## 2. Modelo Mental
 
@@ -71,7 +73,6 @@ Defaults:
 
 - L0/L1 podem rodar com automação.
 - `auto_use=false` por padrão: o loop só roda quando pedido ou sugerido.
-- `auto_use=true`: agentes que seguem `AGENTS.md`/`codex-prompt` devem preferir WSD Loop automaticamente para tarefas L0/L1 elegíveis.
 - L2 fica bloqueado salvo `--human-approved` e inclusão explícita em `allowed_risks`.
 - Auto-commit é permitido depois dos gates.
 - Auto-push é desligado.
@@ -88,7 +89,6 @@ Defaults:
 ./+wsd/bin/wsd loop auto off
 ./+wsd/bin/wsd loop status
 ./+wsd/bin/wsd loop stop
-./+wsd/bin/wsd codex-shortcuts status
 ./+wsd/bin/wsd shortcuts status
 ```
 
@@ -136,27 +136,20 @@ O WSD Loop usa a mesma intuição operacional: agente em ciclo curto, com feedba
 O fluxo comum do operador continua válido: abrir o Codex na pasta do projeto e pedir a tarefa. O WSD reforça isso com quatro peças:
 
 1. `AGENTS.md` gerado com a seção `WSD Codex Bootstrap`;
-2. skills repo-locales em `.agents/skills/`, incluindo `wsd-loop`, com espelho legado em `.codex/skills/`;
+2. skills repo-locales em `.agents/skills/`, incluindo `wsd-loop`, com espelho legado em `.agents/skills/`;
 3. `./+wsd/bin/wsd start --brief` para contexto operacional compacto;
-4. `./+wsd/bin/wsd codex-prompt`, `./+wsd/bin/wsd codex` e `./+wsd/bin/wsd codex-shortcuts` para quando o operador quiser comandos curtos em vez de escrever instruções.
 
 Comandos:
 
 ```bash
 ./+wsd/bin/wsd start --brief
-./+wsd/bin/wsd codex-prompt --task "descreva a tarefa"
-./+wsd/bin/wsd codex --task "descreva a tarefa"
-./+wsd/bin/wsd codex --exec --feature <slug>
-./+wsd/bin/wsd codex-shortcuts install
 ```
 
-`codex-prompt` apenas imprime o prompt WSDD. `codex` chama o Codex CLI apontando para o repositório atual. `--dry-run` valida o prompt sem exigir Codex instalado. `codex-shortcuts install` instala um prompt global opcional do Codex; depois dele, o atalho de TUI é `/prompts:loop status`, `/prompts:loop on` ou `/prompts:loop off`.
 
 No Claude Code, o WSD instala `.claude/commands/loop.md`, então o atalho é literalmente `/loop status`, `/loop on` ou `/loop off`.
 
-Quando `automation.loop.auto_use=true`, o prompt gerado instrui o Codex a usar WSD Loop automaticamente para L0/L1 elegível. Quando `./+wsd/bin/wsd codex --exec --feature <slug>` é usado com `auto_use=true`, o launcher executa `wsd loop run` com `codex exec` como executor.
 
-O WSD não usa hooks internos do Codex como base obrigatória nesta versão. Aderência principal fica em `AGENTS.md` + `.agents/skills/`, porque é o mecanismo compartilhável por repositório; prompts globais (`/prompts:loop`) são opcionais por usuário, e hooks ficam como ideia futura em `+specs/project/IDEAS.md`.
+O WSD não usa hooks internos do Codex como base obrigatória nesta versão. Aderência principal fica em `AGENTS.md` + `.agents/skills/`, porque é o mecanismo compartilhável por repositório; prompts globais (``/loop` (Claude Code) ou skill `wsd-loop` (Codex)`) são opcionais por usuário, e hooks ficam como ideia futura em `+specs/project/IDEAS.md`.
 
 ## 9. Próximas Evoluções
 

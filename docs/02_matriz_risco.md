@@ -37,14 +37,10 @@ otimizado_para_obsidian: true
 5. [[#5. Escore de Risco]]
 6. [[#6. Regra de Elevação]]
 7. [[#7. Sincronização da Matriz de Risco]]
-8. [[#8. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 14:13:39 -03 — Codex: Inclusão da regra de sincronização quando os critérios L0/L1/L2 forem alterados.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -189,14 +185,5 @@ Ao alterar critérios L0/L1/L2, revisar:
 - `templates/repo/AGENTS.md.template`;
 - `templates/codex-skills/wsd/SKILL.md`;
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]].
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 8. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/02_matriz_risco.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/02_matriz_risco.md` | Inclusão da regra de sincronização quando os critérios L0/L1/L2 forem alterados. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

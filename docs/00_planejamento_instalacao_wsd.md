@@ -18,6 +18,14 @@ otimizado_para_obsidian: true
 ---
 # 00 — Planejamento de Instalação WSD
 
+> [!note] Atualização v0.5.0 (lean-core)
+> Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
+> o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
+> atual é linguagem natural + tabela Intenção → Ação do `AGENTS.md`, skills em
+> `.agents/skills/` e guias on-demand em `+wsd/guides/`. Menções abaixo a esses
+> comandos são históricas.
+
+
 [[wsd/wsd|← WSD]]
 
 ---
@@ -48,23 +56,10 @@ otimizado_para_obsidian: true
 14. [[#14. Decisão Sobre Instalação Fora do Projeto]]
 15. [[#15. Relação Com BMad]]
 16. [[#16. Sincronização Deste Planejamento]]
-17. [[#17. 🕒 Registro de Alterações por Agentes]]
 
 ## 1. 🔄 Atualizações
 
-Esta seção documenta o histórico evolutivo do documento, assegurando a rastreabilidade das decisões e alterações realizadas por agentes ou operadores humanos.
-
-- 05/05/2026 13:29:54 -03 — Codex: Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes.
-- 05/05/2026 13:33:20 -03 — Codex: Inclusão de pré-requisitos, canais `npx`, prerelease e modos interativo/não interativo inspirados no BMad.
-- 05/05/2026 13:33:56 -03 — Codex: Limpeza de navegação duplicada após a subseção de pré-requisitos.
-- 05/05/2026 14:13:39 -03 — Codex: Registro do estado implementado em `v0.1.2-alpha` e das notas que devem ser sincronizadas quando o instalador mudar.
-- 05/05/2026 14:38:29 -03 — Codex: Inclusão do planejamento de módulos opcionais, com `git-governance` como primeiro módulo proposto para perguntas do instalador.
-- 06/05/2026 14:41:06 -03 — Codex: Padronização das listas de implementação da nota de instalação com checkboxes para acompanhar o que está concluído e o que falta.
-- 07/05/2026 — Codex: Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização.
-- 07/05/2026 — Codex: Marcação da `v0.1.10-alpha` como implementada: `--git-policy none|basic|full`, Git namespace local, `git_governance` e templates PR/Issue no modo `full`.
-- 30/05/2026 18:15:09 -03 — Codex: Inclusão do subcomando local `wsd version` e do modo de inventário para rastrear a versão WSD instalada em múltiplos projetos.
-- 15/06/2026 — Codex: Inclusão do subcomando local `wsd loop` e do contrato `automation.loop` para automação L0/L1 com gates.
-- 15/06/2026 — Codex: Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `wsd start --brief` para aderência Codex com poucos comandos.
+Histórico completo desta nota: `git log --follow -- <arquivo>` e [CHANGELOG.md](../CHANGELOG.md). Seções de histórico manual foram removidas na v0.5.0 (lean-core); conteúdo preservado em `archive/historico_notas_2026H1.md`.
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]
 
@@ -341,7 +336,6 @@ Depois de instalado dentro do projeto:
 ./+wsd/bin/wsd loop status
 ./+wsd/bin/wsd loop auto on
 ./+wsd/bin/wsd loop auto off
-./+wsd/bin/wsd codex-prompt --task "minha tarefa"
 ```
 
 Inventário de versões WSD em vários projetos:
@@ -396,7 +390,6 @@ Estado implementado até `v0.1.10-alpha`:
 - [x] Criar matriz e checker de sincronização documental.
 - [x] Adicionar `./+wsd/bin/wsd version` para rastrear versão instalada por projeto e inventariar múltiplos repos.
 - [x] Adicionar `./+wsd/bin/wsd loop plan|once|run|status|stop` para automação inteligente L0/L1.
-- [x] Adicionar `./+wsd/bin/wsd codex-prompt`, `codex` e `start --brief` para aderência Codex.
 - [x] Registrar plano do módulo opcional `git-governance`.
 - [x] Criar templates Claude Code.
 - [x] Testar em projeto brownfield real (`koomplet-office`) antes de escalar.
@@ -463,22 +456,5 @@ Quando esta nota mudar, revisar:
 - [[wsd/docs/10_matriz_sincronizacao_notas|10 Matriz de Sincronização]], se surgir nova relação obrigatória;
 - [[wsd/docs/11_modulo_git_governance|11 Módulo Git Governance]], se perguntas de módulo Git mudarem;
 - `bin/wsd-method.js`, `install.sh` e `package.json`, se a nota descrever comportamento executável.
-
-[[#📑 Índice|⬆️ Voltar ao Índice]]
-
-## 17. 🕒 Registro de Alterações por Agentes
-
-| Data e hora | Agente | Arquivos/escopo | Alteração registrada |
-|---|---|---|---|
-| 05/05/2026 13:29:54 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Aplicação do padrão Obsidian WSD: frontmatter, índice literal, seção de atualizações, navegação e registro final de alterações por agentes. |
-| 05/05/2026 13:33:20 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão de pré-requisitos, canais `npx`, prerelease e modos interativo/não interativo inspirados no BMad. |
-| 05/05/2026 13:33:56 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Limpeza de navegação duplicada após a subseção de pré-requisitos. |
-| 05/05/2026 14:13:39 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Registro do estado implementado em `v0.1.2-alpha` e das notas que devem ser sincronizadas quando o instalador mudar. |
-| 05/05/2026 14:38:29 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão do planejamento de módulos opcionais, com `git-governance` como primeiro módulo proposto para perguntas do instalador. |
-| 06/05/2026 14:41:06 -03 | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Padronização das listas de implementação com checkboxes para acompanhar o que está concluído e o que falta. |
-| 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Planejamento da `v0.1.10-alpha` como MVP Git/GitHub Governance antes da estabilização. |
-| 07/05/2026 — | Codex | `x/wsd/docs/00_planejamento_instalacao_wsd.md` | Marcação da `v0.1.10-alpha` como implementada no instalador, CLI local, contexto e templates GitHub. |
-| 30/05/2026 18:15:09 -03 | Codex | `+Apps/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão do `wsd version` nos subcomandos locais e documentação do inventário multi-repo por `+wsd/config.json`. |
-| 15/06/2026 | Codex | `+Apps/wsd/docs/00_planejamento_instalacao_wsd.md` | Inclusão dos comandos `wsd codex-prompt`, `wsd codex` e `start --brief` no planejamento de instalação. |
 
 [[#📑 Índice|⬆️ Voltar ao Índice]]

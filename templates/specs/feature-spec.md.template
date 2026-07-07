@@ -70,4 +70,4 @@
 
 ---
 
-> **Nota para agente:** Não implementar enquanto status for `draft`. Exige `approved` para L1 e aprovação humana explícita para L2.
+> **Nota para agente:** Não implementar enquanto status for `draft`. Exige `approved` para L1/L2; com `approval_mode=full_auto`, o agente promove a `approved` após auto-revisão registrada, e L2 adiciona validação reforçada + rollback documentado.

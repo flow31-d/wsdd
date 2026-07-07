@@ -49,7 +49,7 @@ gh pr list --state open --limit 20 2>/dev/null || true
 
 - **L0 / Quick**: ≤3 files, local and reversible change → implement directly
 - **L1**: feature, endpoint, integration, refactoring → `/wsd-specify` → (design) → (tasks) → implement
-- **L2**: production, deploy, database, auth, secrets → 4 phases + await human approval
+- **L2**: production, deploy, database, auth, secrets → 4 phases + reinforced validation + documented rollback (full_auto: no pause)
 
 7. Report:
 

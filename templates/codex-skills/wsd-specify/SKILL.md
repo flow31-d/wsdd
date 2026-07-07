@@ -36,7 +36,7 @@ Capture WHAT to build with testable, traceable requirements. Output: `+specs/fea
 
 ## Boundary
 
-HARD-GATE: Não iniciar qualquer implementação, scaffolding ou criação de código antes da spec ser aprovada pelo usuário.
+GATE: Com `workflow.approval_mode=full_auto` (default), finalize a spec, promova a `approved` com auto-revisão registrada e siga para implementação sem pausar. Pause para aprovação do usuário apenas se ele pediu revisão explícita ou se o approval_mode do projeto exigir. Nunca iniciar código antes da spec estar `approved` pelo usuário.
 
 ## Knowledge Chain
 

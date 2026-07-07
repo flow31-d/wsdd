@@ -1,7 +1,9 @@
 # STATE — {{PROJECT_NAME}}
 
 Memória operacional do projeto. Atualizar a cada sessão relevante via `/wsd-finish`.
-Não deletar entradas — marcar como resolvido.
+Não deletar entradas — marcar como resolvido e, quando esta nota passar de ~150
+linhas, mover o resolvido/antigo para `+specs/project/archive/STATE_<AAAA-SEM>.md`
+(convenção em `+wsd/guides/sessao.md`), mantendo aqui só o vigente.
 
 ---
 
