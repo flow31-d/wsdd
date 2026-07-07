@@ -21,10 +21,6 @@ version="$(node -p "require('./package.json').version")"
 tag="v${version}"
 
 # 1. Arquivos centrais presentes
-# NOTA (adaptação para o repo público wsdd): "archive/README.md" foi removido
-# desta lista. archive/ é pesquisa interna do WSD privado e nunca é
-# sincronizada para o público por política (docs/15, secao 5.2) — este
-# checker roda também no wsdd, onde a pasta archive/ não existe por design.
 required_files=(
   "README.md"
   "wsd.md"
@@ -41,6 +37,11 @@ for file in "${required_files[@]}"; do
   [[ -f "$file" ]] || fail "missing sync file: $file"
 done
 ok "sync files present"
+
+# archive/ existe só no privado; quando existir, precisa do README com a regra
+if [[ -d archive ]]; then
+  [[ -f archive/README.md ]] || fail "archive/ present without archive/README.md (regra de agentes)"
+fi
 
 # 2. Versão atual em exatamente as fontes declaradas (CHANGELOG + linhas de versão)
 grep -qE "$version|$tag" CHANGELOG.md || fail "current version $version missing in CHANGELOG.md"

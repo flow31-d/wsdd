@@ -15,9 +15,9 @@ const cp = require('child_process');
 const root = process.cwd();
 
 const BLOAT_LIMITS = {
-  '+specs/project/STATE.md': 150,
-  '+specs/project/CONCERNS.md': 120,
-  '+specs/project/CONCERNS_PIPELINE.md': 120,
+  '+specs/project/STATE.md': { lines: 150, bytes: 8192 },
+  '+specs/project/CONCERNS.md': { lines: 120, bytes: 6144 },
+  '+specs/project/CONCERNS_PIPELINE.md': { lines: 120, bytes: 6144 },
 };
 
 function read(file) {
@@ -171,11 +171,181 @@ function bloatWarnings() {
     const content = read(file);
     if (!content) continue;
     const lineCount = content.split(/\r?\n/).length;
-    if (lineCount > limit) {
-      warnings.push(`${file} tem ${lineCount} linhas (limite ${limit}) — arquivar entradas resolvidas em +specs/project/archive/ (ver +wsd/guides/sessao.md)`);
+    const byteCount = Buffer.byteLength(content, 'utf8');
+    const tokens = Math.round(byteCount / 4);
+    if (lineCount > limit.lines || byteCount > limit.bytes) {
+      warnings.push(`${file} tem ${lineCount} linhas / ~${tokens} tokens (limite ${limit.lines} linhas ou ~${Math.round(limit.bytes / 4)} tokens) — rode ./+wsd/bin/wsd compact ou arquive em +specs/project/archive/ (ver +wsd/guides/sessao.md)`);
     }
   }
   return warnings;
+}
+
+// ---------------------------------------------------------------------------
+// Compact engine — move entradas fechadas/antigas para +specs/project/archive/
+// Determinístico: nada é apagado; linhas movidas mantêm IDs e conteúdo.
+// ---------------------------------------------------------------------------
+
+const KEEP_RECENT_ROWS = 10;
+
+function halfLabel() {
+  const now = new Date();
+  return `${now.getFullYear()}H${now.getMonth() < 6 ? 1 : 2}`;
+}
+
+function sectionRange(lines, heading) {
+  const wanted = normalizeHeading(heading);
+  const start = lines.findIndex((line) => normalizeHeading(line.trim()) === wanted);
+  if (start === -1) return null;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i += 1) {
+    if (/^##\s+/.test(lines[i])) { end = i; break; }
+  }
+  return { start, end };
+}
+
+function isTableDataRow(line) {
+  const trimmed = line.trim();
+  return trimmed.startsWith('|') && trimmed.endsWith('|') && !/^\|[\s:|-]+\|$/.test(trimmed);
+}
+
+function rowCells(line) {
+  return line.trim().slice(1, -1).split('|').map((cell) => strip(cell));
+}
+
+function parseRowDate(cell) {
+  let m = String(cell).match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(`${m[1]}-${m[2]}-${m[3]}`).getTime();
+  m = String(cell).match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}`).getTime();
+  return NaN;
+}
+
+// Regras por arquivo: cada regra decide, por seção, quais linhas de dados saem.
+const COMPACT_RULES = {
+  '+specs/project/STATE.md': {
+    archiveFile: () => `+specs/project/archive/STATE_${halfLabel()}.md`,
+    archiveTitle: 'STATE — arquivo',
+    sections: [
+      { heading: '## Bloqueadores Ativos', pick: (cells) => isClosedStatus((cells[3] || '').toLowerCase()) || ['resolvido', 'fechado', 'closed'].includes((cells[3] || '').toLowerCase()) },
+      { heading: '## Decisões', keepRecent: true, dateIndex: 0 },
+      { heading: '## Lições Aprendidas', keepRecent: true, dateIndex: 0 },
+      { heading: '## Todos Ativos', checkbox: true },
+    ],
+  },
+  '+specs/project/CONCERNS.md': {
+    archiveFile: () => `+specs/project/archive/CONCERNS_${halfLabel()}.md`,
+    archiveTitle: 'CONCERNS — arquivo',
+    sections: [
+      { heading: '## Preocupacoes Ativas', pick: (cells) => isClosedStatus((cells[4] || '').toLowerCase()) },
+    ],
+  },
+  '+specs/project/CONCERNS_PIPELINE.md': {
+    archiveFile: () => `+specs/project/archive/CONCERNS_${halfLabel()}.md`,
+    archiveTitle: 'CONCERNS — arquivo',
+    sections: [
+      { heading: '## Pipeline', pick: (cells) => isClosedStatus((cells[2] || '').toLowerCase()) },
+    ],
+  },
+};
+
+function compactFile(file, rule, dryRun) {
+  const content = read(file);
+  if (!content) return null;
+  const lines = content.split(/\r?\n/);
+  const removeIdx = new Set();
+  const moved = [];
+
+  for (const sectionRule of rule.sections) {
+    const range = sectionRange(lines, sectionRule.heading);
+    if (!range) continue;
+
+    if (sectionRule.checkbox) {
+      for (let i = range.start + 1; i < range.end; i += 1) {
+        if (/^- \[x\]/i.test(lines[i].trim())) {
+          removeIdx.add(i);
+          moved.push({ section: sectionRule.heading, line: lines[i] });
+        }
+      }
+      continue;
+    }
+
+    const dataRows = [];
+    for (let i = range.start + 1; i < range.end; i += 1) {
+      if (isTableDataRow(lines[i])) {
+        const cells = rowCells(lines[i]);
+        const isHeader = dataRows.length === 0 && Number.isNaN(parseRowDate(cells[0])) && !/^CONC-|^IDEA-/.test(cells[0] || '');
+        if (isHeader) continue;
+        dataRows.push({ index: i, cells });
+      }
+    }
+
+    if (sectionRule.keepRecent) {
+      if (dataRows.length <= KEEP_RECENT_ROWS) continue;
+      const sorted = [...dataRows].sort((a, b) => {
+        const da = parseRowDate(a.cells[sectionRule.dateIndex]);
+        const db = parseRowDate(b.cells[sectionRule.dateIndex]);
+        if (Number.isNaN(da) || Number.isNaN(db)) return a.index - b.index;
+        return db - da;
+      });
+      for (const row of sorted.slice(KEEP_RECENT_ROWS)) {
+        removeIdx.add(row.index);
+        moved.push({ section: sectionRule.heading, line: lines[row.index] });
+      }
+    } else if (sectionRule.pick) {
+      for (const row of dataRows) {
+        if (sectionRule.pick(row.cells)) {
+          removeIdx.add(row.index);
+          moved.push({ section: sectionRule.heading, line: lines[row.index] });
+        }
+      }
+    }
+  }
+
+  if (!moved.length) return null;
+  if (dryRun) return { file, moved, archivePath: rule.archiveFile() };
+
+  const archivePath = rule.archiveFile();
+  const absArchive = path.join(root, archivePath);
+  fs.mkdirSync(path.dirname(absArchive), { recursive: true });
+  let archive = fs.existsSync(absArchive) ? fs.readFileSync(absArchive, 'utf8') : `# ${rule.archiveTitle} (${halfLabel()})\n\nEntradas movidas pelo wsd compact. IDs e conteúdo preservados; histórico completo no git.\n`;
+  const stamp = new Date().toISOString().slice(0, 10);
+  archive += `\n## Compactação de ${file} — ${stamp}\n\n`;
+  const bySection = new Map();
+  for (const item of moved) {
+    if (!bySection.has(item.section)) bySection.set(item.section, []);
+    bySection.get(item.section).push(item.line);
+  }
+  for (const [section, rows] of bySection) {
+    archive += `### ${section.replace(/^#+\s*/, '')}\n\n${rows.join('\n')}\n\n`;
+  }
+  fs.writeFileSync(absArchive, archive);
+
+  let newLines = lines.filter((_line, i) => !removeIdx.has(i));
+  if (!newLines.some((line) => line.includes('archive/'))) {
+    const h1 = newLines.findIndex((line) => /^#\s+/.test(line));
+    if (h1 !== -1) newLines.splice(h1 + 1, 0, '', `Entradas antigas/resolvidas: ver \`+specs/project/archive/\`.`);
+  }
+  fs.writeFileSync(path.join(root, file), newLines.join('\n'));
+  return { file, moved, archivePath };
+}
+
+function runCompact(argv) {
+  const dryRun = argv.includes('--dry-run');
+  const ifBloated = argv.includes('--if-bloated');
+  if (ifBloated && !bloatWarnings().length) {
+    process.stdout.write('ok: memória WSD dentro dos limites — compact não necessário\n');
+    return;
+  }
+  let total = 0;
+  for (const [file, rule] of Object.entries(COMPACT_RULES)) {
+    const result = compactFile(file, rule, dryRun);
+    if (!result) continue;
+    total += result.moved.length;
+    const verb = dryRun ? 'moveria' : 'movidas';
+    process.stdout.write(`${dryRun ? 'plan' : 'ok'}: ${result.file} — ${result.moved.length} entrada(s) ${verb} para ${result.archivePath}\n`);
+  }
+  if (!total) process.stdout.write('ok: nada elegível para compactação (nenhuma entrada fechada/antiga)\n');
+  else if (!dryRun) process.stdout.write(`PASS: compact — ${total} entrada(s) arquivada(s); nada foi apagado\n`);
 }
 
 function collectModel() {
@@ -407,6 +577,11 @@ function main() {
     return;
   }
 
+  if (mode === 'compact') {
+    runCompact(argv);
+    return;
+  }
+
   if (mode === 'bloat') {
     const warnings = bloatWarnings();
     for (const warning of warnings) process.stdout.write(`warn: ${warning}\n`);
@@ -432,7 +607,7 @@ function main() {
     return;
   }
 
-  process.stderr.write(`FAIL: modo desconhecido: ${mode} (use report|brief|bloat)\n`);
+  process.stderr.write(`FAIL: modo desconhecido: ${mode} (use report|brief|bloat|compact)\n`);
   process.exit(1);
 }
 

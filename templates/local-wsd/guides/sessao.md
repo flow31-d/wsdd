@@ -26,7 +26,20 @@ falha se a worktree não terminar limpa. Flags: `--no-commit`,
 
 ## Compactação (obrigatória — evita context rot)
 
-Nada é apagado; o resolvido sai do caminho de leitura:
+Nada é apagado; o resolvido sai do caminho de leitura. O comando mecânico faz
+isso por você:
+
+```bash
+./+wsd/bin/wsd compact --dry-run   # mostra o que seria arquivado
+./+wsd/bin/wsd compact             # arquiva entradas fechadas/antigas
+```
+
+Regras determinísticas: bloqueadores resolvidos, todos `- [x]`, concerns
+`resolved`/`accepted-risk`/`obsolete` e decisões/lições além das 10 mais
+recentes vão para `+specs/project/archive/<NOTA>_<AAAA-SEM>.md`, com IDs
+preservados. O `wsd finish` roda `compact --if-bloated` automaticamente quando
+uma nota passa do limiar (150 linhas ou ~2k tokens no STATE; 120 linhas ou
+~1,5k tokens nas concerns). Arquivamento manual continua válido:
 
 - Quando `STATE.md` passar de ~150 linhas: mover decisões/lições antigas e
   bloqueadores resolvidos para `+specs/project/archive/STATE_<AAAA-SEM>.md`

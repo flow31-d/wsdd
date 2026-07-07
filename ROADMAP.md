@@ -12,7 +12,7 @@ links: "[[wsd/wsd]], [[wsd/README]], [[wsd/CHANGELOG]], [[wsd/docs/10_matriz_sin
 ---
 # Roadmap WSD
 
-Versão atual: **`v0.5.0`**.
+Versão atual: **`v0.5.1`**.
 
 O roadmap operacional vivo (features ativas, backlog, concluídas) tem **fonte
 única** em [`+specs/project/ROADMAP.md`](+specs/project/ROADMAP.md) — gere a

@@ -1246,7 +1246,7 @@ _wsd_finish() {
   fi
 
   if command -v node >/dev/null 2>&1 && [[ -f +wsd/bin/wsd-report.cjs ]]; then
-    node +wsd/bin/wsd-report.cjs bloat || true
+    node +wsd/bin/wsd-report.cjs compact --if-bloated || true
   fi
 
   _finish_state_prompts "$today"
@@ -1605,6 +1605,11 @@ USAGE
         ;;
     esac
     ;;
+  compact)
+    command -v node >/dev/null 2>&1 || { echo "FAIL: node é necessário para wsd compact" >&2; exit 1; }
+    [[ -f +wsd/bin/wsd-report.cjs ]] || { echo "FAIL: +wsd/bin/wsd-report.cjs ausente — rode ./+wsd/bin/wsd update" >&2; exit 1; }
+    node +wsd/bin/wsd-report.cjs compact "$@"
+    ;;
   snapshot)
     if [[ ! -f +wsd/bin/wsd-snapshot.cjs ]]; then
       echo "FAIL: +wsd/bin/wsd-snapshot.cjs não encontrado — reinstale com wsd-method install --force" >&2
@@ -1690,14 +1695,15 @@ USAGE
     _wsd_loop "$@"
     ;;
   help|--help|-h)
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop"
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|compact|doctor|hooks|update|git|party|snapshot|version|lovable|loop"
+    echo "       ./+wsd/bin/wsd compact [--dry-run] [--if-bloated]"
     echo "       ./+wsd/bin/wsd version [--inventory|--scan] [--json] [--path <dir>] [--max-depth <n>]"
     echo "       ./+wsd/bin/wsd loop plan|once|run|status|stop|auto"
     echo "       ./+wsd/bin/wsd relatorio [--save|--output <file>]"
     ;;
   *)
     echo "Unknown WSD command: $command" >&2
-    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|doctor|hooks|update|git|party|snapshot|version|lovable|loop" >&2
+    echo "Usage: ./+wsd/bin/wsd start|check|finish|relatorio|compact|doctor|hooks|update|git|party|snapshot|version|lovable|loop" >&2
     exit 1
     ;;
 esac

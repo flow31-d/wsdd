@@ -13,7 +13,7 @@ links: "[[wsd/wsd]], [[wsd/CHANGELOG]], [[wsd/docs/01_constituicao]], [[wsd/docs
 ---
 # WSD — Wolff Spec Driven
 
-**Versão atual: `v0.5.0`** — histórico completo em [CHANGELOG.md](CHANGELOG.md).
+**Versão atual: `v0.5.1`** — histórico completo em [CHANGELOG.md](CHANGELOG.md).
 
 WSD é um kit pessoal de Spec Driven Development para agentes de código (Codex,
 Claude Code e equivalentes). Ele transforma repositórios em ambientes
@@ -77,6 +77,7 @@ CLI vendorizado (backend determinístico que o agente chama):
 ./+wsd/bin/wsd check             # valida contrato WSD (gates L0/L1/L2)
 ./+wsd/bin/wsd relatorio         # visão geral: estado, plano, ideias, concerns
 ./+wsd/bin/wsd finish            # fecha: gates, HANDOFF, snapshot, commit, worktree limpa
+./+wsd/bin/wsd compact           # arquiva memória resolvida/antiga (auto no finish)
 ./+wsd/bin/wsd doctor|version|update|hooks|snapshot
 ./+wsd/bin/wsd git doctor|preflight|pr-check
 ./+wsd/bin/wsd loop plan|once|run|status|auto   # automação L0/L1 (Ralph/WSD Loop)
@@ -102,9 +103,10 @@ commands Claude Code em `.claude/commands/` (`/wsd-start`, `/wsd-specify`,
   de `STATE.md` + concerns ativas. Todo o resto é on-demand.
 - Detalhes por subsistema vivem em `+wsd/guides/` (git, loop, party, lovable,
   sessão) e só são lidos quando a tarefa toca o tema.
-- Memória compacta: `STATE.md`/`CONCERNS*` arquivam entradas resolvidas em
-  `+specs/project/archive/` (nada é apagado). `wsd check`/`wsd finish` avisam
-  quando uma nota incha.
+- Memória compacta: `wsd compact` arquiva mecanicamente entradas resolvidas de
+  `STATE.md`/`CONCERNS*` em `+specs/project/archive/` (nada é apagado; IDs
+  preservados). O `wsd finish` compacta sozinho quando uma nota passa do limiar
+  (linhas ou ~tokens); `wsd check`/`relatorio` avisam.
 - Histórico não se duplica: versão vive em `package.json` + `CHANGELOG.md`;
   autoria/data vivem no git. Notas não mantêm tabelas manuais de histórico.
 

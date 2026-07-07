@@ -123,3 +123,17 @@ test -f "$tmpdir/+specs/RELATORIO.md"
 grep -q 'Pipeline de Concerns' "$tmpdir/+specs/RELATORIO.md"
 
 "$tmpdir/+wsd/bin/wsd" report | grep -q '^# Relatorio WSD'
+
+# --- compact engine (v0.5.1) ---
+cat >> "$tmpdir/+specs/project/CONCERNS_PIPELINE.md" <<'EOF'
+| CONC-002 | risco antigo resolvido | resolved | done | p | n | ok | x | — |
+EOF
+"$tmpdir/+wsd/bin/wsd" compact --dry-run | grep -q 'CONCERNS_PIPELINE.md'
+"$tmpdir/+wsd/bin/wsd" compact | grep -q 'PASS: compact'
+test -f "$tmpdir"/+specs/project/archive/CONCERNS_*.md
+grep -q 'CONC-002' "$tmpdir"/+specs/project/archive/CONCERNS_*.md
+! grep -q 'CONC-002' "$tmpdir/+specs/project/CONCERNS_PIPELINE.md"
+grep -q 'CONC-001' "$tmpdir/+specs/project/CONCERNS_PIPELINE.md"
+"$tmpdir/+wsd/bin/wsd" compact | grep -q 'nada elegível'
+"$tmpdir/+wsd/bin/wsd" check >/dev/null
+echo "PASS: relatorio + compact install test"

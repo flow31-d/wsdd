@@ -250,6 +250,39 @@ else
   warn "package.json já não está em $current_version — assumindo já bumped"
 fi
 
+# ----- STEP 4.5: Rotação do CHANGELOG (janela ativa) -----
+step "4.5. Rotação do CHANGELOG (janela ativa de 6 versões)"
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "    [dry-run] rotação CHANGELOG.md → CHANGELOG_ARCHIVE.md (mantém 6 versões ativas)"
+else
+  node - <<'ROTATE'
+const fs = require('fs');
+const KEEP = 6;
+const cl = fs.readFileSync('CHANGELOG.md', 'utf8');
+const lines = cl.split('\n');
+const idx = [];
+lines.forEach((l, i) => { if (/^## \d+\./.test(l) || /^## 0\./.test(l) || /^## [0-9]+\.[0-9]+\.[0-9]+/.test(l)) idx.push(i); });
+if (idx.length <= KEEP) { console.log(`ok: CHANGELOG com ${idx.length} versões ativas (limite ${KEEP}) — sem rotação`); process.exit(0); }
+// seções são newest-first; as excedentes ficam no fim (antes do trailer '---')
+const firstOld = idx[KEEP];
+let trailerStart = lines.length;
+for (let i = lines.length - 1; i > firstOld; i -= 1) {
+  if (lines[i].startsWith('---')) { trailerStart = i; break; }
+}
+const movedBlock = lines.slice(firstOld, trailerStart).join('\n').trim();
+const kept = lines.slice(0, firstOld).join('\n').replace(/\n+$/, '\n') + '\n' + lines.slice(trailerStart).join('\n');
+let arch = fs.existsSync('CHANGELOG_ARCHIVE.md') ? fs.readFileSync('CHANGELOG_ARCHIVE.md', 'utf8') : '# Changelog WSD — Arquivo (versões antigas)\n\n';
+const insertAt = arch.indexOf('\n## ');
+if (insertAt === -1) arch = arch.trimEnd() + '\n\n' + movedBlock + '\n';
+else arch = arch.slice(0, insertAt + 1) + '\n' + movedBlock + '\n' + arch.slice(insertAt + 1);
+fs.writeFileSync('CHANGELOG.md', kept);
+fs.writeFileSync('CHANGELOG_ARCHIVE.md', arch);
+const movedCount = idx.length - KEEP;
+console.log(`ok: rotação — ${movedCount} versão(ões) movida(s) para CHANGELOG_ARCHIVE.md (${KEEP} ativas)`);
+ROTATE
+fi
+
 # ----- STEP 5: Run local gates -----
 step "5. Rodando gates locais"
 

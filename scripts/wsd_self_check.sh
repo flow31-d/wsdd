@@ -258,6 +258,11 @@ grep -q 'Relatorio WSD' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-repo
 grep -q 'Sugestão do Agente' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing agent suggestion"
 grep -q 'renderBrief' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing brief mode"
 grep -q 'bloatWarnings' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing bloat/compaction warnings"
+grep -q 'runCompact' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing compact engine"
+grep -q 'COMPACT_RULES' templates/local-wsd/bin/wsd-report.cjs || fail "wsd-report.cjs missing compact rules"
+grep -qE '^  compact\)' templates/local-wsd/bin/wsd || fail "vendored CLI missing compact command"
+grep -q 'compact --if-bloated' templates/local-wsd/bin/wsd || fail "wsd finish missing auto-compaction"
+grep -q 'ROTATE' scripts/wsd_release.sh || fail "wsd_release.sh missing CHANGELOG rotation step"
 grep -q 'test:install-relatorio' package.json || fail "package.json missing test:install-relatorio"
 ok "wsd report engine contract present (Node, não bash)"
 

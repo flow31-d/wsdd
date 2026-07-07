@@ -16,6 +16,12 @@ otimizado_para_obsidian: true
 
 # 17 — O que é e o que contém o Snapshot WSD
 
+> [!note] v0.5.1
+> O engine `+wsd/bin/wsd-report.cjs` também alimenta `wsd relatorio`, `start --brief`
+> e a compactação (`wsd compact`); os limiares de inchaço são medidos em linhas E
+> em tokens estimados (~bytes/4).
+
+
 [[wsd/wsd|← WSD]]
 
 ---

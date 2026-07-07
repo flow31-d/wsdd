@@ -15,7 +15,7 @@ links: "[[x]], [[wsd/README]], [[wsd/ROADMAP]], [[wsd/CHANGELOG]], [[wsd/AGENTS]
 
 [[x|← x — Interface IA]]
 
-Versão atual: **`v0.5.0`** — detalhes em [[wsd/CHANGELOG|CHANGELOG]]. Visão
+Versão atual: **`v0.5.1`** — detalhes em [[wsd/CHANGELOG|CHANGELOG]]. Visão
 geral e instalação: [[wsd/README|README]].
 
 ## Mapa

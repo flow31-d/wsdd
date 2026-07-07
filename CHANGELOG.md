@@ -16,6 +16,26 @@ Fonte única do histórico de versões do WSD. Janela ativa: últimas versões; 
 restante vive em [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md). Autoria e data
 de cada mudança: `git log`.
 
+## 0.5.1 — 07/07/2026
+
+**Patch "compact engine"** — fecha as 3 melhorias da revisão v0.5.0
+(spec `+specs/features/compact-engine/spec.md`):
+
+- `./+wsd/bin/wsd compact [--dry-run|--if-bloated]`: arquivamento mecânico e
+  determinístico de memória — bloqueadores fechados, todos `- [x]`, concerns
+  `resolved`/`accepted-risk`/`obsolete` e decisões/lições além das 10 mais
+  recentes vão para `+specs/project/archive/`, com IDs preservados e no-op
+  idempotente.
+- `wsd finish` roda `compact --if-bloated` automaticamente; a compactação entra
+  no commit de fechamento.
+- Limiares de inchaço por linhas E tokens estimados (~bytes/4).
+- `wsd_release.sh` rotaciona o CHANGELOG automaticamente (6 versões ativas;
+  excedente vai para `CHANGELOG_ARCHIVE.md`).
+- Gates: compact coberto em `test:install-relatorio`; self_check valida engine,
+  dispatch, auto-compact e rotação. `docs_check` passa a exigir
+  `archive/README.md` apenas quando `archive/` existir (compat com o wsdd
+  público).
+
 ## 0.5.0 — 07/07/2026
 
 **Minor "lean core + full-auto"** — otimização estrutural completa do método

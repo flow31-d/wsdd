@@ -104,6 +104,9 @@ git commit -m "chore(release): v0.1.X+1"
 git tag v0.1.X+1
 git push origin main --tags
 
+# 4.5 Rotação do CHANGELOG é automática no wsd_release.sh (janela de 6 versões;
+#     excedente vai para CHANGELOG_ARCHIVE.md)
+
 # 5. Sync para wsdd público (manual via cp + rsync conforme whitelist em archive/REVIEW_PRE_V1.md)
 ```
 

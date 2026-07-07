@@ -16,6 +16,13 @@ otimizado_para_obsidian: true
 ---
 # 18 — Manual Leigo dos Comandos WSDD
 
+> [!tip] Compactação de memória (v0.5.1)
+> `./+wsd/bin/wsd compact` arquiva mecanicamente entradas resolvidas/antigas de
+> `STATE.md` e `CONCERNS*` em `+specs/project/archive/` — nada é apagado, IDs
+> preservados. `--dry-run` mostra antes. O `wsd finish` roda isso sozinho quando
+> uma nota passa do limiar de linhas/tokens.
+
+
 > [!note] Atualização v0.5.0 (lean-core)
 > Os comandos `wsd codex-prompt`, `wsd codex`, `wsd codex-shortcuts`, `wsd shortcuts`,
 > o prompt `/prompts:loop` e o espelho `.codex/skills/` foram **aposentados**. O caminho
